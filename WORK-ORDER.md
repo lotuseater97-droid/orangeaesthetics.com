@@ -19,7 +19,7 @@
 | W02 | P0 | Design roles, permissions and separation of duties | Pure permission matrix + test source committed; server enforcement pending | Scaffold complete; untested |
 | W03 | P0 | Define member QR lifecycle, check-in and redemption state machine | Draft schema, state guards and test source committed; transaction design pending | Scaffold complete; untested |
 | W04 | P0 | Build auth and session architecture | API contract and pure access guards drafted; dedicated backend, sessions and MFA not deployed | Design complete; implementation blocked |
-| W05 | P0 | Build protected membership/credits APIs | Added paid/unspent grant selection and unit tests; real authorization and transactional balances pending | Scaffold expanded; blocked: W04 |
+| W05 | P0 | Build protected membership/credits APIs | Added member-scoped paid subscription checks and approved reversal handling; production must require scope and server-derived inputs | Policy expanded; blocked: W04 |
 | W06 | P0 | Implement QR issuance, scan, verify and atomic redemption | Added draft QR uniqueness, idempotency and redemption constraints; protected transaction/API still pending | SQL draft; blocked: W04/W05 |
 | W07 | P0 | Connect Stripe sandbox and webhook reconciliation | Signed webhooks, duplicate event tests, refunds, portal and no PHI | Blocked: merchant onboarding/terms |
 | W08 | P1 | Build authenticated member UI | Actual credits, appointments, QR and billing from protected APIs | Blocked: W04–W07 |
@@ -62,3 +62,8 @@
 - W05: Added `app/lib/grant-selection.mjs` and `app/tests/grant-selection.test.mjs` for deterministic earliest-expiring, paid, unspent credit selection. Pure helper only; database state is authoritative.
 - W06: Added `app/redemption-integrity.draft.sql` with unique QR/check-in constraints, reversal record and idempotency record drafts. This is **unapplied**, requires review of schema evolution and transaction locking, and is not an API.
 - No live credit deduction, authenticated login, Stripe integration or real patient QR operation. Tests committed but **not executed**.
+
+## Progress log — member isolation and reversal policy (2026-11-22)
+- Strengthened `app/lib/grant-selection.mjs` with optional authenticated-member scoping through server-verified active paid subscription records and separate approved reversal events. Legacy unscoped mode remains for existing tests; **must not be used in production APIs**.
+- Added tests for cross-member isolation, unpaid/inactive subscriptions, unapproved reversal flags and missing subscription scope. **Not run**.
+- Next: remove legacy unscoped entry point before any API integration, implement transaction-safe SQL and verify test suite in checkout.
