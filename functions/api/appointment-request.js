@@ -12,9 +12,11 @@ export async function onRequestPost({request,env}) {
   let data;try{const body=await request.text();if(body.length>4096)return json(413,"Request too large");data=JSON.parse(body)}catch{return json(400,"Invalid request")}
   if(!data || typeof data!=="object" || Array.isArray(data))return json(400,"Invalid request");
   if(data.website)return json(200,"Received");
+  // Contact-only form: reject extra fields so medical notes are not forwarded by accident.
+  if(Object.keys(data).some(key=>!["name","email","phone","service","website"].includes(key)))return json(400,"Unsupported fields");
   const fields=["name","email","phone","service"];if(fields.some(key=>typeof data[key]!=="string"))return json(400,"Missing fields");
   const name=data.name.trim(),email=data.email.trim(),phone=data.phone.trim(),service=data.service;
-  if(name.length<2||name.length>100||email.length>200||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||phone.length<7||phone.length>35||!allowed.has(service))return json(400,"Invalid fields");
+  if(name.length<2||name.length>100||email.length>200||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||phone.length<7||phone.length>35||!allowed.has(service)||/[\r\n]/.test(name+email+phone))return json(400,"Invalid fields");
   // An approved endpoint must be configured as a server secret. No patient clinical details.
   try{
     const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
