@@ -1,0 +1,10 @@
+import test from "node:test";import assert from "node:assert/strict";
+import {projectBenefits,chooseOldestAvailableGrant,expirationImpact} from "../lib/benefit-history.mjs";
+const g=(id,valid_from,expires_at,quantity=1)=>({id,valid_from,expires_at,quantity,status:"paid"});
+test("oldest eligible expiration wins regardless of input order",()=>{const p=projectBenefits({grants:[g("b","2026-02-01","2026-05-02"),g("a","2026-01-01","2026-04-01")],now:"2026-03-01",expirationApproved:true});assert.equal(chooseOldestAvailableGrant(p),"a")});
+test("expiration removes usability but preserves historical remaining",()=>{const p=projectBenefits({grants:[g("a","2026-01-01","2026-04-01")],now:"2026-04-01",expirationApproved:true});assert.equal(p[0].available,0);assert.equal(p[0].remaining,1);assert.equal(p[0].expired,true)});
+test("legal gate defaults off",()=>{const p=projectBenefits({grants:[g("a","2026-01-01","2026-04-01")],now:"2026-05-01"});assert.equal(p[0].available,1);assert.equal(p[0].expired,false)});
+test("elite two credits, redemption and approved restoration",()=>{const p=projectBenefits({grants:[g("e","2026-01-01","2026-04-01",2)],redemptions:[{id:"r",grant_id:"e",status:"confirmed"}],adjustments:[{grant_id:"e",kind:"restore",quantity:1,approved:true}],now:"2026-02-01",expirationApproved:true});assert.equal(p[0].available,2)});
+test("reversed redemption is restored without erasing original",()=>{const p=projectBenefits({grants:[g("a","2026-01-01","2026-04-01")],redemptions:[{id:"r",grant_id:"a",status:"confirmed"}],adjustments:[{grant_id:"a",kind:"reverse_redemption",redemption_id:"r",approved:true}],now:"2026-02-01",expirationApproved:true});assert.equal(p[0].available,1)});
+test("impact report preserves expired quantity",()=>{const x=expirationImpact({grants:[g("a","2026-01-01","2026-04-01",2)],now:"2026-05-01"});assert.equal(x.total,2);assert.equal(x.affected[0].grant_id,"a")});
+test("rejects duplicate grant identifiers",()=>assert.throws(()=>projectBenefits({grants:[g("a","2026-01-01","2026-04-01"),g("a","2026-01-01","2026-04-01")],now:"2026-02-01"})));
