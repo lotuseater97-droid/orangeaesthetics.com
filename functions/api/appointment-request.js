@@ -4,7 +4,7 @@ const json=(status,message)=>new Response(JSON.stringify({message}),{status,head
 export async function onRequestPost({request,env}) {
   if (!env.APPOINTMENT_NOTIFICATION_ENDPOINT || !env.APPOINTMENT_NOTIFICATION_TOKEN) return json(503,"Appointment requests are not configured");
   let endpoint;try{endpoint=new URL(env.APPOINTMENT_NOTIFICATION_ENDPOINT)}catch{return json(503,"Notification endpoint is invalid")}
-  if(endpoint.protocol!=="https:" || endpoint.username || endpoint.password) return json(503,"Secure notification endpoint required");
+  if(endpoint.protocol!=="https:" || endpoint.username || endpoint.password || endpoint.port) return json(503,"Secure notification endpoint required");
   const origin=request.headers.get("origin");
   if(origin){let parsed;try{parsed=new URL(origin)}catch{return json(403,"Invalid origin")};if(parsed.origin!==new URL(request.url).origin)return json(403,"Invalid origin")}
   if(!(request.headers.get("content-type")||"").toLowerCase().startsWith("application/json"))return json(415,"JSON required");
@@ -14,7 +14,7 @@ export async function onRequestPost({request,env}) {
   if(data.website)return json(200,"Received");
   const fields=["name","email","phone","service"];if(fields.some(key=>typeof data[key]!=="string"))return json(400,"Missing fields");
   const name=data.name.trim(),email=data.email.trim(),phone=data.phone.trim(),service=data.service;
-  if(name.length<2||name.length>100||email.length>200||!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)||phone.length<7||phone.length>35||!allowed.has(service))return json(400,"Invalid fields");
+  if(name.length<2||name.length>100||email.length>200||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||phone.length<7||phone.length>35||!allowed.has(service))return json(400,"Invalid fields");
   // An approved endpoint must be configured as a server secret. No patient clinical details.
   try{
     const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
