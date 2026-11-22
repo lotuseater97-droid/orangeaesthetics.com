@@ -1,0 +1,21 @@
+name: Business foundation tests
+on:
+  push:
+    paths:
+      - 'app/lib/**'
+      - 'app/tests/**'
+      - '.github/workflows/business-foundation-tests.yml'
+  pull_request:
+    paths:
+      - 'app/lib/**'
+      - 'app/tests/**'
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run business policy tests
+        run: node --test app/tests/*.test.mjs
