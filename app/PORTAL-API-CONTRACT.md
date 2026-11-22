@@ -35,3 +35,6 @@
 
 ## Implementation gates
 No real endpoints, accounts, QR credentials, billing or PHI are active. Confirm vendor BAA/HIPAA scope, architecture, backups, retention, staging/production isolation, test harness and independent security review before connecting patient information.
+
+## Current QR helper source
+`app/lib/qr-token.mjs` provides Node-only cryptographic primitives; `app/tests/qr-token.test.mjs` provides unit-test source. No API routes, DB writes, credential issuance or redemption are live. A QR credential is not authorization for medical care.
