@@ -53,3 +53,6 @@ html,body{width:100%;max-width:100%;overflow-x:clip}img{max-width:100%}
  .section-heading h2{font-size:clamp(32px,8vw,44px)}.grid,.showcase-grid,.concern-grid{max-width:100%}
 }
 @media(max-width:380px){.home-hero h1{font-size:39px!important}.home-hero .hero-copy .eyebrow{font-size:9px!important;letter-spacing:.09em!important}}
+
+/* Membership conversion cards */
+.membership-intro{max-width:760px;margin:0 0 28px;color:var(--muted);font-size:16px}.membership-grid{align-items:stretch}.membership-grid .card{display:flex;flex-direction:column;min-height:340px;padding:34px;background:#fffefa;border:1px solid #dfe5dc}.membership-grid .card h2{margin:15px 0 12px;font-size:clamp(42px,4vw,57px);color:var(--sea)}.membership-grid .card p{font-size:15px;line-height:1.75;flex:1}.membership-grid .membership-cta{display:flex;width:100%;margin-top:20px;text-align:center;min-height:49px;padding:13px 16px}.membership-helper{display:block;text-align:center;font-size:11px;color:var(--muted);margin-top:11px}.membership-grid .card:nth-child(2){border-color:#9eb8aa;background:#f4f8f4}@media(max-width:760px){.membership-grid{grid-template-columns:1fr}.membership-grid .card{min-height:0;padding:28px}.membership-intro{font-size:14px}}
