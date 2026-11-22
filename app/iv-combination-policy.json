@@ -112,6 +112,13 @@
     "Separate administration does not imply clinical suitability.",
     "Public display must not disclose patient information.",
     "All clinical blocks must be enforced by the server, not only the browser.",
-    "Glutathione push is a separate sequential administration after the main infusion, not a same-bag ingredient; same-line sequential use requires product-specific flush and administration verification."
-  ]
+    "Glutathione push is a separate sequential administration after the main infusion, not a same-bag ingredient; same-line sequential use requires product-specific flush and administration verification.",
+    "Never label an unstudied combination as chemically incompatible merely because it is not approved for automatic ordering."
+  ],
+  "patient_ordering_purpose": "Prevent accidental self-ordering of unreviewed combinations; clinician retains final treatment decision.",
+  "compatibility_status_definitions": {
+    "selectable": "Documented compatibility and clinic-approved ordering policy; still subject to clinical review before administration.",
+    "requires_review": "Evidence incomplete or formulation-specific verification pending; not automatically orderable; not a finding of incompatibility.",
+    "blocked": "Known incompatibility, duplicate treatment, route mismatch, or another established restriction, with documented rationale."
+  }
 }
