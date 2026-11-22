@@ -169,3 +169,11 @@ This register consolidates the 36-item audit. **Source-level corrections are not
 
 ### Verification limitations
 Edits in this session were committed through GitHub. No local repository checkout, browser rendering, Cloudflare production inspection, test run, Stripe configuration or email-delivery test was performed. Do not mark these as deployed, tested or live.
+
+
+## 13. Follow-on hardening — 2026-11-22
+- [x] Strengthened the Cloudflare appointment function: HTTPS-only notification destination, reject cross-origin requests and non-JSON bodies, cap payload size even when Content-Length is absent, validate input, reject redirecting notification destinations, and return controlled errors for delivery failures/timeouts. **Not a substitute for provider authentication, rate limiting, HIPAA assessment or a successful delivery test.**
+- [x] Corrected the compatibility checker message for a single treatment with no add-on: it is an inquiry, not an unapproved combination.
+- [x] Restrict membership preselection query values to the three advertised tiers; the public request continues to transmit only broad service categories.
+- [ ] Before enabling appointment intake: configure a trusted HTTPS delivery provider, add durable rate limiting/bot mitigation, verify endpoint response and receipt, and confirm privacy/security arrangements.
+- [ ] Browser-test form errors, success state, mobile and accessibility; code commits alone do not establish production behavior.
