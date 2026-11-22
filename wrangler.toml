@@ -1,0 +1,8 @@
+name = "orangeaesthetics-com"
+compatibility_date = "2026-11-22"
+
+# Static public website. Existing custom domains remain managed in Cloudflare.
+# This is an assets-only Worker; Pages Functions in /functions are NOT deployed.
+[assets]
+directory = "."
+not_found_handling = "404-page"
