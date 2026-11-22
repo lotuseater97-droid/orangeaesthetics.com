@@ -11,7 +11,7 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 
 ## 2. Fixed owner decisions
 - **Payments:** Stripe chosen as primary provider. Stripe account creation/onboarding and connection **pending**. Hosted Checkout/Billing/Customer Portal/Terminal where appropriate; verify merchant eligibility and privacy restrictions first.
-- **IV plans:** Wellness $99/mo; Performance $199/mo; Elite $399/mo. Benefits are drafts and contractual terms require final approval before billing. NAD+ separate.
+- **IV plans:** Wellness $99/mo; Performance $199/mo; Elite $399/mo. Owner selected Wellness 15% discount across eligible Orange Aesthetics services and retail (not just IV), and proposed 90-day unused IV benefit rollover; both require final lawful exclusions and written contract review before billing. NAD+ separate.
 - **Weight management:** initial evaluation at Pacific Urgent Care; lab testing through regular insurance where covered; clinician-authorized injections in clinic. **Never display public weight-loss medication prices**. Keep clinical data in compliant clinical systems.
 - **Skincare:** NEOCUTIS product catalog with *advertised reference retail prices*, not verified inventory, acquisition cost, authorized online resale, or final sales price.
 - **Partner:** Flourish Longer is independent; link to its separate booking and payment experience. No shared charges or revenue split.
@@ -276,3 +276,9 @@ Edits in this session were committed through GitHub. No local repository checkou
 - Medical Board corporate-practice and medical-spa ownership/clinical control: https://www.mbc.ca.gov/Licensing/Physicians-and-Surgeons/Practice-Information/default.aspx
 - Counsel to review: medical-practice entity and NP/physician supervision/authorization, clinical eligibility and refund when unsuitable, HIPAA/payment separation and BAAs, package vs gift-card treatment, cash-out rights, cancellation and refund policy, advertising, sales tax and consumer privacy.
 - **System rule pending legal signoff:** retain original grant issuance/payment/expiry records; support separate non-expiring prepaid-value ledger if legally required; never erase historical grants; provide member-visible terms and audit trail.
+
+
+## 24. Wellness membership discount scope — 2026-11-22
+- [x] Owner decision: $99 Wellness includes one Mini PlenishIV monthly and **15% off eligible Orange Aesthetics services and skincare retail**, including additional IVs, injectables, laser and skin services. Do not extend to independent partners or Pacific Urgent Care/insurance-billed services by implication.
+- [x] Public `memberships.html` revised to reflect broader proposed benefit and pending 90-day rollover legal approval.
+- [ ] Finalize exclusions, whether higher-tier 20%/25% discounts share the same scope, discount stacking, minimum prices, resale rights and medical-service fee compliance. No live checkout or automatic expiration.
