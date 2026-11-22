@@ -17,3 +17,9 @@
 5. Add real member/staff/owner UIs only after secure authentication and role tests.
 
 **Do not paste Stripe secret keys into GitHub or chat.**
+
+## Additional foundation helpers
+- `lib/webhook-signature.mjs`: Stripe raw-body signature verification with timestamp tolerance; not an HTTP endpoint.
+- `lib/checkout-policy.mjs`: fail-closed checkout eligibility validation. Draft catalog remains disabled.
+- `lib/owner-metrics.mjs`: deterministic owner financial totals and stock movements; not connected to real records.
+- `tests/integration-policy.test.mjs`: test source for the above; **not executed yet**.
