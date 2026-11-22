@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "status": "draft_not_approved",
+  "currency": "usd",
+  "memberships": [
+    {
+      "code": "wellness",
+      "price_cents": 9900,
+      "credits": 1,
+      "discount_percent": 15,
+      "rollover_days": 30
+    },
+    {
+      "code": "performance",
+      "price_cents": 19900,
+      "credits": 1,
+      "discount_percent": 20,
+      "rollover_days": null
+    },
+    {
+      "code": "elite",
+      "price_cents": 39900,
+      "credits": 2,
+      "discount_percent": 25,
+      "rollover_days": null
+    }
+  ],
+  "retail": [
+    {
+      "code": "neocutis_bio_serum_firm_30ml",
+      "reference_price_cents": 29000
+    },
+    {
+      "code": "neocutis_bio_cream_firm_50ml",
+      "reference_price_cents": 18800
+    },
+    {
+      "code": "neocutis_lumiere_firm_15ml",
+      "reference_price_cents": 11400
+    }
+  ],
+  "notes": [
+    "Prices are examples from public listings and NOT approved for transactions.",
+    "Medical weight-loss pricing is intentionally excluded.",
+    "Do not send treatment details or PHI to Stripe."
+  ]
+}
