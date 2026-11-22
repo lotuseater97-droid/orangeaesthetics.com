@@ -120,3 +120,11 @@ Customer app navigation: **IV Therapy | Aesthetics | Medical Weight Loss | Neocu
 - Weight-loss page should invite patients to arrange an initial consultation through the medical clinic. Labs may be billed to insurance when covered; do not promise coverage.
 - After clinical evaluation and approval, individualized costs can be presented privately to the patient for explicit authorization in the secure portal. Do not list a general price menu.
 - No historical pharmacy acquisition pricing in customer-visible content.
+
+## Payment processor decision — Stripe (2026-11-21)
+- Owner selected **Stripe** for simplicity and integration. Do not build Helcim/Square as the primary checkout.
+- Use Stripe-hosted Checkout for approved one-time retail purchases and eligible nonclinical transactions; Stripe Billing subscriptions and customer portal for the three IV memberships, subject to finalized program terms.
+- Use a dedicated authenticated server endpoint to create sessions from an allowlisted, server-priced catalog; never trust client amounts. No secret keys in GitHub or browser. Verify signed webhooks, deduplicate event IDs, reconcile payment state before credit fulfillment, and handle failed renewals, refunds and disputes.
+- **PHI boundary:** Stripe is not the clinical chart. Never send diagnoses, prescriptions, clinical treatment details, labs, medical notes, appointment reasons, or other PHI in product names, Stripe metadata, descriptions, receipts, or customer records. Have counsel/compliance review whether each proposed transaction and data flow is permissible before launch; don't assume Stripe is a HIPAA BAA-covered clinical processor.
+- Keep medical weight-loss prices off public pages. Do not activate medication-related payments until merchant underwriting, legal and compliance approval.
+- Stripe account onboarding, verified bank payout details, product/price IDs, webhook signing secret and hosting secrets are not yet connected; the site is not processing real payments.
