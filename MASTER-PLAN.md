@@ -120,5 +120,7 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 
 - Added prominent per-tier membership enrollment buttons ($99/$199/$399) on `memberships.html`, currently routed to contact with tier query parameter. These are **inquiry CTAs, not Stripe buy buttons**, because payment onboarding, approved contract terms and backend checkout remain incomplete. Replace with secure Stripe-hosted checkout only after those gates.
 
+- Appointment workflow decision: existing Pacific urgent care manager remains responsible for all appointment requests. Notification destination is private and **must not appear in client code or public GitHub**. Added `/appointment-request.html` with contact-only intake and Cloudflare Pages function `/api/appointment-request`; function is **not operational until a trusted notification endpoint and token are configured as server secrets**. Do not claim email delivery or confirmed bookings. No medical history or clinical notes in email.
+
 ## 11. Next development focus
 Audit existing source for broken navigation and accessibility; prepare real app architecture, migrations and test harness in repository without connecting real patient data or pretending payment flows are active. Keep the current public site safe and operational.
