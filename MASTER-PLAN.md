@@ -116,5 +116,7 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 
 - Visual refresh requested: prior page relied heavily on abstract art and CSS background images. Home now uses explicit editorial photo elements for hero, service cards, interior feature and partner section; image loading remains externally hosted and has **not been browser-verified**. These are illustrative stock photographs, not actual clinic, staff or patient images. Replace with licensed/owned clinic photography before launch where possible.\n\n- Owner identified imagery shared with Pacific Urgent Care. Replaced the duplicated homepage hero/skin/laser photograph source and wellness interior source with different candidate editorial images. **Image URLs and cross-site uniqueness are not yet browser-verified.** Require separate approved photo library for Orange Aesthetics, distinct from Pacific Urgent Care.
 
+- Visual refinement: standardized navigation on key pages, simplified homepage, added editorial photo panels on treatment, membership, shop and contact pages, and new responsive styles. **Browser QA and photo licensing/uniqueness checks are pending**; Pacific Urgent Care images may be referenced stylistically but not reused.
+
 ## 11. Next development focus
 Audit existing source for broken navigation and accessibility; prepare real app architecture, migrations and test harness in repository without connecting real patient data or pretending payment flows are active. Keep the current public site safe and operational.
