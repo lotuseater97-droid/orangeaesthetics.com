@@ -1,0 +1,13 @@
+import test from "node:test";import assert from "node:assert/strict";import {prepareCreate,prepareTransition,BusinessError} from "../lib/business-api.mjs";
+const owner={user_id:"verified-owner",organization_id:"orange",role:"owner",permissions:[]};
+const expense={vendor_id:"vendor-1",category:"supplies",amount_cents:1800,incurred_on:"2026-11-22"};
+test("authenticated owner can prepare expense",()=>{const x=prepareCreate({actor:owner,kind:"expense",payload:expense,idempotency_key:"expense_20261122_001"});assert.equal(x.identity.organization_id,"orange");assert.equal(x.data.amount_cents,1800)});
+test("client cannot spoof organization or role",()=>assert.throws(()=>prepareCreate({actor:owner,kind:"expense",payload:{...expense,organization_id:"other",role:"owner"},idempotency_key:"expense_20261122_002"}),BusinessError));
+test("staff cannot create owner financial records",()=>assert.throws(()=>prepareCreate({actor:{...owner,role:"ma"},kind:"expense",payload:expense,idempotency_key:"expense_20261122_003"}),BusinessError));
+test("missing verified actor fails closed",()=>assert.throws(()=>prepareCreate({kind:"expense",payload:expense,idempotency_key:"expense_20261122_004"}),BusinessError));
+test("missing idempotency key rejects expense",()=>assert.throws(()=>prepareCreate({actor:owner,kind:"expense",payload:expense}),TypeError));
+test("invalid negative expense rejects",()=>assert.throws(()=>prepareCreate({actor:owner,kind:"expense",payload:{...expense,amount_cents:-5},idempotency_key:"expense_20261122_005"}),BusinessError));
+test("cross-organization state transition hidden",()=>assert.throws(()=>prepareTransition({actor:owner,kind:"invoice",record:{id:"inv-1",organization_id:"other",status:"issued"},to:"paid",idempotency_key:"invoice_20261122_001"}),BusinessError));
+test("invalid invoice state transition rejected",()=>assert.throws(()=>prepareTransition({actor:owner,kind:"invoice",record:{id:"inv-1",organization_id:"orange",status:"draft"},to:"paid",idempotency_key:"invoice_20261122_002"}),RangeError));
+test("valid invoice state transition prepared",()=>assert.equal(prepareTransition({actor:owner,kind:"invoice",record:{id:"inv-1",organization_id:"orange",status:"issued"},to:"paid",idempotency_key:"invoice_20261122_003"}).to,"paid"));
+test("freeform medical fields are rejected",()=>assert.throws(()=>prepareCreate({actor:owner,kind:"inquiry",payload:{name:"Sample",email:"sample@example.com",diagnosis:"secret"}}),BusinessError));
