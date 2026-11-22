@@ -18,3 +18,19 @@
 
 /* Skincare planning bag: local browser-only, no purchase or patient data */
 .catalog-add{margin-top:14px;display:inline-block;background:#435d60;color:white;border:0;border-radius:2px;padding:12px 16px;cursor:pointer;font:600 12px 'DM Sans',sans-serif;letter-spacing:.04em}.catalog-add:hover{background:#304749}.planning-bag{margin-top:35px;padding:30px;background:#eef1eb;border:1px solid #d4dfd6}.planning-bag h3{margin-top:0}.planning-bag ul{padding-left:20px}.planning-bag li{margin-bottom:9px}.planning-bag .btn{cursor:pointer;border:0;margin-right:10px}.planning-bag .btn:disabled{opacity:.45;cursor:not-allowed}.planning-bag .btn-outline{background:transparent;color:#435d60;border:1px solid #435d60}#bag-total{font-size:20px;font-weight:700;color:#435d60}
+
+/* November visual refresh: actual photographic image elements, not CSS-only artwork. */
+:root{--ivory:#fbfaf7;--ink:#293936;--line:#e7e9e4}
+header{box-shadow:none;border-bottom:1px solid #e8e9e3;background:rgba(251,250,247,.98)}
+header>.wrap{max-width:1420px}header strong:after{letter-spacing:.2em}nav{gap:15px}
+.home-hero{background:#f6f4ef}.home-hero .wrap{max-width:1420px}.hero-layout{grid-template-columns:1fr 1.02fr;min-height:690px}.hero-copy{padding-right:65px}.home-hero h1{letter-spacing:-.045em}.hero-lead{line-height:1.7}
+.hero-visual,.tile-art,.split-art,.kaja-art{position:relative;overflow:hidden}
+.hero-visual .editorial-photo,.split-art .editorial-photo,.kaja-art .editorial-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.hero-visual .editorial-photo{object-position:center 42%}.hero-photo-shade{position:absolute;inset:0;background:linear-gradient(0deg,rgba(29,52,46,.47),transparent 55%)}
+.photo-hero,.photo-interior,.tile-inject .tile-art,.tile-skin .tile-art,.tile-laser .tile-art,.tile-wellness .tile-art{background-image:none!important}
+.tile-art .tile-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}.service-tile:hover .tile-photo{transform:scale(1.035)}.tile-art:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(25,45,40,.18),transparent 55%);z-index:1}.tile-art span{position:relative;z-index:2}
+.split-art span{position:relative;z-index:2}.split-art:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(30,52,46,.62),transparent 62%)}
+.kaja-art{border:0;min-height:430px;background:#d9e5d7}.kaja-art:after{content:"";position:absolute;inset:0;background:rgba(251,250,247,.70)}.kaja-art span{position:relative;z-index:2}
+.service-tile{border:1px solid #e8ebe5;box-shadow:none}.tile-copy{background:#fffefa}.concern-grid a{border-color:#e8ebe5}.intro-band{background:#f8f7f3}
+@media(max-width:1050px){.hero-copy{padding-right:30px}}
+@media(max-width:760px){.hero-layout{grid-template-columns:1fr}.hero-copy{padding:56px 0 48px}.hero-visual{min-height:410px}.home-hero h1{font-size:clamp(52px,12vw,76px)}.kaja-art{min-height:300px}}
