@@ -25,3 +25,11 @@
 9. **Brand separation:** Homepage still features Flourish Longer as independent partner; confirm prominence and wording with owner so it does not overpower Orange Aesthetics' two equal specialties.
 
 **Audit verdict:** Core source navigation and specialty positioning corrected; not production-certified, not a complete clinical/legal/security audit.
+
+
+## Follow-up source audit — 2026-11-22
+- Refined homepage to keep aesthetics and IV therapy equal; removed oversized standalone Flourish Longer homepage feature and independent partner tile. Partner remains available through secondary wellness content, subject to owner approval.
+- Preserved four original specialty showcase cards, feature split, pricing highlight, two IV/membership cards, visit steps and FAQs; checked opening/closing section counts.
+- Added two-column layout for remaining IV/membership cards and mobile single-column fallback.
+- Added canonical URL metadata to aesthetics.html and iv-therapy.html.
+- Confirmed source-level section structure and navigation; **still no live Cloudflare deployment, browser screenshot, or production form delivery verification**.
