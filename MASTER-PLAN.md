@@ -29,8 +29,8 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 | Member area | Prototype | `member-preview.html`; fictional data, no login, credits or billing |
 | Staff check-in | Prototype | `staff-preview.html`; no scanner, staff login, real check-ins or redemption |
 | Owner dashboard | Prototype | `owner-preview.html`; fictional data, no accounting integration |
-| Stripe payments/Billing/Terminal | Not started | No merchant connection, secrets, products, webhooks or live checkout |
-| Protected backend/database | Not started | No dedicated production project, identity, authorization, ledger or audit |
+| Stripe payments/Billing/Terminal | Scaffold only | Event classification helper drafted; no Stripe SDK connection, secrets, products, signed webhook endpoint or checkout |
+| Protected backend/database | Schema draft only | Proposed SQL, pure ledger helpers and test source in app/; no database, authentication, deployed API or applied migration |
 | Domain/deployment | Unverified | Do not claim site is live until checked |
 
 ## 4. Product surfaces
@@ -106,5 +106,11 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 - NEOCUTIS authorized resale rights, inventory and fulfillment decisions.
 - Live domain/deployment verification and legal text approval.
 
-## 10. Next development focus
+## 10. Implementation log — 2026-11-21
+- Created `app/README.md`, `app/catalog.json`, `app/schema.sql`, `app/.env.example`, `app/lib/ledger.mjs`, `app/lib/stripe-events.mjs`, `app/tests/business.test.mjs`.
+- Draft catalog excludes weight-loss medication pricing; schema is unapplied; pure ledger and Stripe event helpers are not a live payment integration.
+- Test code was committed but **has not been executed in a verified repository checkout**. Do not mark as tested.
+- Next priority: create secure authenticated backend with verified webhook signatures, idempotent database transactions and real automated integration tests after infrastructure and vendor decisions.
+
+## 11. Next development focus
 Audit existing source for broken navigation and accessibility; prepare real app architecture, migrations and test harness in repository without connecting real patient data or pretending payment flows are active. Keep the current public site safe and operational.
