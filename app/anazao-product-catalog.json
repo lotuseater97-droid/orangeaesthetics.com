@@ -14,6 +14,9 @@
       "preservation": "preservative_free",
       "listing_sections": [
         "503b"
+      ],
+      "supplier_categories": [
+        "immunity_support"
       ]
     },
     {
@@ -28,6 +31,9 @@
       "preservation": "preserved",
       "listing_sections": [
         "503b"
+      ],
+      "supplier_categories": [
+        "immunity_support"
       ]
     },
     {
@@ -39,6 +45,9 @@
       "preservation": "preservative_free",
       "listing_sections": [
         "503b"
+      ],
+      "supplier_categories": [
+        "immunity_support"
       ]
     },
     {
@@ -50,6 +59,9 @@
       "preservation": "preserved",
       "listing_sections": [
         "503b"
+      ],
+      "supplier_categories": [
+        "immunity_support"
       ]
     },
     {
@@ -61,6 +73,9 @@
       "preservation": "preservative_free",
       "listing_sections": [
         "503b"
+      ],
+      "supplier_categories": [
+        "immunity_support"
       ]
     },
     {
@@ -73,6 +88,9 @@
       "listing_sections": [
         "503b",
         "503a"
+      ],
+      "supplier_categories": [
+        "immunity_support"
       ]
     },
     {
@@ -101,6 +119,9 @@
       ],
       "listing_sections": [
         "503b"
+      ],
+      "supplier_categories": [
+        "immunity_support"
       ]
     },
     {
@@ -117,6 +138,9 @@
       ],
       "listing_sections": [
         "503b"
+      ],
+      "supplier_categories": [
+        "immunity_support"
       ]
     },
     {
@@ -153,6 +177,9 @@
       "route_not_established_for_iv": true,
       "listing_sections": [
         "503a"
+      ],
+      "supplier_categories": [
+        "immunity_support"
       ]
     },
     {
@@ -165,7 +192,10 @@
         "503b",
         "503a"
       ],
-      "route_not_established_for_iv": true
+      "route_not_established_for_iv": true,
+      "supplier_categories": [
+        "immunity_support"
+      ]
     },
     {
       "id": "nad_pf",
@@ -177,7 +207,10 @@
         "503b",
         "503a"
       ],
-      "route_not_established_for_iv": true
+      "route_not_established_for_iv": true,
+      "supplier_categories": [
+        "immunity_support"
+      ]
     },
     {
       "id": "lipoic_acid",
@@ -199,7 +232,10 @@
       "listing_sections": [
         "503b"
       ],
-      "route_not_established_for_iv": true
+      "route_not_established_for_iv": true,
+      "supplier_categories": [
+        "immunity_support"
+      ]
     },
     {
       "id": "mic",
@@ -224,7 +260,10 @@
         "503b",
         "503a"
       ],
-      "route_not_established_for_iv": true
+      "route_not_established_for_iv": true,
+      "supplier_categories": [
+        "immunity_support"
+      ]
     },
     {
       "id": "plaquex_compounded",
@@ -341,6 +380,57 @@
         "503a"
       ],
       "route_not_established_for_iv": true
+    },
+    {
+      "id": "neuroreset",
+      "name": "NAD / Niacin Sublingual Tablet (NeuroReset)",
+      "ingredients": [
+        "nad",
+        "niacin"
+      ],
+      "dosage_form": "sublingual_tablet",
+      "listing_sections": [
+        "503a"
+      ],
+      "supplier_categories": [
+        "immunity_support"
+      ],
+      "route_not_established_for_iv": true,
+      "not_iv_product": true
+    },
+    {
+      "id": "neuroreset_plus",
+      "name": "NAD / Niacin Sublingual Tablet (NeuroReset Plus)",
+      "ingredients": [
+        "nad",
+        "niacin"
+      ],
+      "dosage_form": "sublingual_tablet",
+      "listing_sections": [
+        "503a"
+      ],
+      "supplier_categories": [
+        "immunity_support"
+      ],
+      "route_not_established_for_iv": true,
+      "not_iv_product": true
+    },
+    {
+      "id": "neuroreset_max",
+      "name": "NAD / Niacin Sublingual Tablet (NeuroReset Max)",
+      "ingredients": [
+        "nad",
+        "niacin"
+      ],
+      "dosage_form": "sublingual_tablet",
+      "listing_sections": [
+        "503a"
+      ],
+      "supplier_categories": [
+        "immunity_support"
+      ],
+      "route_not_established_for_iv": true,
+      "not_iv_product": true
     }
   ],
   "excluded_non_iv_categories": [
@@ -357,6 +447,8 @@
     "503A/503B listing category is not a route-of-administration or admixture-compatibility approval.",
     "Plaquex Compounded contains sodium deoxycholate in addition to phosphatidylcholine; do not substitute plain phosphatidylcholine.",
     "NAD+ PF SDV and preserved MDV are distinct supplier products.",
-    "Hormone/oil-based and other injection-only listings must not be offered as same-bag IV options."
+    "Hormone/oil-based and other injection-only listings must not be offered as same-bag IV options.",
+    "Immunity Support is a supplier marketing category, not proof of immune benefit or suitability for IV admixture.",
+    "NeuroReset NAD/niacin products are sublingual tablets, not IV preparations."
   ]
 }
