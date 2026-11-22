@@ -183,3 +183,12 @@ Edits in this session were committed through GitHub. No local repository checkou
 ## 14. Operating-hours decision — 2026-11-22
 - [x] Updated contact page to show Pacific Urgent Care hours as the current Orange Aesthetics operating hours: Monday–Friday 8 AM–5 PM; Saturday 8 AM–2 PM; Sunday closed.
 - [ ] Verify hours consistently wherever they appear on the public website and external listings, and confirm against any holiday schedule before publishing exceptions.
+
+
+## 15. Public-page consistency and structured hours — 2026-11-22
+- [x] Updated Wellness page to identify Mini/Full PlenishIV as the actual supplier cocktail, retaining Myers-style as a familiar descriptive term.
+- [x] Linked the Wellness page to appointment requests and the IV combination review chart; clarified that a published price does not guarantee eligibility or availability.
+- [x] Added a direct appointment-request link from the IV pricing page.
+- [x] Added current Monday–Saturday Pacific Urgent Care operating hours to homepage MedicalBusiness structured data; Sunday is closed. **Search-engine rendering and actual deployed metadata not verified.**
+- [ ] Check all remaining pages, external business listings and holiday exceptions for consistent hours and contact details.
+- [ ] Validate structured data with a live structured-data validator and confirm canonical domain/deployment.
