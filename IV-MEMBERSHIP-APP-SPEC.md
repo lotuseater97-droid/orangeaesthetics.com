@@ -64,3 +64,29 @@ The public Orange Aesthetics site remains a premium aesthetics and wellness mark
 - Server is source of truth for prices, membership discounts, eligibility and charges. Atomic order finalization, webhook replay protection, concurrency-safe redemption, authorization for staff overrides, and clear proration/cancellation rules.
 - **Payment processor HIPAA boundary**: Stripe's public terms restrict sending PHI through billing services and other third-party data. Do not put treatment names, diagnoses, patient identifiers linked to treatment, service details or medical notes into payment processor products, metadata, invoices, receipts, or analytics. Keep clinical catalog/order detail in the HIPAA-covered application and transmit only minimum necessary non-clinical billing references/amounts after legal/vendor review; or use an appropriately contracted healthcare billing platform with BAA. Stripe is NOT approved as a PHI repository by default.
 - Customer portal must be hosted separately from the static marketing site and launched only after signed BAAs, HIPAA controls, staff MFA, patient access controls and a security review. No production patient data in this repository.
+
+## Expanded scope: universal customer checkout (members AND nonmembers)
+Decision: Orange Aesthetics must support **walk-in guest checkout, returning customer checkout, and IV member checkout** from the same web app. Native app download is optional; responsive web app/PWA is the initial delivery target.
+
+### Guest walk-in workflow
+1. Patient scans front-desk QR linking to a public service catalog (not an individual patient's QR). No login/download required.
+2. Select service (IV, other eligible aesthetic service), review price and availability. Do not advertise unapproved prices.
+3. Enter minimal contact details for order and receipt; collect medical intake and consent separately in HIPAA-covered authenticated workflow. Provide an accessible staff-assisted alternative.
+4. Show exact charge and explicit authorization; redirect to compliant hosted checkout or secure embedded payment element. Never collect raw card data.
+5. Backend verifies signed payment webhook and marks order **paid / awaiting clinical screening**, not **treatment complete**.
+6. Staff dashboard displays queue with payment status and verifies identity. Clinician confirms eligibility/consent; MA records treatment completion only after service actually delivered.
+7. Email/text receipt only if appropriate and without PHI. Guest can later claim their account with verified identity; do not reveal guest orders via unverified email lookup.
+
+### Returning customers and members
+- Returning customer signs in and sees their own purchase history, receipts, appointment requests, available prepaid treatments and optional saved payment method.
+- Member can apply eligible monthly credits and discounts and purchase extra services. One-time purchases never become recurring charges without explicit separate opt-in.
+- Staff can initiate checkout on behalf of walk-in customers with role-based permissions; payment method handled by secure processor terminal/checkout.
+- In the app distinguish **order paid**, **clinical clearance**, **appointment confirmed**, **service performed**, and **membership benefit redeemed** as separate states.
+- Offer cancellations, refunds, partial redemptions and package balances with immutable audit records.
+
+### Technical additions
+public service catalog; guest_order_intents; verified customer identities; orders/order_lines; payment_intents; webhook_events; clinical_clearance_reference; appointments; visit ledger; receipts; membership benefit ledger; consent_records; staff queue; role-based authorization; QR signage endpoint.
+- Public QR for checkout contains only URL to service catalog; private member QR remains opaque, revocable, and distinct.
+- Public marketing website should link to a separately secured checkout app after compliance review. No PHI on static pages, public URL query strings, payment metadata, or generic analytics.
+- No live charging or patient record writes until HIPAA BAAs, payment processing, authorization, clinical workflows, refunds and QA are approved.
+- An IV purchase is **not** medical approval to administer an infusion. Provide a clear screening and refund path if not eligible.
