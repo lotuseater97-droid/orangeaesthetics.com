@@ -249,3 +249,9 @@ Edits in this session were committed through GitHub. No local repository checkou
 - [x] Created `app/PORTAL-API-CONTRACT.md`: proposed protected member, staff, clinical and owner endpoints; short-lived opaque QR, server role authorization, audit, idempotent redemption and immutable reversal design. **No endpoints deployed.**
 - [x] Added `app/lib/portal-access.mjs` pure authorization/self-access checks and `app/tests/portal-access.test.mjs` for cross-member isolation and MFA guards. **Tests not executed; no live identity provider.**
 - [ ] Verify all tests locally and implement the database transaction and access controls after backend selection and HIPAA/vendor review.
+
+
+## 21. QR token security foundation — 2026-11-22
+- [x] Added `app/lib/qr-token.mjs` with server-only cryptographically random 256-bit opaque QR credentials, hashed token comparison and a 60-second expiry guard. Never put these tokens in logs or URLs.
+- [x] Added `app/tests/qr-token.test.mjs` for malformed, expired, revoked, consumed and mismatched credentials. **Test source committed, not run**.
+- [ ] Implement real token issuance and atomic database consumption with authenticated member/staff roles, rate limits and audit; no production QR cards are active.
