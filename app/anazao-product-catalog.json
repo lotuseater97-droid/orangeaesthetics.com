@@ -1,0 +1,132 @@
+{
+  "source": "User-provided AnazaoHealth Aesthetics IV & Injections product listing, 2026",
+  "status": "supplier_ingredient_identity_only_not_compatibility_approval",
+  "products": [
+    {
+      "id": "aminomultiplex_pf",
+      "name": "AminoMultiPlex (PF)",
+      "ingredients": [
+        "arginine_hcl",
+        "glutamine",
+        "lysine_hcl",
+        "proline"
+      ],
+      "preservation": "preservative_free"
+    },
+    {
+      "id": "aminomultiplex_preserved",
+      "name": "AminoMultiPlex (Preserved)",
+      "ingredients": [
+        "arginine_hcl",
+        "glutamine",
+        "lysine_hcl",
+        "proline"
+      ],
+      "preservation": "preserved"
+    },
+    {
+      "id": "ascorbic_acid_pf",
+      "name": "Ascorbic Acid Injection (Non-Corn) PF",
+      "ingredients": [
+        "ascorbic_acid"
+      ],
+      "preservation": "preservative_free"
+    },
+    {
+      "id": "ascorbic_acid_preserved",
+      "name": "Ascorbic Acid Injection (Preserved Non-Corn) MDV",
+      "ingredients": [
+        "ascorbic_acid"
+      ],
+      "preservation": "preserved"
+    },
+    {
+      "id": "glutathione_pf",
+      "name": "Glutathione Injection (PF)",
+      "ingredients": [
+        "glutathione"
+      ],
+      "preservation": "preservative_free"
+    },
+    {
+      "id": "glutathione_preserved",
+      "name": "Glutathione Injection (Preserved)",
+      "ingredients": [
+        "glutathione"
+      ],
+      "preservation": "preserved"
+    },
+    {
+      "id": "phosphatidylcholine",
+      "name": "Phosphatidylcholine Injection",
+      "ingredients": [
+        "phosphatidylcholine"
+      ]
+    },
+    {
+      "id": "plenishiv",
+      "name": "PlenishIV Nutrient Cocktail",
+      "ingredients": [
+        "magnesium_chloride",
+        "calcium_gluconate",
+        "thiamine_hcl",
+        "riboflavin",
+        "pyridoxine_hcl",
+        "niacinamide",
+        "dexpanthenol",
+        "cyanocobalamin"
+      ]
+    },
+    {
+      "id": "replenx",
+      "name": "RePlenX IV Nutrient Cocktail",
+      "ingredients": [
+        "magnesium_chloride",
+        "calcium_gluconate",
+        "thiamine_hcl",
+        "riboflavin",
+        "pyridoxine_hcl",
+        "niacinamide",
+        "dexpanthenol"
+      ]
+    },
+    {
+      "id": "mic_b12",
+      "name": "M.I.C. + Vitamin B12 Injection",
+      "ingredients": [
+        "methionine",
+        "inositol",
+        "choline",
+        "cyanocobalamin"
+      ]
+    },
+    {
+      "id": "proline",
+      "name": "Proline Injection",
+      "ingredients": [
+        "proline"
+      ]
+    },
+    {
+      "id": "vitamin_d3_olive_oil",
+      "name": "Vitamin D3 Injection (in Olive Oil)",
+      "ingredients": [
+        "cholecalciferol"
+      ],
+      "vehicle": "olive_oil",
+      "route_not_established_for_iv": true
+    }
+  ],
+  "excluded_non_iv_categories": [
+    "chemical_peels",
+    "numbing_agents",
+    "lightening_agents",
+    "topical_solutions"
+  ],
+  "warnings": [
+    "Product catalog is not a compatibility reference.",
+    "No concentrations, excipients, preservative identity, pH, osmolarity, diluent, beyond-use time, administration route or compatibility evidence supplied.",
+    "Do not assume Vitamin D3 in olive oil is suitable for IV infusion.",
+    "Commercial multi-ingredient preparations do not establish compatibility with other products."
+  ]
+}
