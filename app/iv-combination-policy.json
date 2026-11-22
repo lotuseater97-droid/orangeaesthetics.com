@@ -87,7 +87,11 @@
     {
       "id": "glutathione_push",
       "label": "Glutathione Push",
-      "type": "addon"
+      "type": "addon",
+      "administrationMode": "sequential_iv_push_after_main_infusion",
+      "sameBagAllowed": false,
+      "requiresProductSpecificRouteRateAndFlushVerification": true,
+      "note": "Clinic's intended workflow; sequence is not an evidence-based blanket approval. Confirm product-specific directions and clinical suitability."
     },
     {
       "id": "extra_hydration",
@@ -107,6 +111,7 @@
     "No pairs are authorized by this draft policy.",
     "Separate administration does not imply clinical suitability.",
     "Public display must not disclose patient information.",
-    "All clinical blocks must be enforced by the server, not only the browser."
+    "All clinical blocks must be enforced by the server, not only the browser.",
+    "Glutathione push is a separate sequential administration after the main infusion, not a same-bag ingredient; same-line sequential use requires product-specific flush and administration verification."
   ]
 }
