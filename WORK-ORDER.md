@@ -141,3 +141,7 @@ Owner wants both specialties equally prominent. Actual index.html updated with e
 
 ## Unified public navigation implemented — 2026-11-22
 Owner selected top-level **Home / Aesthetics / IV Therapy / Providers / Memberships**, with secondary **More** menu, external **Pacific Urgent Care** link clearly separate, and **Book Now** CTA. Actual HTML headers updated across 11 core pages; styles.css adds responsive dropdown treatment. Aesthetics currently links to existing aesthetic-pricing.html and IV Therapy to existing pricing.html, not newly built landing pages. Cloudflare publication and mobile/browser testing remain unverified. More menu houses injectables, skin, laser, shop, wellness and contact.
+
+
+## Dedicated landing pages and internal consistency audit — 2026-11-22
+Created aesthetics.html and iv-therapy.html, updated all 20 audited public page headers to consistent simplified navigation, fixed IV pricing business separation copy, and added responsive specialty CSS. See INTERNAL-CONSISTENCY-AUDIT-2026-11-22.md for findings, remaining clinical/legal checks, Cloudflare deployment and visual QA blockers. Changes are in GitHub, not verified live.
