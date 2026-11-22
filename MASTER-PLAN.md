@@ -347,3 +347,11 @@ Owner selected top-level **Home / Aesthetics / IV Therapy / Providers / Membersh
 
 ## Dedicated landing pages and internal consistency audit — 2026-11-22
 Created aesthetics.html and iv-therapy.html, updated all 20 audited public page headers to consistent simplified navigation, fixed IV pricing business separation copy, and added responsive specialty CSS. See INTERNAL-CONSISTENCY-AUDIT-2026-11-22.md for findings, remaining clinical/legal checks, Cloudflare deployment and visual QA blockers. Changes are in GitHub, not verified live.
+
+
+## Follow-up source audit — 2026-11-22
+- Refined homepage to keep aesthetics and IV therapy equal; removed oversized standalone Flourish Longer homepage feature and independent partner tile. Partner remains available through secondary wellness content, subject to owner approval.
+- Preserved four original specialty showcase cards, feature split, pricing highlight, two IV/membership cards, visit steps and FAQs; checked opening/closing section counts.
+- Added two-column layout for remaining IV/membership cards and mobile single-column fallback.
+- Added canonical URL metadata to aesthetics.html and iv-therapy.html.
+- Confirmed source-level section structure and navigation; **still no live Cloudflare deployment, browser screenshot, or production form delivery verification**.
