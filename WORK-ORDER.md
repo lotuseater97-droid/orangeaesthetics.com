@@ -106,3 +106,13 @@ Owner requested that proposed 90-day IV benefits disappear from *usable* member 
 - Added `app/tests/benefit-history.test.mjs` with seven test cases and `app/benefit-history.draft.sql` append-only audit event schema proposal. These are **not deployed** and tests have not been verified in repository runtime.
 - **Important limitation:** projection is a prototype, not a production credit ledger. It does not enforce member scoping, verify payment, implement legal reinstatement of expired dates, or run atomic concurrent redemptions. Production implementation must address these before enabling anything.
 - Expiration remains explicitly gated by legal approval; no live 90-day expiration or real backups are configured. Next: backend, event immutability/RLS, real backup/restore and integration tests.
+
+
+## Consolidated membership compliance architecture — 2026-11-22
+**Authoritative documents:** [LEGAL-COUNSEL-REVIEW.md](LEGAL-COUNSEL-REVIEW.md) (all open legal questions, L01–L10) and [MEMBERSHIP-TERMS-ATTORNEY-DRAFT.md](MEMBERSHIP-TERMS-ATTORNEY-DRAFT.md) (proposed customer terms). Do not treat legal review questions as resolved simply because implementation is designed around them.
+
+**Owner-approved commercial design:** separate Orange Aesthetics entity; Wellness $99/one Mini PlenishIV/15%, Performance $199/one qualifying IV/20%, Elite $399/two qualifying IVs/25%; discounts only for eligible Orange Aesthetics services and retail, never Pacific Urgent Care or external partners. Proposed 90-day grant expiration, earliest-expiring-first redemption, owner-only retained expired history, audited legal recovery.
+
+**Safe-by-default implementation:** issue only from verified payments; do not send PHI to Stripe; member/MA/owner access segregated; never delete credit history; keep gift cards and purchased stored value in a separate non-expiring-policy ledger; disable expiration server-side until attorney signoff; expose no production portal before authenticated HIPAA-ready backend, backups and tested restore. Clinical approval remains independent of payment. No live systems or tests are implied by this specification.
+
+**Next work:** validate pure ledger against all boundary and remediation cases, implement server-side legal approval switch, append-only protected event store and real backup/restore, wire authenticated portals and signed payment webhooks only after infrastructure/legal gates. Remove contradictory historical 30-day wording wherever still present before launch.
