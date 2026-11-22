@@ -70,3 +70,8 @@ nav .nav-more{position:relative;font:inherit}nav .nav-more>summary{cursor:pointe
 
 /* Homepage specialty balance: two IV and membership cards */
 .wellness-feature .grid{grid-template-columns:repeat(2,minmax(0,1fr))}@media(max-width:750px){.wellness-feature .grid{grid-template-columns:1fr}}
+
+/* Navigation usability correction: prevent More dropdown being clipped by horizontal scroller. */
+@media(min-width:1051px){header>.wrap{gap:18px}header nav{flex-wrap:wrap!important;overflow:visible!important;max-width:none!important;justify-content:flex-end}header nav .nav-more-menu{z-index:100}}
+@media(max-width:1050px){header>.wrap{display:block}header .brand{display:inline-block;margin-bottom:8px}header nav{display:flex!important;flex-wrap:wrap!important;overflow:visible!important;max-width:none!important;gap:12px 16px!important;padding:8px 0!important;justify-content:flex-start}header nav a{font-size:12px!important}header nav .nav-more{position:relative}header nav .nav-more-menu{position:absolute;top:100%;left:0;right:auto;z-index:100;min-width:205px}}
+@media(max-width:600px){header nav{gap:10px 14px!important}header nav .nav-more-menu{position:absolute;max-width:min(250px,80vw)}header nav .nav-pacific{font-size:11px}}
