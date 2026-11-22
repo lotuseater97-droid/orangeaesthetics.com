@@ -29,8 +29,8 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 | Member area | Prototype | `member-preview.html`; fictional data, no login, credits or billing |
 | Staff check-in | Prototype | `staff-preview.html`; no scanner, staff login, real check-ins or redemption |
 | Owner dashboard | Prototype | `owner-preview.html`; fictional data, no accounting integration |
-| Stripe payments/Billing/Terminal | Scaffold only | Event classification helper drafted; no Stripe SDK connection, secrets, products, signed webhook endpoint or checkout |
-| Protected backend/database | Schema draft only | Proposed SQL, pure ledger helpers and test source in app/; no database, authentication, deployed API or applied migration |
+| Stripe payments/Billing/Terminal | Scaffold only | Event classification and raw-body HMAC signature verification helpers drafted; no deployed endpoint, Stripe SDK connection, secrets, products or checkout |
+| Protected backend/database | Schema draft only | Proposed SQL, pure ledger, checkout guardrails, owner metrics and test source in app/; no database, authentication, deployed API or applied migration |
 | Domain/deployment | Unverified | Do not claim site is live until checked |
 
 ## 4. Product surfaces
@@ -111,6 +111,8 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 - Draft catalog excludes weight-loss medication pricing; schema is unapplied; pure ledger and Stripe event helpers are not a live payment integration.
 - Test code was committed but **has not been executed in a verified repository checkout**. Do not mark as tested.
 - Next priority: create secure authenticated backend with verified webhook signatures, idempotent database transactions and real automated integration tests after infrastructure and vendor decisions.
+
+- Added `app/lib/webhook-signature.mjs`, `app/lib/checkout-policy.mjs`, `app/lib/owner-metrics.mjs` and `app/tests/integration-policy.test.mjs` for signature verification, fail-closed checkout policy and accounting helpers. **Source committed, tests not executed in a checked-out repository.**
 
 ## 11. Next development focus
 Audit existing source for broken navigation and accessibility; prepare real app architecture, migrations and test harness in repository without connecting real patient data or pretending payment flows are active. Keep the current public site safe and operational.
