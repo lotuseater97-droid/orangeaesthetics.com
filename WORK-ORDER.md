@@ -99,3 +99,10 @@
 
 ## Expired-benefit backup and legal recovery — 2026-11-22
 Owner requested that proposed 90-day IV benefits disappear from *usable* member balances, be redeemed earliest-expiring first, and remain in a protected historical ledger after expiration for future legal remediation. Design recorded in [app/EXPIRED-BENEFIT-RECOVERY.md](app/EXPIRED-BENEFIT-RECOVERY.md). Expiration enforcement is **NOT enabled** pending California legal approval. Preserve immutable grant/payment/redemption/expiration events and use audited restoration/refund adjustments rather than deleting or rewriting records. Implementation and tests pending protected backend.
+
+
+## Benefit recovery implementation progress — 2026-11-22
+- Added `app/lib/benefit-history.mjs` pure projection for oldest-expiring-first selection, retained expired history, approved reversals/restorations, and retrospective impact counts.
+- Added `app/tests/benefit-history.test.mjs` with seven test cases and `app/benefit-history.draft.sql` append-only audit event schema proposal. These are **not deployed** and tests have not been verified in repository runtime.
+- **Important limitation:** projection is a prototype, not a production credit ledger. It does not enforce member scoping, verify payment, implement legal reinstatement of expired dates, or run atomic concurrent redemptions. Production implementation must address these before enabling anything.
+- Expiration remains explicitly gated by legal approval; no live 90-day expiration or real backups are configured. Next: backend, event immutability/RLS, real backup/restore and integration tests.
