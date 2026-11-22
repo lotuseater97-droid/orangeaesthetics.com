@@ -20,3 +20,9 @@
 - Authorized Neocutis product catalog, inventory, prices and fulfillment choices.
 - Final membership terms and staff permissions.
 - Confirm production domain status and approved clinic privacy/terms documents.
+
+## Portal UI work completed (November 2026)
+- `member-preview.html`: responsive member area prototype for tier, entitlements, renewal, card placeholder, receipts, appointments, add-ons and activity; fictional data only.
+- `staff-preview.html`: staff workflow prototype for two-identifier check-in, payment verification, clinician approval, credit redemption, exceptions and role separation; no live scanner or lookup.
+- `owner-preview.html`: owner command center prototype for revenue, Stripe reconciliation, memberships, expenses, inventory and reports; fictional data only.
+- **NOT DONE:** real account signup/login, MFA, Stripe onboarding or checkout, subscription billing, secure database, HIPAA agreements, protected patient data, server-side roles, actual QR tokens or redemption. Do not call any prototype a production portal.
