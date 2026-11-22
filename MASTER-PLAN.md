@@ -118,5 +118,7 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 
 - Visual refinement: standardized navigation on key pages, simplified homepage, added editorial photo panels on treatment, membership, shop and contact pages, and new responsive styles. **Browser QA and photo licensing/uniqueness checks are pending**; Pacific Urgent Care images may be referenced stylistically but not reused.
 
+- Added prominent per-tier membership enrollment buttons ($99/$199/$399) on `memberships.html`, currently routed to contact with tier query parameter. These are **inquiry CTAs, not Stripe buy buttons**, because payment onboarding, approved contract terms and backend checkout remain incomplete. Replace with secure Stripe-hosted checkout only after those gates.
+
 ## 11. Next development focus
 Audit existing source for broken navigation and accessibility; prepare real app architecture, migrations and test harness in repository without connecting real patient data or pretending payment flows are active. Keep the current public site safe and operational.
