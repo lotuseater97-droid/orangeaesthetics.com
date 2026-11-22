@@ -90,3 +90,20 @@ public service catalog; guest_order_intents; verified customer identities; order
 - Public marketing website should link to a separately secured checkout app after compliance review. No PHI on static pages, public URL query strings, payment metadata, or generic analytics.
 - No live charging or patient record writes until HIPAA BAAs, payment processing, authorization, clinical workflows, refunds and QA are approved.
 - An IV purchase is **not** medical approval to administer an infusion. Provide a clear screening and refund path if not eligible.
+
+## New business lines: Neocutis retail store and in-clinic medical weight loss
+### Neocutis retail
+- Dedicated skincare storefront with categories, product details, ingredient/usage information grounded in approved brand materials, stock counts, cart, checkout, receipts, pickup/shipping options, return policy, taxes and inventory decrement.
+- **Do not list unverified SKUs, invent prices, or use copyrighted manufacturer images without permission.** Confirm authorized retailer/reseller status, brand e-commerce restrictions, minimum advertised price and fulfillment rights before publishing products or accepting orders.
+- Retail inventory and physical-product checkout should be distinguishable from clinical service payments; avoid PHI in retail payment processor metadata.
+- Staff can sell products in-clinic through the same authorized checkout; customer sees order and fulfillment status.
+### Medical weight loss — in-clinic weekly injections
+- Patient-facing service page: request evaluation, view clinician-approved program information, schedule consultation and recurring weekly injection visits, pay approved consultation/program fees, receive reminders, view appointments and receipts.
+- Practice policy: injections administered **in clinic**, not shipped for self-administration. Weekly scheduling applies when clinically appropriate for the selected prescribed medication; no promise of eligibility or automatic treatment after online payment.
+- Clinician workflow: assessment, contraindication/medication review, informed consent, prescription and titration plan, follow-up monitoring, adverse-event escalation. Staff workflow: identity verification, ordered drug/dose verification, lot/expiration tracking, actual injection administration documentation only by appropriately authorized personnel under applicable rules, next appointment.
+- Clinical records must be in a compliant EHR or securely integrated system; membership/order ledger is **not** a substitute for the medical chart.
+- Never automatically titrate based on calendar or payment status. Never create an injection administration record merely because a visit is paid or booked.
+- Confirm California scope/delegation, medication sourcing and storage, labeling, advertising rules, FDA status and restrictions on compounded GLP-1 products before offering them. Do not market compounded medication as FDA-approved or interchangeable with branded drugs.
+- Clarify cancellation/no-show policy, medical ineligibility refunds, missed-dose handling by clinician, and whether weekly injections are paid per visit or under a monthly program.
+### Integration
+Customer app navigation: **IV Therapy | Aesthetics | Medical Weight Loss | Neocutis Shop | My Account**. Member and nonmember checkout. Separate purchase status, appointment status, clinical clearance, actual administration and retail fulfillment. Kaja/Flourish Longer remains an independent external partner.
