@@ -76,3 +76,7 @@
 - Medical Board corporate-practice and medical-spa ownership/clinical control: https://www.mbc.ca.gov/Licensing/Physicians-and-Surgeons/Practice-Information/default.aspx
 - Counsel to review: medical-practice entity and NP/physician supervision/authorization, clinical eligibility and refund when unsuitable, HIPAA/payment separation and BAAs, package vs gift-card treatment, cash-out rights, cancellation and refund policy, advertising, sales tax and consumer privacy.
 - **System rule pending legal signoff:** retain original grant issuance/payment/expiry records; support separate non-expiring prepaid-value ledger if legally required; never erase historical grants; provide member-visible terms and audit trail.
+
+## Progress — Wellness discount scope (2026-11-22)
+- Owner decided Wellness $99/month should provide 15% off eligible Orange Aesthetics services and retail, rather than IV-only. Updated public membership description, detailed membership specification and master plan.
+- Proposed 90-day rollover is visible as pending legal approval; no automatic expiration or live discount processing. Higher-tier discount scope and exclusions remain to be confirmed.
