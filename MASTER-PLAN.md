@@ -17,6 +17,7 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 - **Partner:** Flourish Longer is independent; link to its separate booking and payment experience. No shared charges or revenue split.
 - **Brand:** ivory #FAF8F3, sea glass #435D60, sage #A9C3BB, champagne #D6B68C, bronze #A77B61. Headline: “Feel beautiful. Live well.” No navy.
 - **Location:** 1520 E Lincoln Ave, Orange, CA 92865; phone (714) 921-3870.
+- **Hours (owner decision, temporary):** Orange Aesthetics follows Pacific Urgent Care hours: Monday–Friday 8 AM–5 PM, Saturday 8 AM–2 PM, Sunday closed. Keep hours consistent across public pages and local listings; appointment availability remains subject to confirmation.
 
 ## 3. Current implementation truth
 | Area | State | Verified reality |
@@ -177,3 +178,8 @@ Edits in this session were committed through GitHub. No local repository checkou
 - [x] Restrict membership preselection query values to the three advertised tiers; the public request continues to transmit only broad service categories.
 - [ ] Before enabling appointment intake: configure a trusted HTTPS delivery provider, add durable rate limiting/bot mitigation, verify endpoint response and receipt, and confirm privacy/security arrangements.
 - [ ] Browser-test form errors, success state, mobile and accessibility; code commits alone do not establish production behavior.
+
+
+## 14. Operating-hours decision — 2026-11-22
+- [x] Updated contact page to show Pacific Urgent Care hours as the current Orange Aesthetics operating hours: Monday–Friday 8 AM–5 PM; Saturday 8 AM–2 PM; Sunday closed.
+- [ ] Verify hours consistently wherever they appear on the public website and external listings, and confirm against any holiday schedule before publishing exceptions.
