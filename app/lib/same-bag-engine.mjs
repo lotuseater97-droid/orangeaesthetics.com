@@ -21,7 +21,7 @@ export function evaluateSameBag({formulation,policy,clinicalClearance=false,clin
   totals.set(key,(totals.get(key)||0)+ing.dose);
  }
  if(totals.size!==ingredients.length)errors.push("DUPLICATE_INGREDIENT_REQUIRES_TOTAL_DOSE_REVIEW");
- const approved=policy?.approvedIngredients||[];
+ const approved=Array.isArray(policy?.approvedIngredients)?policy.approvedIngredients:[];
  for(const ing of ingredients){
   const entry=approved.find(x=>x.ingredientId===ing.ingredientId&&x.sourceSku===ing.sourceSku&&x.unit===ing.unit&&x.concentrationUnit===ing.concentrationUnit);
   if(!entry||entry.status!=="approved"||!positive(entry.maxDose)||!positive(entry.minConcentration)||!positive(entry.maxConcentration)||!positive(entry.maxTotalDose)||!entry.sourceReference||!entry.reviewedBy||!entry.effectiveDate||entry.expiresAt<=now)errors.push("INGREDIENT_NOT_APPROVED:"+ing.ingredientId);
