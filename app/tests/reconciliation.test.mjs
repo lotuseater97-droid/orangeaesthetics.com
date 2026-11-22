@@ -1,0 +1,10 @@
+import test from "node:test";import assert from "node:assert/strict";import {reconcileInvoices,depositSummary} from "../lib/reconciliation.mjs";
+const inv={id:"i1",organization_id:"oa",total_cents:10000,balance_cents:4000};
+const payment={id:"p1",invoice_id:"i1",organization_id:"oa",status:"succeeded",amount_cents:6000,method:"cash"};
+test("reconciles valid invoice",()=>assert.equal(reconcileInvoices([inv],[payment]).balanced,true));
+test("flags balance mismatch",()=>assert.ok(reconcileInvoices([{...inv,balance_cents:5000}],[payment]).discrepancies.some(x=>x.code==="BALANCE_MISMATCH")));
+test("flags orphan payment",()=>assert.ok(reconcileInvoices([],[payment]).discrepancies.some(x=>x.code==="ORPHAN_PAYMENT")));
+test("flags cross-organization payment",()=>assert.ok(reconcileInvoices([inv],[{...payment,organization_id:"other"}]).discrepancies.some(x=>x.code==="CROSS_ORG_PAYMENT")));
+test("rejects duplicate payments",()=>assert.throws(()=>reconcileInvoices([inv],[payment,payment]),TypeError));
+test("tracks undeposited cash/check only",()=>assert.deepEqual(depositSummary([payment,{...payment,id:"p2",method:"card"},{...payment,id:"p3",deposited_at:"2026-11-22"}]),{undeposited_cents:6000,payment_ids:["p1"]}));
+test("refund entries are accounted for",()=>assert.equal(reconcileInvoices([{...inv,balance_cents:5000}],[payment,{...payment,id:"refund",status:"refunded",amount_cents:1000}]).balanced,true));
