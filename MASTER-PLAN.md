@@ -192,3 +192,9 @@ Edits in this session were committed through GitHub. No local repository checkou
 - [x] Added current Monday–Saturday Pacific Urgent Care operating hours to homepage MedicalBusiness structured data; Sunday is closed. **Search-engine rendering and actual deployed metadata not verified.**
 - [ ] Check all remaining pages, external business listings and holiday exceptions for consistent hours and contact details.
 - [ ] Validate structured data with a live structured-data validator and confirm canonical domain/deployment.
+
+
+## 16. Appointment validation correctness — 2026-11-22
+- [x] Fixed a JavaScript regex escaping error in the Cloudflare appointment function that could incorrectly reject valid email addresses. Source-level correction only; delivery still requires provider setup and live testing.
+- [x] Disallow non-default ports on configured notification destination to reduce configuration risk.
+- [ ] Execute positive/negative tests for valid emails, malformed emails, honeypot, payload size, cross-origin requests and upstream delivery before enabling production form.
