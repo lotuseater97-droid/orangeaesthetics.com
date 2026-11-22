@@ -18,8 +18,8 @@
 | W01 | P0 | Reconcile master plan and specs; create execution ledger | This work order and master-plan link | Complete |
 | W02 | P0 | Design roles, permissions and separation of duties | Pure permission matrix + test source committed; server enforcement pending | Scaffold complete; untested |
 | W03 | P0 | Define member QR lifecycle, check-in and redemption state machine | Draft schema, state guards and test source committed; transaction design pending | Scaffold complete; untested |
-| W04 | P0 | Build auth and session architecture | Dedicated backend selected, MFA, audit, verified role checks | Blocked: infrastructure/vendor decision |
-| W05 | P0 | Build protected membership/credits APIs | Tests for cross-member isolation, paid-only grants, concurrent redemption | Blocked: W04 |
+| W04 | P0 | Build auth and session architecture | API contract and pure access guards drafted; dedicated backend, sessions and MFA not deployed | Design complete; implementation blocked |
+| W05 | P0 | Build protected membership/credits APIs | Cross-member authorization test source added; live paid-only grants and concurrent redemption not implemented | Partially scaffolded; blocked: W04 |
 | W06 | P0 | Implement QR issuance, scan, verify and atomic redemption | Camera + fallback, token expiry/replay/revocation, two identifiers, clinician separation | Blocked: W04/W05 |
 | W07 | P0 | Connect Stripe sandbox and webhook reconciliation | Signed webhooks, duplicate event tests, refunds, portal and no PHI | Blocked: merchant onboarding/terms |
 | W08 | P1 | Build authenticated member UI | Actual credits, appointments, QR and billing from protected APIs | Blocked: W04–W07 |
@@ -47,3 +47,8 @@
 ## Progress log — 2026-11-22
 - Created pure role/permission model, check-in transition guards, QR credential/check-in schema draft and test source. These are **not** production authorization or an operational database.
 - Next unblocked step: inspect checkout/member UI and add more testable static design; live authenticated functions remain gated by dedicated backend, contracts and secure deployment.
+
+## Progress log — 2026-11-22 (continued)
+- W04: Created `app/PORTAL-API-CONTRACT.md` detailing member, staff, clinician and owner endpoints; opaque QR lifecycle, MFA, audit and transactional redemption. **Contract only.**
+- W04/W05: Added `app/lib/portal-access.mjs` with pure fail-closed action/self-access guards and `app/tests/portal-access.test.mjs` with isolation and MFA test cases. **Not deployed; tests not executed.**
+- Remaining immediate work: run the full Node test suite in an actual checkout, design durable transaction migration, select/provision dedicated backend with compliance review, and wire authenticated portals only after gates.
