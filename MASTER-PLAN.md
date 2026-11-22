@@ -267,3 +267,12 @@ Edits in this session were committed through GitHub. No local repository checkou
 - [x] Updated `app/lib/grant-selection.mjs` to support member-scoped, active payment-verified subscription checks and approved compensating reversal records.
 - [x] Expanded `app/tests/grant-selection.test.mjs` with member isolation, payment status and reversal tests. **Not executed.**
 - [ ] Legacy unscoped helper use is for existing draft tests only; require server-derived member identity and authoritative subscription records before production use. Enforce isolation at the database transaction boundary.
+
+
+## Membership rollover legal gate — 2026-11-22
+- Owner preference: **90-day rollover** of unused monthly benefits. **Proposed only; not legally approved.** Do not implement automatic forfeiture, advertise enforceable expiry, or enable billing until California counsel classifies each paid service credit versus truly free promotional benefit.
+- California Civil Code 1749.5 gift-certificate restrictions and exceptions require review; April 1, 2026 statutory change must be checked. Source: https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?sectionNum=1749.5.&lawCode=CIV
+- California Automatic Renewal Law BPC 17602: express consent, clear terms, retainable acknowledgment, consent record retention, annual reminders, online cancellation and fee-change notices. Source: https://oag.ca.gov/node/608083
+- Medical Board corporate-practice and medical-spa ownership/clinical control: https://www.mbc.ca.gov/Licensing/Physicians-and-Surgeons/Practice-Information/default.aspx
+- Counsel to review: medical-practice entity and NP/physician supervision/authorization, clinical eligibility and refund when unsuitable, HIPAA/payment separation and BAAs, package vs gift-card treatment, cash-out rights, cancellation and refund policy, advertising, sales tax and consumer privacy.
+- **System rule pending legal signoff:** retain original grant issuance/payment/expiry records; support separate non-expiring prepaid-value ledger if legally required; never erase historical grants; provide member-visible terms and audit trail.
