@@ -137,3 +137,7 @@ Original website https://orangeaesthetics.com/ uses the tagline **Where Beauty M
 
 ## Homepage implementation — balanced aesthetics and IV wellness (2026-11-22)
 Owner wants both specialties equally prominent. Actual index.html updated with equal primary CTAs and two equal editorial specialty panels; IV pricing FAQ corrected to reference Orange Aesthetics. Responsive styles.css updated and stylesheet cache-busted. Deployment not verified; no live functionality claimed.
+
+
+## Unified public navigation implemented — 2026-11-22
+Owner selected top-level **Home / Aesthetics / IV Therapy / Providers / Memberships**, with secondary **More** menu, external **Pacific Urgent Care** link clearly separate, and **Book Now** CTA. Actual HTML headers updated across 11 core pages; styles.css adds responsive dropdown treatment. Aesthetics currently links to existing aesthetic-pricing.html and IV Therapy to existing pricing.html, not newly built landing pages. Cloudflare publication and mobile/browser testing remain unverified. More menu houses injectables, skin, laser, shop, wellness and contact.
