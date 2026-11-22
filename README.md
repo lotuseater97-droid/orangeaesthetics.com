@@ -1,3 +1,7 @@
+# Project roadmap
+
+**Start here:** [MASTER-PLAN.md](MASTER-PLAN.md) — authoritative project status, owner decisions, security gates, phases and next tasks.
+
 # Orange Aesthetics & Wellness
 
 Static Cloudflare Pages-ready website. Primary focus: Botox, laser hair removal, microneedling.
