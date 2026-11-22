@@ -28,7 +28,7 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 | Guest IV browsing | Built but untested | No payments |
 | Medical weight-management information | Built but untested | No public weight-loss pricing |
 | Member area | Prototype | `member-preview.html`; fictional data, no login, credits or billing |
-| Staff check-in | Prototype | `staff-preview.html`; no scanner, staff login, real check-ins or redemption |
+| Staff check-in | Prototype | `staff-preview.html` has a demo-only QR camera scanner; no real login, member lookup, check-ins or redemption |
 | Owner dashboard | Prototype | `owner-preview.html`; fictional data, no accounting integration |
 | Stripe payments/Billing/Terminal | Scaffold only | Event classification and raw-body HMAC signature verification helpers drafted; no deployed endpoint, Stripe SDK connection, secrets, products or checkout |
 | Protected backend/database | Schema draft only | Proposed SQL, pure ledger, checkout guardrails, owner metrics and test source in app/; no database, authentication, deployed API or applied migration |
@@ -233,3 +233,13 @@ Edits in this session were committed through GitHub. No local repository checkou
 - [ ] End-to-end test on Android and iOS, including camera permissions, QR expiry, replay, revoked cards, duplicate scans and offline behavior.
 
 **Never use demo QR code OA-DEMO-CARD for real identification, eligibility or billing.** No live patient lookup or credits exist in these preview pages.
+
+
+## 19. Structured execution work order and QR foundation — 2026-11-22
+- [x] Read full master plan and linked membership/app, owner dashboard, launch and app foundation specifications; created [WORK-ORDER.md](WORK-ORDER.md) with priority, dependencies, acceptance criteria and resumption protocol.
+- [x] Added `app/lib/portal-permissions.mjs` with fail-closed member/MA/clinician/manager/owner action matrix and member self-access check. **Pure code only, not enforced by deployed API.**
+- [x] Added `app/lib/checkin-policy.mjs` with explicit check-in transition and QR/redemption precondition checks. **Pure code only, not transactional or deployed.**
+- [x] Added `app/qr-checkin-schema.draft.sql` for hashed, expiring and revocable QR credentials, check-in states and transition history. **Draft, unapplied; not a complete production migration.**
+- [x] Added `app/tests/portal-permissions.test.mjs` covering privilege separation, invalid roles, skipped check-in stages, payment/clinical gates and QR replay conditions. **Tests written but not executed in a verified checkout.**
+- [ ] Implement and verify authenticated, database-backed member/staff/owner API and transactional check-in before displaying real member data or issuing real QR cards.
+- [ ] Review the draft schema and state model with clinical/compliance staff, particularly identity verification, visit recording and audit retention.
