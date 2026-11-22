@@ -8,7 +8,7 @@ Status: DESIGN ONLY; NOT LIVE; NO REAL PATIENT DATA. Do not expose the staff app
 3. Admin: plans and eligibility, enroll/suspend/cancel, billing sync, discount rules, rollover/expiration, audit reports, check-in and revenue reports.
 
 ## Existing plans (confirm precise benefit definitions)
-- Wellness $99/month: one Mini Myers, 15% discount, 30-day rollover.
+- Wellness $99/month: one Mini PlenishIV (Mini Myers-style) monthly; 15% off eligible Orange Aesthetics services and retail skincare (including additional IV, injectables, laser and skin treatments). Owner prefers 90-day rollover of unused included IV benefits; enforce only after California legal approval and finalized contract.
 - Performance $199/month: one qualifying drip, 20% discount.
 - Elite $399/month: two qualifying drips, 25% discount, priority scheduling.
 - NAD+ purchased separately with membership discount, subject to applicable terms.
@@ -30,7 +30,7 @@ billing_events(id, provider_event_id unique, processed_at, status)
 Authenticated staff scans a random opaque QR token; server hashes it and resolves the member. UI shows minimum necessary info and asks staff to verify patient identity. Staff selects the *actual* eligible IV service and clicks Confirm. Backend transaction locks the benefit grant, checks membership active and quantity available, inserts one redemption with unique idempotency key, and updates available balance (prefer ledger derivation). Replays/double-scans must not double-charge. Errors or reversals create audit entries and never erase original events.
 
 ## Renewal
-Use signed, replay-safe payment-provider webhooks to create monthly benefit grants only after authoritative billing status is confirmed. Unique event ID and period ID prevent duplicate grants. Define late payments, proration, pause, cancellation, refunds, 30-day rollover, expiration and discounts before implementation. Never use a browser timer as billing authority.
+Use signed, replay-safe payment-provider webhooks to create monthly benefit grants only after authoritative billing status is confirmed. Unique event ID and period ID prevent duplicate grants. Define late payments, proration, pause, cancellation, refunds, proposed 90-day rollover, expiration and discounts before implementation. Never use a browser timer as billing authority.
 
 ## Security and HIPAA launch gate
 - No PHI in GitHub, public static HTML, URL parameters, QR payload, third-party analytics, logs, or email.
@@ -128,3 +128,6 @@ Customer app navigation: **IV Therapy | Aesthetics | Medical Weight Loss | Neocu
 - **PHI boundary:** Stripe is not the clinical chart. Never send diagnoses, prescriptions, clinical treatment details, labs, medical notes, appointment reasons, or other PHI in product names, Stripe metadata, descriptions, receipts, or customer records. Have counsel/compliance review whether each proposed transaction and data flow is permissible before launch; don't assume Stripe is a HIPAA BAA-covered clinical processor.
 - Keep medical weight-loss prices off public pages. Do not activate medication-related payments until merchant underwriting, legal and compliance approval.
 - Stripe account onboarding, verified bank payout details, product/price IDs, webhook signing secret and hosting secrets are not yet connected; the site is not processing real payments.
+
+## Wellness discount scope decision — 2026-11-22
+Owner selected 15% across eligible Orange Aesthetics services and retail, not only IV. Exclude independent partners and Pacific Urgent Care or insurance-billed services unless separately contracted and legally approved. Clarify stacking, retail brand permissions, clinical services, discounts on special offers and refund treatment in written terms. 90-day rollover remains a proposed policy pending California review; never automatically expire purchased value without signoff.
