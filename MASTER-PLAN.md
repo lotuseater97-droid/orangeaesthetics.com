@@ -114,5 +114,5 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 
 - Added `app/lib/webhook-signature.mjs`, `app/lib/checkout-policy.mjs`, `app/lib/owner-metrics.mjs` and `app/tests/integration-policy.test.mjs` for signature verification, fail-closed checkout policy and accounting helpers. **Source committed, tests not executed in a checked-out repository.**
 
-## 11. Next development focus
+- Visual refresh requested: prior page relied heavily on abstract art and CSS background images. Home now uses explicit editorial photo elements for hero, service cards, interior feature and partner section; image loading remains externally hosted and has **not been browser-verified**. These are illustrative stock photographs, not actual clinic, staff or patient images. Replace with licensed/owned clinic photography before launch where possible.\n\n## 11. Next development focus
 Audit existing source for broken navigation and accessibility; prepare real app architecture, migrations and test harness in repository without connecting real patient data or pretending payment flows are active. Keep the current public site safe and operational.
