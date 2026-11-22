@@ -1,6 +1,6 @@
 # Orange Aesthetics & Wellness — MASTER PLAN
 
-**Updated:** 2026-11-21  
+**Updated:** 2026-11-22  
 **Repository:** `lotuseater97-droid/orangeaesthetics.com`  
 **Status:** Development. **NOT a live payment, member, staff or owner application.**
 
@@ -128,3 +128,44 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 
 ## 11. Next development focus
 Audit existing source for broken navigation and accessibility; prepare real app architecture, migrations and test harness in repository without connecting real patient data or pretending payment flows are active. Keep the current public site safe and operational.
+
+
+## 12. Website remediation register — 2026-11-22
+
+This register consolidates the 36-item audit. **Source-level corrections are not production verification.** Keep open until tested in the deployed website.
+
+### Corrected in GitHub (deployment and visual QA pending)
+- [x] Checkout menu labels now identify Mini/Full **PlenishIV** as the supplier product and Myers-style as the familiar search term; mini is a half-dose subject to actual product directions.
+- [x] Checkout Glow description explicitly places glutathione in a **separate post-infusion push**, not the bag.
+- [x] Membership Wellness benefit now uses Mini PlenishIV terminology.
+- [x] Checkout has an appointment-request CTA; **this is not payment or a confirmed booking**.
+- [x] Pricing clarifies that high-dose vitamin C needs individualized clinical/lab screening and that Plaquex product identity and administration are unverified.
+- [x] Public compatibility chart clarifies that add-on selection is distinct from combining two complete cocktails; evidence-unknown is not known-incompatible.
+- [x] Source-linked `app/iv-evidence-review.json` and historical Dripology reference are available for clinical review; **not clinical approval**.
+
+### P0 — clinical, payment and privacy gates (open)
+- [ ] Implement server-enforced patient-order restrictions and versioned, signed-off clinical compatibility policy; current chart and engines are informational/unwired.
+- [ ] Obtain exact Anazao product labels/SKUs, diluents, concentrations, route, hold time, sterility data, and pharmacist-reviewed compatibility sources. Verify zinc sourcing and Plaquex identity.
+- [ ] Confirm California-specific scope, prescribing, office stock sourcing, and sterile compounding arrangements before elective same-bag mixing.
+- [ ] Implement clinician review workflow, secure clinical screening/consent in appropriate compliant systems, and emergency readiness.
+- [ ] Configure and test manager appointment notification endpoint/secrets; no PHI in routine email; ensure rate limiting and abuse protection.
+- [ ] Complete Stripe onboarding, eligible product configuration, secure checkout, recurring billing, webhook reconciliation, refunds and cancellation; no payment is live.
+- [ ] Establish compliant backend, access control/MFA, data minimization, BAAs where applicable, logging and backups before collecting sensitive information.
+
+### P1 — public-site quality (open)
+- [ ] Verify Cloudflare branch/deployment, DNS/HTTPS, cache invalidation and live pages after commits.
+- [ ] Audit all pages for links, mobile menu, layout, keyboard use, accessibility, contrast, images and loading performance.
+- [ ] Audit clinical/marketing benefit claims and California advertising compliance; finalize legal, privacy, cancellation and refund text.
+- [ ] Verify pricing and membership inclusions/rollover/exclusions; publish approved contractual terms.
+- [ ] Verify SEO metadata, canonical URLs, sitemap, robots, structured data and local listings.
+- [ ] Verify photography rights and replace placeholder/duplicated stock imagery with approved assets.
+
+### P2 — secure product workflows (open)
+- [ ] Member signup/login, payment portal, credits, rollover, receipts, QR token lifecycle.
+- [ ] Staff role-based check-in, redemption, reversal, clinical clearance separation, inventory.
+- [ ] Owner financial reporting, Stripe reconciliation, expenses, receipts, vendor and staff workflows.
+- [ ] NEOCUTIS authorization, stock, shipping, tax, returns and ecommerce.
+- [ ] Automated test execution and end-to-end mobile, email, security and payment verification before launch.
+
+### Verification limitations
+Edits in this session were committed through GitHub. No local repository checkout, browser rendering, Cloudflare production inspection, test run, Stripe configuration or email-delivery test was performed. Do not mark these as deployed, tested or live.
