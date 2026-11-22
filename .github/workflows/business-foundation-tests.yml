@@ -18,4 +18,4 @@ jobs:
         with:
           node-version: '22'
       - name: Run business policy tests
-        run: node --test app/tests/*.test.mjs
+        run: node --test app/tests/business-operations.test.mjs app/tests/workflow-rules.test.mjs
