@@ -133,3 +133,7 @@ Owner confirms **100% cash-pay; no insurance claims** for Orange Aesthetics. Pre
 
 ## Brand alignment — original Orange Aesthetics website, 2026-11-22
 Original website https://orangeaesthetics.com/ uses the tagline **Where Beauty Meets Imagination** and emphasizes personalized medical aesthetics, IV hydration, skincare, natural-looking enhancement and a luxurious clinical setting. Owner rejected **Feel beautiful. Live well.** because it resembles Flourish Longer branding. Homepage headline restored to **Where beauty meets imagination.** Supporting copy: **Refined aesthetics. Personalized care.** Do not reuse the rejected slogan; keep Orange Aesthetics brand distinct from Flourish Longer and Pacific Urgent Care. Avoid unsubstantiated treatment efficacy claims. Homepage change committed to GitHub; Cloudflare production deployment remains separately unverified and may be stalled.
+
+
+## Homepage implementation — balanced aesthetics and IV wellness (2026-11-22)
+Owner wants both specialties equally prominent. Actual index.html updated with equal primary CTAs and two equal editorial specialty panels; IV pricing FAQ corrected to reference Orange Aesthetics. Responsive styles.css updated and stylesheet cache-busted. Deployment not verified; no live functionality claimed.
