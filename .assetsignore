@@ -1,0 +1,22 @@
+# Never publish repository internals, drafts, or server-side code
+.git/
+.github/
+node_modules/
+functions/
+app/
+*.md
+*.sql
+*.toml
+*.json
+*.jsonc
+*.lock
+*.map
+*.yml
+*.yaml
+*.sh
+*.py
+*.env
+*.env.*
+.gitignore
+.assetsignore
+.DS_Store
