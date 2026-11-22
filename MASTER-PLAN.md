@@ -122,5 +122,7 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 
 - Appointment workflow decision: existing Pacific urgent care manager remains responsible for all appointment requests. Notification destination is private and **must not appear in client code or public GitHub**. Added `/appointment-request.html` with contact-only intake and Cloudflare Pages function `/api/appointment-request`; function is **not operational until a trusted notification endpoint and token are configured as server secrets**. Do not claim email delivery or confirmed bookings. No medical history or clinical notes in email.
 
+- Added conservative IV combination chart at `/iv-combinations.html`, draft policy `app/iv-combination-policy.json`, fail-closed evaluator `app/lib/iv-safety.mjs`, and test source. **No combinations are approved or verified.** The public chart is informational and cannot authorize treatment. The evaluator is not connected to an authenticated ordering/administration workflow; production requires server-side enforcement, versioned approved clinical rules, exact formulation/compatibility sources and patient-specific checks. Tests are not yet executed.
+
 ## 11. Next development focus
 Audit existing source for broken navigation and accessibility; prepare real app architecture, migrations and test harness in repository without connecting real patient data or pretending payment flows are active. Keep the current public site safe and operational.
