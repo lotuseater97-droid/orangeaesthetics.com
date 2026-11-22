@@ -51,3 +51,9 @@ H. Run authorization, financial reconciliation, accessibility, mobile, security,
 
 ## Dependencies not yet provisioned
 Dedicated database/auth, runtime secrets, live Stripe, clinical approvals, notification transport, actual Google Calendar, protected app deployment, backup provider and operational data. No real patient information or payment processing should begin before these are complete.
+
+
+## Development preview and test verification
+- `app/prototypes/owner-business.html` is an interactive, **synthetic-data-only** owner dashboard design with Today, Business, Finances, Operations, Communication and Administration views. It is deliberately excluded from public Worker assets; it is NOT a secure live dashboard.
+- `app/lib/workflow-rules.mjs` adds fail-closed state transitions for inquiries, appointments, invoices and expenses; `app/tests/workflow-rules.test.mjs` covers transitions and idempotency-key validation.
+- The dedicated new business foundation GitHub Actions test run **passed**: https://github.com/lotuseater97-droid/orangeaesthetics.com/actions/runs/45067002971. The initial run of **all** existing app tests failed three unrelated pre-existing checks (newline injection and two same-bag IV compatibility tests): https://github.com/lotuseater97-droid/orangeaesthetics.com/actions/runs/45066916545. Those failures are unresolved and should be investigated separately before any clinical features are enabled.
