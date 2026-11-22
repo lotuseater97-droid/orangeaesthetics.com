@@ -20,3 +20,7 @@ Report issued, redeemed, expired, restored, refunded and outstanding quantities 
 
 ## Launch gate
 Counsel-approved contract and benefit classification; verified Orange Aesthetics entity and clinical authority; tested renewal/cancellation/consent, durable backups and recovery; protected database and MFA; complete test suite. No live expiration or member data until then.
+
+
+## Legal and terms source of truth
+Use ../../LEGAL-COUNSEL-REVIEW.md and ../../MEMBERSHIP-TERMS-ATTORNEY-DRAFT.md (repository-root paths) for pending legal determinations and draft terms. Never make the expiry engine active until explicit signed approval. Keep audit events and real backups separate; an event log alone is not a disaster-recovery backup.
