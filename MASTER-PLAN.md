@@ -261,3 +261,9 @@ Edits in this session were committed through GitHub. No local repository checkou
 - [x] Drafted `app/redemption-integrity.draft.sql` with proposed unique QR use, redemption request idempotency, reversal records and transactional locking requirements. **Not applied, not production-ready.**
 - [x] Added `app/lib/grant-selection.mjs` for deterministic paid, valid, available grant selection and `app/tests/grant-selection.test.mjs` with boundary tests. **Not executed; helper is not a transactional credit ledger.**
 - [ ] Review reversal semantics, concurrency behavior, migrations, role isolation and audit requirements in a dedicated staging database before connecting portals.
+
+
+## 23. Credit isolation and reversal safeguards — 2026-11-22
+- [x] Updated `app/lib/grant-selection.mjs` to support member-scoped, active payment-verified subscription checks and approved compensating reversal records.
+- [x] Expanded `app/tests/grant-selection.test.mjs` with member isolation, payment status and reversal tests. **Not executed.**
+- [ ] Legacy unscoped helper use is for existing draft tests only; require server-derived member identity and authoritative subscription records before production use. Enforce isolation at the database transaction boundary.
