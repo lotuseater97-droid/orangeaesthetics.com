@@ -10,13 +10,19 @@
     },
     {
       "id": "mini_myers",
-      "label": "Mini Myers' Cocktail",
-      "type": "base"
+      "label": "Mini PlenishIV (Mini Myers-style)",
+      "type": "base",
+      "supplierProductId": "plenishiv",
+      "relativeDoseFraction": 0.5,
+      "note": "Half of the standard PlenishIV dose; preparation and administration instructions must be verified."
     },
     {
       "id": "full_myers",
-      "label": "Full Myers' Cocktail",
-      "type": "base"
+      "label": "Full PlenishIV (Myers-style)",
+      "type": "base",
+      "supplierProductId": "plenishiv",
+      "relativeDoseFraction": 1,
+      "note": "Standard PlenishIV product; Myers-style is a familiar descriptive search term, not a separate formulation."
     },
     {
       "id": "vitamin_c_zinc",
