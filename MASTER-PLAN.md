@@ -243,3 +243,9 @@ Edits in this session were committed through GitHub. No local repository checkou
 - [x] Added `app/tests/portal-permissions.test.mjs` covering privilege separation, invalid roles, skipped check-in stages, payment/clinical gates and QR replay conditions. **Tests written but not executed in a verified checkout.**
 - [ ] Implement and verify authenticated, database-backed member/staff/owner API and transactional check-in before displaying real member data or issuing real QR cards.
 - [ ] Review the draft schema and state model with clinical/compliance staff, particularly identity verification, visit recording and audit retention.
+
+
+## 20. Work-order execution — 2026-11-22
+- [x] Created `app/PORTAL-API-CONTRACT.md`: proposed protected member, staff, clinical and owner endpoints; short-lived opaque QR, server role authorization, audit, idempotent redemption and immutable reversal design. **No endpoints deployed.**
+- [x] Added `app/lib/portal-access.mjs` pure authorization/self-access checks and `app/tests/portal-access.test.mjs` for cross-member isolation and MFA guards. **Tests not executed; no live identity provider.**
+- [ ] Verify all tests locally and implement the database transaction and access controls after backend selection and HIPAA/vendor review.
