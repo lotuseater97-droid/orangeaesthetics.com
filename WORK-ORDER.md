@@ -67,3 +67,12 @@
 - Strengthened `app/lib/grant-selection.mjs` with optional authenticated-member scoping through server-verified active paid subscription records and separate approved reversal events. Legacy unscoped mode remains for existing tests; **must not be used in production APIs**.
 - Added tests for cross-member isolation, unpaid/inactive subscriptions, unapproved reversal flags and missing subscription scope. **Not run**.
 - Next: remove legacy unscoped entry point before any API integration, implement transaction-safe SQL and verify test suite in checkout.
+
+
+## Membership rollover legal gate — 2026-11-22
+- Owner preference: **90-day rollover** of unused monthly benefits. **Proposed only; not legally approved.** Do not implement automatic forfeiture, advertise enforceable expiry, or enable billing until California counsel classifies each paid service credit versus truly free promotional benefit.
+- California Civil Code 1749.5 gift-certificate restrictions and exceptions require review; April 1, 2026 statutory change must be checked. Source: https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?sectionNum=1749.5.&lawCode=CIV
+- California Automatic Renewal Law BPC 17602: express consent, clear terms, retainable acknowledgment, consent record retention, annual reminders, online cancellation and fee-change notices. Source: https://oag.ca.gov/node/608083
+- Medical Board corporate-practice and medical-spa ownership/clinical control: https://www.mbc.ca.gov/Licensing/Physicians-and-Surgeons/Practice-Information/default.aspx
+- Counsel to review: medical-practice entity and NP/physician supervision/authorization, clinical eligibility and refund when unsuitable, HIPAA/payment separation and BAAs, package vs gift-card treatment, cash-out rights, cancellation and refund policy, advertising, sales tax and consumer privacy.
+- **System rule pending legal signoff:** retain original grant issuance/payment/expiry records; support separate non-expiring prepaid-value ledger if legally required; never erase historical grants; provide member-visible terms and audit trail.
