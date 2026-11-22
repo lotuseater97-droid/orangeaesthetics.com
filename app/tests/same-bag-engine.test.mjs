@@ -1,0 +1,15 @@
+import test from "node:test";import assert from "node:assert/strict";import {evaluateSameBag} from "../lib/same-bag-engine.mjs";
+const now="2026-11-21T00:00:00.000Z",later="2030-01-01T00:00:00.000Z";
+const approvedIngredient=(ingredientId,sourceSku)=>({ingredientId,sourceSku,unit:"mg",concentrationUnit:"mg_ml",status:"approved",maxDose:100,minConcentration:1,maxConcentration:100,maxTotalDose:100,sourceReference:"pharmacy-verified",reviewedBy:"pharmacist",effectiveDate:now,expiresAt:later});
+const policy={status:"approved",administration:"same_bag_same_line",formulationVersion:"v1",approvedDiluents:["ns"],maxFinalVolumeMl:1000,maxInfusionMinutes:240,maxHoldMinutes:120,approvedIngredients:[approvedIngredient("a","sku_a"),approvedIngredient("b","sku_b")],rules:[{a:"a",b:"b",status:"approved",administration:"same_bag_same_line",formulationVersion:"v1",diluentId:"ns",minVolumeMl:100,maxVolumeMl:1000,maxInfusionMinutes:240,maxHoldMinutes:120,sourceReference:"pharmacy-verified",reviewedBy:"pharmacist",effectiveDate:now,expiresAt:later}]};
+const formulation={id:"test_bag",version:"v1",diluentId:"ns",finalVolumeMl:500,infusionMinutes:90,holdMinutes:30,ingredients:[{ingredientId:"a",sourceSku:"sku_a",dose:50,unit:"mg",concentration:5,concentrationUnit:"mg_ml"},{ingredientId:"b",sourceSku:"sku_b",dose:30,unit:"mg",concentration:3,concentrationUnit:"mg_ml"}]};
+const checks={contraindicationsCleared:true,medicationsReviewed:true,labsReviewed:true,clinicianOrderVerified:true};
+const run=(f=formulation,p=policy,c=checks)=>evaluateSameBag({formulation:f,policy:p,clinicalClearance:true,clinicalChecks:c,now});
+test("draft policy always blocks",()=>assert.equal(run(formulation,{...policy,status:"draft"}).allowed,false));
+test("unknown pair blocks",()=>assert.ok(run(formulation,{...policy,rules:[]}).codes.some(x=>x.startsWith("PAIR_NOT_VERIFIED"))));
+test("different diluent blocks",()=>assert.equal(run({...formulation,diluentId:"d5w"}).allowed,false));
+test("expired compatibility evidence blocks",()=>assert.equal(run(formulation,{...policy,rules:[{...policy.rules[0],expiresAt:"2020-01-01"}]}).allowed,false));
+test("duplicate ingredient blocks",()=>assert.ok(run({...formulation,ingredients:[...formulation.ingredients,formulation.ingredients[0]]}).codes.includes("DUPLICATE_INGREDIENT_REQUIRES_TOTAL_DOSE_REVIEW")));
+test("missing medication review blocks",()=>assert.equal(run(formulation,policy,{...checks,medicationsReviewed:false}).allowed,false));
+test("excessive hold time blocks",()=>assert.equal(run({...formulation,holdMinutes:200}).allowed,false));
+test("complete synthetic approved policy reaches final verification",()=>assert.equal(run().status,"eligible_for_final_pharmacist_and_clinician_verification"));
