@@ -1,0 +1,106 @@
+{
+  "source": "User-provided Dripology RN Mix Guide v14 dated 2022-01-01, 2021 menu and 29-page training manual",
+  "classification": "historical_third_party_reference_not_verified_compatibility_or_clinic_protocol",
+  "do_not_use_for_automatic_ordering_approval": true,
+  "examples": [
+    {
+      "name": "Thrive",
+      "bag": "normal_saline_1l",
+      "bag_ingredients": [
+        "nad_plus"
+      ],
+      "pushes": []
+    },
+    {
+      "name": "Beauty",
+      "bag": "lactated_ringers_0_5_or_1l",
+      "bag_ingredients": [
+        "ascorbic_acid",
+        "b_complex",
+        "niacinamide"
+      ],
+      "pushes": [
+        "glutathione",
+        "lysine"
+      ]
+    },
+    {
+      "name": "Chill",
+      "bag": "lactated_ringers_0_5_or_1l",
+      "bag_ingredients": [
+        "b_complex",
+        "magnesium_chloride"
+      ],
+      "pushes": [
+        "glutathione",
+        "lysine"
+      ]
+    },
+    {
+      "name": "Detox",
+      "bag": "lactated_ringers_0_5_or_1l",
+      "bag_ingredients": [
+        "ascorbic_acid",
+        "b_complex",
+        "magnesium_chloride"
+      ],
+      "pushes": [
+        "glutathione",
+        "methylcobalamin",
+        "niacinamide"
+      ]
+    },
+    {
+      "name": "Immunity",
+      "bag": "lactated_ringers_0_5_or_1l",
+      "bag_ingredients": [
+        "ascorbic_acid",
+        "b_complex",
+        "zinc_chloride_or_sulfate"
+      ],
+      "pushes": [
+        "lysine",
+        "taurine"
+      ]
+    },
+    {
+      "name": "Persist",
+      "bag": "lactated_ringers_0_5_or_1l",
+      "bag_ingredients": [
+        "ascorbic_acid",
+        "magnesium_chloride"
+      ],
+      "pushes": [
+        "taurine",
+        "methylcobalamin",
+        "ketorolac"
+      ]
+    },
+    {
+      "name": "Energy",
+      "bag": "lactated_ringers_0_5_or_1l",
+      "bag_ingredients": [
+        "ascorbic_acid",
+        "b_complex"
+      ],
+      "pushes": [
+        "taurine",
+        "methylcobalamin"
+      ]
+    }
+  ],
+  "red_flags": [
+    "Historical third-party protocol does not establish same-bag, Y-site or sequential compatibility for Anazao products.",
+    "Persist taurine 100 mg at 50 mg/mL is printed as 1 mL, inconsistent with 2 mL calculation.",
+    "Manual's anaphylaxis algorithm places epinephrine after antihistamines and steroids; epinephrine is first-line and should not be delayed.",
+    "Manual's SDV handling, aseptic mixing, medication claims, and product-specific routes require current standards review.",
+    "2021 menu makes unverified efficacy claims; do not import marketing language."
+  ],
+  "possible_website_mapping": {
+    "vitamin_c_zinc": "Immunity",
+    "glow_drip": "Beauty",
+    "energy_recovery": "Energy",
+    "nad_infusions": "Thrive"
+  },
+  "next_step": "Verify exact Anazao SKUs, concentrations, excipients, route, diluent and compatibility with primary pharmacy evidence before approving any combination."
+}
