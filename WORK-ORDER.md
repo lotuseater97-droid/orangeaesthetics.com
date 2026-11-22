@@ -116,3 +116,12 @@ Owner requested that proposed 90-day IV benefits disappear from *usable* member 
 **Safe-by-default implementation:** issue only from verified payments; do not send PHI to Stripe; member/MA/owner access segregated; never delete credit history; keep gift cards and purchased stored value in a separate non-expiring-policy ledger; disable expiration server-side until attorney signoff; expose no production portal before authenticated HIPAA-ready backend, backups and tested restore. Clinical approval remains independent of payment. No live systems or tests are implied by this specification.
 
 **Next work:** validate pure ledger against all boundary and remediation cases, implement server-side legal approval switch, append-only protected event store and real backup/restore, wire authenticated portals and signed payment webhooks only after infrastructure/legal gates. Remove contradictory historical 30-day wording wherever still present before launch.
+
+
+## Business management and backup decision — 2026-11-22
+Owner wants the authenticated Orange Aesthetics platform to operate the business end-to-end, with independently recoverable data and downloadable owner archives. See [BUSINESS-OPERATIONS-BACKUP-PLAN.md](BUSINESS-OPERATIONS-BACKUP-PLAN.md) for the implementation and security specification.
+- Target: daily encrypted full database backups, weekly independent immutable offsite copies, monthly owner-downloadable audited business archives, quarterly actual restore drills, and failure alerts. Continuous PITR preferred if supported.
+- Owner dashboard must include Backup Center, last verified successful job, backup history, downloadable monthly archive and restore-test evidence. Owner exports must exclude clinical charts and payment credentials; HIPAA-sensitive records require separate approved workflow.
+- Retain expired IV credits, issuance, redemptions, refunds and legal restorations in immutable history. Backups are distinct from historical event logs. No automatic 90-day forfeiture without California counsel signoff.
+- Added pure `app/lib/export-manifest.mjs` and five `app/tests/export-manifest.test.mjs` test cases for file hashes/manifest integrity. **No real archive, storage, scheduled job, owner download or restoration is implemented; tests have not been executed.**
+- Next dependencies: protected backend, BAA/security decisions, authenticated owner endpoint, real backup provider, independent storage, tested restoration, approved retention policy.
