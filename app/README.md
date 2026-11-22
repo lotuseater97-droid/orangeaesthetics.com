@@ -23,3 +23,6 @@
 - `lib/checkout-policy.mjs`: fail-closed checkout eligibility validation. Draft catalog remains disabled.
 - `lib/owner-metrics.mjs`: deterministic owner financial totals and stock movements; not connected to real records.
 - `tests/integration-policy.test.mjs`: test source for the above; **not executed yet**.
+
+### Same-bag / same-line safety foundation
+`lib/same-bag-engine.mjs` is a pure, fail-closed validation engine for exact ingredient combinations and formulation constraints. `tests/same-bag-engine.test.mjs` contains synthetic test fixtures (not medical recommendations). No real IV admixture has been approved and no production ordering endpoint is connected. All clinical compatibility decisions require a licensed pharmacist/medical director and documented formulation-specific evidence. Never use test policy fixtures in production.
