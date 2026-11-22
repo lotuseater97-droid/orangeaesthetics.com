@@ -1,0 +1,161 @@
+{
+  "version": "2026-11-21-initial",
+  "purpose": "Patient selection screening; never preparation instructions or administration authorization",
+  "sources": [
+    {
+      "id": "ca-board-2026",
+      "url": "https://pharmacy.ca.gov/online/faqs.shtml",
+      "finding": "California immediate-use sterile compounding exception is narrowly limited; routine elective bag mixing cannot be assumed exempt."
+    },
+    {
+      "id": "ca-board-iv",
+      "url": "https://www.pharmacy.ca.gov/publications/iv_hydration_ed.pdf",
+      "finding": "California Board of Pharmacy directs IV hydration compounders to USP 797 and licensure verification."
+    },
+    {
+      "id": "fda-nad",
+      "url": "https://www.fda.gov/drugs/human-drug-compounding/fda-reminds-compounders-use-ingredients-suitable-sterile-compounding",
+      "finding": "FDA reports severe reactions and endotoxin concerns from compounded injectable NAD+."
+    },
+    {
+      "id": "fda-glutathione-2026",
+      "url": "https://www.fda.gov/drugs/human-drug-compounding/fda-reminds-compounders-not-use-dietary-supplement-grade-glutathione-injectables",
+      "finding": "2026 FDA warning: dietary-supplement-grade glutathione unsuitable for injectables; reported serious adverse events."
+    },
+    {
+      "id": "fda-503b-nad-2026",
+      "url": "https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/warning-letters/genogenix-llc-718739-01202026",
+      "finding": "FDA cited one outsourcing facility for NAD+ bulk drug compounding not meeting 503B conditions; verify individual product legal status rather than infer from supplier catalog."
+    },
+    {
+      "id": "ascor-label",
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2024/209112Orig1s009lbl.pdf",
+      "finding": "Specific FDA-approved ascorbic acid injection has formulation, dilution, concentration, and copper-reduction restrictions; not blanket validation of high-dose wellness vitamin C."
+    },
+    {
+      "id": "anaphylaxis-2023",
+      "url": "https://www.allergyparameters.org/parameters-and-guidelines/anaphylaxis/2023-anaphylaxis-update",
+      "finding": "IM epinephrine first-line for suspected anaphylaxis; other treatments must not delay."
+    }
+  ],
+  "reviews": [
+    {
+      "id": "mini_myers",
+      "status": "requires_review",
+      "reason": "Supplier pre-compounded PlenishIV may be evaluated as a single product; half-dose needs label-specific instructions and approved dose.",
+      "evidence": [
+        "ca-board-iv"
+      ]
+    },
+    {
+      "id": "full_myers",
+      "status": "requires_review",
+      "reason": "Existing PlenishIV is a distinct supplied formulation, but route, label and sourcing still require verification.",
+      "evidence": [
+        "ca-board-iv"
+      ]
+    },
+    {
+      "id": "vitamin_c_zinc",
+      "status": "requires_review",
+      "reason": "Historical Dripology example is not chemical stability evidence; exact zinc formulation and calcium-containing diluent matter.",
+      "evidence": [
+        "ascor-label",
+        "ca-board-iv"
+      ]
+    },
+    {
+      "id": "glow_drip",
+      "status": "requires_review",
+      "reason": "Mini PlenishIV plus vitamin C is an additional admixture, not automatically validated; glutathione is separately administered.",
+      "evidence": [
+        "ascor-label",
+        "fda-glutathione-2026"
+      ]
+    },
+    {
+      "id": "luxe_drip",
+      "status": "requires_review",
+      "reason": "NAD+ with high-dose vitamin C in one bag lacks verified formulation-specific stability; glutathione separate.",
+      "evidence": [
+        "fda-nad",
+        "ascor-label",
+        "fda-glutathione-2026"
+      ]
+    },
+    {
+      "id": "high_dose_vitamin_c",
+      "status": "requires_review",
+      "reason": "High-dose use differs from labeled scurvy dosing; requires renal/stone, G6PD and assay interference assessment, and exact product labeling.",
+      "evidence": [
+        "ascor-label"
+      ]
+    },
+    {
+      "id": "plaquex",
+      "status": "requires_review",
+      "reason": "Plain phosphatidylcholine and Plaquex with deoxycholate are not interchangeable; product and IV route must be confirmed.",
+      "evidence": [
+        "ca-board-iv"
+      ]
+    },
+    {
+      "id": "nad_250",
+      "status": "requires_review",
+      "reason": "Verify injectable product quality, regulatory eligibility, rate, diluent and medical suitability.",
+      "evidence": [
+        "fda-nad",
+        "fda-503b-nad-2026"
+      ]
+    },
+    {
+      "id": "nad_500",
+      "status": "requires_review",
+      "reason": "Verify injectable product quality, regulatory eligibility, rate, diluent and medical suitability.",
+      "evidence": [
+        "fda-nad",
+        "fda-503b-nad-2026"
+      ]
+    },
+    {
+      "id": "nad_750",
+      "status": "requires_review",
+      "reason": "Verify injectable product quality, regulatory eligibility, rate, diluent and medical suitability.",
+      "evidence": [
+        "fda-nad",
+        "fda-503b-nad-2026"
+      ]
+    },
+    {
+      "id": "nad_1000",
+      "status": "requires_review",
+      "reason": "Verify injectable product quality, regulatory eligibility, rate, diluent and medical suitability.",
+      "evidence": [
+        "fda-nad",
+        "fda-503b-nad-2026"
+      ]
+    },
+    {
+      "id": "glutathione_push",
+      "status": "requires_review",
+      "reason": "Separate sequential push is clinic workflow; verify IV route, product quality, dose, rate and flushing.",
+      "evidence": [
+        "fda-glutathione-2026"
+      ]
+    }
+  ],
+  "known_restrictions": [
+    {
+      "id": "glutathione_in_same_bag",
+      "status": "blocked",
+      "basis": "Clinic workflow restriction: glutathione is a separate push, not a same-bag additive; not a general chemical incompatibility claim."
+    },
+    {
+      "id": "repeat_base_infusion",
+      "status": "blocked",
+      "basis": "Prevent unintended duplicate base treatments and cumulative dosing until clinician review."
+    }
+  ],
+  "unknown_not_incompatible": true,
+  "auto_approved_pairs": []
+}
