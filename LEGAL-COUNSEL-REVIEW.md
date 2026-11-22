@@ -30,3 +30,15 @@ For each L-ID record: reviewer name, bar/license details, review date, law versi
 
 ## Launch-blocking principle
 Build the software toward the preferred 90-day outcome, but keep an explicit server-side `expiration_policy_approved=false` until counsel signs off. Never describe a proposed 90-day term as a legally guaranteed forfeiture. No backdating approval.
+
+
+## Additional legal/vendor review — clinical system
+| ID | Question | Safe default |
+|---|---|---|
+| L11 | Is a cash-only Orange Aesthetics entity HIPAA covered, a business associate, or neither, considering shared Pacific practice and electronic standard transactions? | Apply healthcare-grade security regardless; obtain written classification |
+| L12 | California CMIA, medical record custody/retention, patient access and breach notification | EHR as clinical source of truth; documented records custodian |
+| L13 | May two separate legal entities use the existing Practice Fusion account and clinical charts, with patient authorization, staff access, contracts and adequate separation? | Do not share records or accounts until vendor and counsel confirm |
+| L14 | Does Practice Fusion's EHI/FHIR export cover the records needed for continuity, and may encrypted exports be retained independently? | Keep clinical backup separate from business export; validate scope and recovery |
+| L15 | Which vendors need BAAs, privacy agreements and approved data processing terms, including cloud, backup, notifications and integrations? | No PHI in unapproved vendors or static hosting |
+
+Reference: [PRACTICE-FUSION-CLINICAL-PLAN.md](PRACTICE-FUSION-CLINICAL-PLAN.md).
