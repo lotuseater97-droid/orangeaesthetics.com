@@ -33,3 +33,11 @@
 - Added two-column layout for remaining IV/membership cards and mobile single-column fallback.
 - Added canonical URL metadata to aesthetics.html and iv-therapy.html.
 - Confirmed source-level section structure and navigation; **still no live Cloudflare deployment, browser screenshot, or production form delivery verification**.
+
+
+## Full-platform implementation pass — 2026-11-22
+- Updated prominent appointment CTAs on homepage, both specialty landing pages, contact and memberships to link to appointment-request.html; label is **Request Appointment**, not guaranteed booking.
+- Fixed CSS responsive nav wrapping and More dropdown clipping risk; still requires browser visual QA.
+- Added PRODUCTION-DEPLOYMENT-CHECKLIST.md documenting Cloudflare Workers versus Pages incompatibility risk and acceptance checks. GitHub repository root has no package.json/wrangler config; actual Cloudflare project settings must be inspected before choosing a deployment mechanism.
+- Appointment API is a Pages Function and uses server secrets for notification endpoint; cannot claim it runs on Workers or is operational. No PHI or payment tests.
+- Stripe, auth, membership ledger, staff tools and owner dashboard remain prototypes/scaffolds, not deployed or secure.
