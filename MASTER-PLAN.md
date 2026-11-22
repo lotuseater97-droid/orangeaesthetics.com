@@ -255,3 +255,9 @@ Edits in this session were committed through GitHub. No local repository checkou
 - [x] Added `app/lib/qr-token.mjs` with server-only cryptographically random 256-bit opaque QR credentials, hashed token comparison and a 60-second expiry guard. Never put these tokens in logs or URLs.
 - [x] Added `app/tests/qr-token.test.mjs` for malformed, expired, revoked, consumed and mismatched credentials. **Test source committed, not run**.
 - [ ] Implement real token issuance and atomic database consumption with authenticated member/staff roles, rate limits and audit; no production QR cards are active.
+
+
+## 22. Redemption integrity and membership credit selection — 2026-11-22
+- [x] Drafted `app/redemption-integrity.draft.sql` with proposed unique QR use, redemption request idempotency, reversal records and transactional locking requirements. **Not applied, not production-ready.**
+- [x] Added `app/lib/grant-selection.mjs` for deterministic paid, valid, available grant selection and `app/tests/grant-selection.test.mjs` with boundary tests. **Not executed; helper is not a transactional credit ledger.**
+- [ ] Review reversal semantics, concurrency behavior, migrations, role isolation and audit requirements in a dedicated staging database before connecting portals.
