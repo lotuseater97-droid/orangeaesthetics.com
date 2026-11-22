@@ -16,8 +16,8 @@
 | ID | Priority | Work item | Acceptance evidence | State |
 |---|---|---|---|---|
 | W01 | P0 | Reconcile master plan and specs; create execution ledger | This work order and master-plan link | Complete |
-| W02 | P0 | Design roles, permissions and separation of duties | Server-authoritative permission matrix, tests | In progress |
-| W03 | P0 | Define member QR lifecycle, check-in and redemption state machine | Schema draft, no patient data, replay/idempotency requirements | In progress |
+| W02 | P0 | Design roles, permissions and separation of duties | Pure permission matrix + test source committed; server enforcement pending | Scaffold complete; untested |
+| W03 | P0 | Define member QR lifecycle, check-in and redemption state machine | Draft schema, state guards and test source committed; transaction design pending | Scaffold complete; untested |
 | W04 | P0 | Build auth and session architecture | Dedicated backend selected, MFA, audit, verified role checks | Blocked: infrastructure/vendor decision |
 | W05 | P0 | Build protected membership/credits APIs | Tests for cross-member isolation, paid-only grants, concurrent redemption | Blocked: W04 |
 | W06 | P0 | Implement QR issuance, scan, verify and atomic redemption | Camera + fallback, token expiry/replay/revocation, two identifiers, clinician separation | Blocked: W04/W05 |
@@ -43,3 +43,7 @@
 - Draft QR token/check-in/visit schema extension (unapplied).
 - Unit tests for permission and state transitions.
 - Update master plan to reflect current QR demo and three distinct portal previews.
+
+## Progress log — 2026-11-22
+- Created pure role/permission model, check-in transition guards, QR credential/check-in schema draft and test source. These are **not** production authorization or an operational database.
+- Next unblocked step: inspect checkout/member UI and add more testable static design; live authenticated functions remain gated by dedicated backend, contracts and secure deployment.
