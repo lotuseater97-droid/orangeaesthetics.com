@@ -1,5 +1,5 @@
 {
-  "source": "User-provided AnazaoHealth Aesthetics IV & Injections product listing, 2026",
+  "source": "User-provided AnazaoHealth Aesthetics and IV & Injection Therapy listings (2026)",
   "status": "supplier_ingredient_identity_only_not_compatibility_approval",
   "products": [
     {
@@ -11,7 +11,10 @@
         "lysine_hcl",
         "proline"
       ],
-      "preservation": "preservative_free"
+      "preservation": "preservative_free",
+      "listing_sections": [
+        "503b"
+      ]
     },
     {
       "id": "aminomultiplex_preserved",
@@ -22,7 +25,10 @@
         "lysine_hcl",
         "proline"
       ],
-      "preservation": "preserved"
+      "preservation": "preserved",
+      "listing_sections": [
+        "503b"
+      ]
     },
     {
       "id": "ascorbic_acid_pf",
@@ -30,7 +36,10 @@
       "ingredients": [
         "ascorbic_acid"
       ],
-      "preservation": "preservative_free"
+      "preservation": "preservative_free",
+      "listing_sections": [
+        "503b"
+      ]
     },
     {
       "id": "ascorbic_acid_preserved",
@@ -38,7 +47,10 @@
       "ingredients": [
         "ascorbic_acid"
       ],
-      "preservation": "preserved"
+      "preservation": "preserved",
+      "listing_sections": [
+        "503b"
+      ]
     },
     {
       "id": "glutathione_pf",
@@ -46,7 +58,10 @@
       "ingredients": [
         "glutathione"
       ],
-      "preservation": "preservative_free"
+      "preservation": "preservative_free",
+      "listing_sections": [
+        "503b"
+      ]
     },
     {
       "id": "glutathione_preserved",
@@ -54,14 +69,22 @@
       "ingredients": [
         "glutathione"
       ],
-      "preservation": "preserved"
+      "preservation": "preserved",
+      "listing_sections": [
+        "503b",
+        "503a"
+      ]
     },
     {
       "id": "phosphatidylcholine",
       "name": "Phosphatidylcholine Injection",
       "ingredients": [
         "phosphatidylcholine"
-      ]
+      ],
+      "listing_sections": [
+        "503b"
+      ],
+      "distinct_from": "plaquex_compounded"
     },
     {
       "id": "plenishiv",
@@ -75,6 +98,9 @@
         "niacinamide",
         "dexpanthenol",
         "cyanocobalamin"
+      ],
+      "listing_sections": [
+        "503b"
       ]
     },
     {
@@ -88,6 +114,9 @@
         "pyridoxine_hcl",
         "niacinamide",
         "dexpanthenol"
+      ],
+      "listing_sections": [
+        "503b"
       ]
     },
     {
@@ -98,6 +127,10 @@
         "inositol",
         "choline",
         "cyanocobalamin"
+      ],
+      "listing_sections": [
+        "503b",
+        "503a"
       ]
     },
     {
@@ -105,6 +138,9 @@
       "name": "Proline Injection",
       "ingredients": [
         "proline"
+      ],
+      "listing_sections": [
+        "503b"
       ]
     },
     {
@@ -114,6 +150,196 @@
         "cholecalciferol"
       ],
       "vehicle": "olive_oil",
+      "route_not_established_for_iv": true,
+      "listing_sections": [
+        "503a"
+      ]
+    },
+    {
+      "id": "nad_preserved",
+      "name": "β-NAD+ (Preserved) MDV",
+      "ingredients": [
+        "nad_plus"
+      ],
+      "listing_sections": [
+        "503b",
+        "503a"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "nad_pf",
+      "name": "β-NAD+ (PF) SDV",
+      "ingredients": [
+        "nad_plus"
+      ],
+      "listing_sections": [
+        "503b",
+        "503a"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "lipoic_acid",
+      "name": "Lipoic Acid",
+      "ingredients": [
+        "lipoic_acid"
+      ],
+      "listing_sections": [
+        "503b"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "lysine_hcl",
+      "name": "Lysine HCl",
+      "ingredients": [
+        "lysine_hcl"
+      ],
+      "listing_sections": [
+        "503b"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "mic",
+      "name": "M.I.C.",
+      "ingredients": [
+        "methionine",
+        "inositol",
+        "choline"
+      ],
+      "listing_sections": [
+        "503b"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "methylcobalamin",
+      "name": "Methylcobalamin (Vitamin B12)",
+      "ingredients": [
+        "methylcobalamin"
+      ],
+      "listing_sections": [
+        "503b",
+        "503a"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "plaquex_compounded",
+      "name": "Plaquex Compounded",
+      "ingredients": [
+        "phosphatidylcholine",
+        "sodium_deoxycholate"
+      ],
+      "listing_sections": [
+        "503b"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "thiamine_pyridoxine",
+      "name": "Thiamine HCl / Pyridoxine HCl (B1/B6)",
+      "ingredients": [
+        "thiamine_hcl",
+        "pyridoxine_hcl"
+      ],
+      "listing_sections": [
+        "503b"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "l_carnitine",
+      "name": "L-Carnitine Injection",
+      "ingredients": [
+        "l_carnitine"
+      ],
+      "listing_sections": [
+        "503a"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "nandrolone_decanoate",
+      "name": "Nandrolone Decanoate",
+      "ingredients": [
+        "nandrolone_decanoate"
+      ],
+      "listing_sections": [
+        "503b",
+        "503a"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "testosterone_cypionate_grapeseed",
+      "name": "Testosterone Cypionate (Grape Seed Oil)",
+      "ingredients": [
+        "testosterone_cypionate"
+      ],
+      "listing_sections": [
+        "503b",
+        "503a"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "testosterone_cypionate_enanthate_sesame",
+      "name": "Testosterone Cypionate / Testosterone Enanthate (Sesame Oil)",
+      "ingredients": [
+        "testosterone_cypionate",
+        "testosterone_enanthate"
+      ],
+      "listing_sections": [
+        "503a"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "testosterone_cypionate_anastrozole_grapeseed",
+      "name": "Testosterone Cypionate / Anastrozole (Grape Seed Oil)",
+      "ingredients": [
+        "testosterone_cypionate",
+        "anastrozole"
+      ],
+      "listing_sections": [
+        "503a"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "testosterone_enanthate_grapeseed",
+      "name": "Testosterone Enanthate (Grape Seed Oil)",
+      "ingredients": [
+        "testosterone_enanthate"
+      ],
+      "listing_sections": [
+        "503a"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "gonadorelin",
+      "name": "Gonadorelin Acetate Injection",
+      "ingredients": [
+        "gonadorelin_acetate"
+      ],
+      "listing_sections": [
+        "503a"
+      ],
+      "route_not_established_for_iv": true
+    },
+    {
+      "id": "sermorelin",
+      "name": "Sermorelin Acetate",
+      "ingredients": [
+        "sermorelin_acetate"
+      ],
+      "listing_sections": [
+        "503a"
+      ],
       "route_not_established_for_iv": true
     }
   ],
@@ -127,6 +353,10 @@
     "Product catalog is not a compatibility reference.",
     "No concentrations, excipients, preservative identity, pH, osmolarity, diluent, beyond-use time, administration route or compatibility evidence supplied.",
     "Do not assume Vitamin D3 in olive oil is suitable for IV infusion.",
-    "Commercial multi-ingredient preparations do not establish compatibility with other products."
+    "Commercial multi-ingredient preparations do not establish compatibility with other products.",
+    "503A/503B listing category is not a route-of-administration or admixture-compatibility approval.",
+    "Plaquex Compounded contains sodium deoxycholate in addition to phosphatidylcholine; do not substitute plain phosphatidylcholine.",
+    "NAD+ PF SDV and preserved MDV are distinct supplier products.",
+    "Hormone/oil-based and other injection-only listings must not be offered as same-bag IV options."
   ]
 }
