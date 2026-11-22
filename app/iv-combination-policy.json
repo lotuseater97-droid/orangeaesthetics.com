@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "status": "draft_no_combinations_approved",
+  "review_required": true,
+  "items": [
+    {
+      "id": "basic_hydration",
+      "label": "Basic Hydration",
+      "type": "base"
+    },
+    {
+      "id": "mini_myers",
+      "label": "Mini Myers' Cocktail",
+      "type": "base"
+    },
+    {
+      "id": "full_myers",
+      "label": "Full Myers' Cocktail",
+      "type": "base"
+    },
+    {
+      "id": "vitamin_c_zinc",
+      "label": "Vitamin C + Zinc",
+      "type": "base"
+    },
+    {
+      "id": "energy_recovery",
+      "label": "Energy & Recovery",
+      "type": "base"
+    },
+    {
+      "id": "athletes_blend",
+      "label": "Athlete's Blend",
+      "type": "base"
+    },
+    {
+      "id": "recovery_hydration",
+      "label": "Recovery Hydration",
+      "type": "base"
+    },
+    {
+      "id": "glow_drip",
+      "label": "Glow Drip",
+      "type": "base"
+    },
+    {
+      "id": "luxe_drip",
+      "label": "Luxe Drip",
+      "type": "base"
+    },
+    {
+      "id": "high_dose_vitamin_c",
+      "label": "High-Dose Vitamin C",
+      "type": "base"
+    },
+    {
+      "id": "plaquex",
+      "label": "Plaquex Therapy",
+      "type": "base"
+    },
+    {
+      "id": "nad_250",
+      "label": "NAD+ 250 mg",
+      "type": "base"
+    },
+    {
+      "id": "nad_500",
+      "label": "NAD+ 500 mg",
+      "type": "base"
+    },
+    {
+      "id": "nad_750",
+      "label": "NAD+ 750 mg",
+      "type": "base"
+    },
+    {
+      "id": "nad_1000",
+      "label": "NAD+ 1000 mg",
+      "type": "base"
+    },
+    {
+      "id": "glutathione_push",
+      "label": "Glutathione Push",
+      "type": "addon"
+    },
+    {
+      "id": "extra_hydration",
+      "label": "Additional Hydration 1 L",
+      "type": "addon"
+    }
+  ],
+  "rules": [],
+  "approval_requirements": [
+    "Exact formulation, concentrations, diluent, volume and route",
+    "Documented physical/chemical compatibility for same-bag or Y-site administration",
+    "Maximum total cumulative doses and infusion rate",
+    "Patient-specific contraindication, medication and laboratory screening",
+    "Pharmacist/medical-director review, source citation, effective date and version"
+  ],
+  "notes": [
+    "No pairs are authorized by this draft policy.",
+    "Separate administration does not imply clinical suitability.",
+    "Public display must not disclose patient information.",
+    "All clinical blocks must be enforced by the server, not only the browser."
+  ]
+}
