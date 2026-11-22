@@ -198,3 +198,10 @@ Edits in this session were committed through GitHub. No local repository checkou
 - [x] Fixed a JavaScript regex escaping error in the Cloudflare appointment function that could incorrectly reject valid email addresses. Source-level correction only; delivery still requires provider setup and live testing.
 - [x] Disallow non-default ports on configured notification destination to reduce configuration risk.
 - [ ] Execute positive/negative tests for valid emails, malformed emails, honeypot, payload size, cross-origin requests and upstream delivery before enabling production form.
+
+
+## 17. Appointment intake defense and test coverage — 2026-11-22
+- [x] Appointment function rejects unexpected JSON keys, preventing accidental forwarding of extra patient/clinical fields; rejects CR/LF in contact fields.
+- [x] Added `app/tests/appointment-request.test.mjs` covering accepted contact-only requests, invalid email, extra medical fields, newline injection, cross-origin requests, missing configuration, insecure notification URL and provider failure.
+- [ ] Execute test suite in a checked-out repository and resolve any failures; **test source committed, not run**.
+- [ ] Add durable rate limiting, abuse monitoring, delivery provider setup and independent verification of notification receipt before accepting public submissions.
