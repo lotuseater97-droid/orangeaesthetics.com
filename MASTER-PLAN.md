@@ -15,7 +15,7 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 - **Weight management:** initial evaluation at Pacific Urgent Care; lab testing through regular insurance where covered; clinician-authorized injections in clinic. **Never display public weight-loss medication prices**. Keep clinical data in compliant clinical systems.
 - **Skincare:** NEOCUTIS product catalog with *advertised reference retail prices*, not verified inventory, acquisition cost, authorized online resale, or final sales price.
 - **Partner:** Flourish Longer is independent; link to its separate booking and payment experience. No shared charges or revenue split.
-- **Brand:** ivory #FAF8F3, sea glass #435D60, sage #A9C3BB, champagne #D6B68C, bronze #A77B61. Headline: “Feel beautiful. Live well.” No navy.
+- **Brand:** ivory #FAF8F3, sea glass #435D60, sage #A9C3BB, champagne #D6B68C, bronze #A77B61. Headline: “Where Beauty Meets Imagination” (original Orange Aesthetics tagline); supporting line “Refined aesthetics. Personalized care.” No navy.
 - **Location:** 1520 E Lincoln Ave, Orange, CA 92865; phone (714) 921-3870.
 - **Hours (owner decision, temporary):** Orange Aesthetics follows Pacific Urgent Care hours: Monday–Friday 8 AM–5 PM, Saturday 8 AM–2 PM, Sunday closed. Keep hours consistent across public pages and local listings; appointment availability remains subject to confirmation.
 
@@ -331,3 +331,7 @@ Owner wants the authenticated Orange Aesthetics platform to operate the business
 
 ## Cash-pay clinical record architecture — 2026-11-22
 Owner confirms **100% cash-pay; no insurance claims** for Orange Aesthetics. Prefer existing Practice Fusion EHR for clinical charts and consents, but verify separate legal entity and account access with vendor and attorney before any cross-practice data access. Keep the Orange Aesthetics portal as the business/credit/payment/stock/owner system; no clinical chart duplication. Practice Fusion offers documented FHIR APIs and EHI export, but neither is confirmed configured or free; do not treat EHI export as a restorable EHR backup. Separate authorized clinical exports from ordinary daily/weekly business backups and monthly owner business ZIPs. Full vendor questions, public pricing and compliance gates: [PRACTICE-FUSION-CLINICAL-PLAN.md](PRACTICE-FUSION-CLINICAL-PLAN.md). Attorney issues L11-L15 in [LEGAL-COUNSEL-REVIEW.md](LEGAL-COUNSEL-REVIEW.md). **No actual EHR integration, records export, vendor account, BAA or clinical backup configured.**
+
+
+## Brand alignment — original Orange Aesthetics website, 2026-11-22
+Original website https://orangeaesthetics.com/ uses the tagline **Where Beauty Meets Imagination** and emphasizes personalized medical aesthetics, IV hydration, skincare, natural-looking enhancement and a luxurious clinical setting. Owner rejected **Feel beautiful. Live well.** because it resembles Flourish Longer branding. Homepage headline restored to **Where beauty meets imagination.** Supporting copy: **Refined aesthetics. Personalized care.** Do not reuse the rejected slogan; keep Orange Aesthetics brand distinct from Flourish Longer and Pacific Urgent Care. Avoid unsubstantiated treatment efficacy claims. Homepage change committed to GitHub; Cloudflare production deployment remains separately unverified and may be stalled.
