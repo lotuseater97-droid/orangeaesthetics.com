@@ -1,0 +1,11 @@
+import test from "node:test";import assert from "node:assert/strict";import {overlaps,evaluateSlot,requestWindow} from "../lib/booking-capacity.mjs";
+const base={start_at:"2026-12-01T10:00:00Z",end_at:"2026-12-01T11:00:00Z",provider_id:"provider-a",room_id:"room-a"};
+test("back-to-back appointments do not overlap",()=>assert.equal(overlaps(base,{start_at:base.end_at,end_at:"2026-12-01T12:00:00Z"}),false));
+test("provider double booking blocked",()=>assert.equal(evaluateSlot({...base,appointments:[{id:"a",...base,status:"confirmed"}]}).available,false));
+test("room double booking blocked across providers",()=>assert.equal(evaluateSlot({...base,appointments:[{id:"a",...base,provider_id:"provider-b",status:"confirmed"}]}).available,false));
+test("cancelled bookings do not block",()=>assert.equal(evaluateSlot({...base,appointments:[{id:"a",...base,status:"cancelled"}]}).available,true));
+test("buffers prevent too-tight appointments",()=>assert.equal(evaluateSlot({...base,buffers_minutes:15,appointments:[{id:"a",...base,start_at:"2026-12-01T11:10:00Z",end_at:"2026-12-01T12:00:00Z",status:"confirmed"}]}).available,false));
+test("closures block all resources",()=>assert.equal(evaluateSlot({...base,closures:[{id:"holiday",all_resources:true,start_at:"2026-12-01T00:00:00Z",end_at:"2026-12-02T00:00:00Z"}]}).available,false));
+test("rejects inverted appointment window",()=>assert.throws(()=>evaluateSlot({...base,end_at:"2026-12-01T09:00:00Z"}),RangeError));
+test("request window enforces notice",()=>assert.equal(requestWindow({requested_at:"2026-12-01T10:30:00Z",now:"2026-12-01T10:00:00Z"}).allowed,false));
+test("request window permits valid future slot",()=>assert.equal(requestWindow({requested_at:"2026-12-02T10:00:00Z",now:"2026-12-01T10:00:00Z"}).allowed,true));
