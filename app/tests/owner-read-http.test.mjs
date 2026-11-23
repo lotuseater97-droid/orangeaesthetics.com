@@ -1,6 +1,6 @@
 import test from "node:test";import assert from "node:assert/strict";import {createOwnerReadHttpHandler} from "../lib/owner-read-http.mjs";import {BusinessError} from "../lib/business-api.mjs";
 const url="https://orange.example/api/owner/records?collection=appointments";
-const make=(list=async()=>[],extractVerifiedToken=async()=>"verified_session_123")=>{const calls=[];const handler=createOwnerReadHttpHandler({backend:{list:async args=>{calls.push(args);return list(args)}},extractVerifiedToken});return {handler,calls}};
+const make=(list=async()=>[],extractVerifiedToken=async()=>"verified_session_123")=>{const calls=[];const handler=createOwnerReadHttpHandler({backend:{list:async args=>{calls.push(args);return list(args)}},extractVerifiedToken,allowedOrigin:"https://orange.example"});return {handler,calls}};
 test("valid request invokes protected backend",async()=>{const {handler,calls}=make(async()=>[{id:"a1"}]);const r=await handler({method:"GET",url});assert.equal(r.status,200);assert.deepEqual(JSON.parse(r.body),{collection:"appointments",records:[{id:"a1"}]});assert.deepEqual(calls[0],{sessionToken:"verified_session_123",collection:"appointments",limit:50});assert.equal(r.headers["cache-control"],"no-store")});
 test("explicit bounded limit is forwarded",async()=>{const {handler,calls}=make();await handler({method:"GET",url:url+"&limit=12"});assert.equal(calls[0].limit,12)});
 test("POST cannot mutate records",async()=>{const {handler,calls}=make();assert.equal((await handler({method:"POST",url})).status,405);assert.equal(calls.length,0)});
@@ -12,3 +12,9 @@ test("missing session denied",async()=>{const {handler}=make(async()=>[],async()
 test("forbidden backend response is sanitized",async()=>{const {handler}=make(async()=>{throw new BusinessError("FORBIDDEN","secret detail")});const r=await handler({method:"GET",url});assert.deepEqual(JSON.parse(r.body),{error:"FORBIDDEN"});assert.equal(r.status,403)});
 test("unexpected error hides internals",async()=>{const {handler}=make(async()=>{throw new Error("database password")});const r=await handler({method:"GET",url});assert.equal(r.status,500);assert.equal(r.body.includes("password"),false)});
 test("unrelated path returns 404",async()=>{const {handler}=make();assert.equal((await handler({method:"GET",url:"https://orange.example/api/other?collection=appointments"})).status,404)});
+
+test("rejects a different request host",async()=>{const {handler}=make();assert.equal((await handler({method:"GET",url:"https://attacker.example/api/owner/records?collection=appointments"})).status,403)});
+test("rejects cross-site Origin header",async()=>{const {handler}=make();assert.equal((await handler({method:"GET",url,headers:{origin:"https://attacker.example"}})).status,403)});
+test("rejects cross-site Fetch Metadata",async()=>{const {handler}=make();assert.equal((await handler({method:"GET",url,headers:{"sec-fetch-site":"cross-site"}})).status,403)});
+test("allows same-origin browser fetch",async()=>{const {handler}=make();assert.equal((await handler({method:"GET",url,headers:{origin:"https://orange.example","sec-fetch-site":"same-origin"}})).status,200)});
+test("requires explicit HTTPS origin at construction",()=>assert.throws(()=>createOwnerReadHttpHandler({backend:{list:async()=>[]},extractVerifiedToken:async()=>""}),TypeError));
