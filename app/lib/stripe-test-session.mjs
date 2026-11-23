@@ -35,7 +35,7 @@ export function createStripeTestSessionAdapter({secretKey,fetchImpl=fetch}={}){
   try{checkoutUrl=new URL(data?.url)}catch{throw new Error("Invalid Stripe response")}
   if(typeof data?.id!=="string"||!/^cs_test_[A-Za-z0-9_]+$/.test(data.id)||
      checkoutUrl.protocol!=="https:"||checkoutUrl.hostname!=="checkout.stripe.com"||
-     checkoutUrl.username||checkoutUrl.password||checkoutUrl.port||checkoutUrl.hash||
+     checkoutUrl.username||checkoutUrl.password||checkoutUrl.port||
      checkoutUrl.pathname!=="/c/pay/"+data.id)throw new Error("Invalid Stripe response");
   return {id:data.id,url:data.url};
  };
