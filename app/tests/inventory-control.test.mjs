@@ -1,0 +1,10 @@
+import test from "node:test";import assert from "node:assert/strict";import {evaluateInventory,proposeReorder} from "../lib/inventory-control.mjs";
+const item={id:"i1",sku:"SUP-1",reorder_threshold:5};
+test("low stock raises reorder alert",()=>assert.ok(evaluateInventory({items:[item],movements:[{id:"m1",item_id:"i1",quantity_delta:3}],today:"2026-11-22"}).alerts.some(a=>a.kind==="reorder")));
+test("sufficient stock no reorder",()=>assert.equal(evaluateInventory({items:[item],movements:[{id:"m1",item_id:"i1",quantity_delta:10}],today:"2026-11-22"}).alerts.length,0));
+test("negative stock flagged",()=>assert.ok(evaluateInventory({items:[item],movements:[{id:"m1",item_id:"i1",quantity_delta:-1}],today:"2026-11-22"}).alerts.some(a=>a.kind==="negative_stock")));
+test("expired lot flagged",()=>assert.ok(evaluateInventory({items:[{...item,lots:[{lot_code:"L1",quantity:2,expires_on:"2026-11-01"}]}],today:"2026-11-22"}).alerts.some(a=>a.kind==="expired_lot")));
+test("expiring lot flagged",()=>assert.ok(evaluateInventory({items:[{...item,lots:[{lot_code:"L1",quantity:2,expires_on:"2026-12-01"}]}],today:"2026-11-22"}).alerts.some(a=>a.kind==="expiring_lot")));
+test("orphan movement flagged",()=>assert.ok(evaluateInventory({items:[item],movements:[{id:"m1",item_id:"other",quantity_delta:3}],today:"2026-11-22"}).alerts.some(a=>a.kind==="orphan_movement")));
+test("reorder packs round up",()=>assert.equal(proposeReorder({on_hand:3,reorder_threshold:5,target_stock:20,pack_size:6}),18));
+test("no reorder above threshold",()=>assert.equal(proposeReorder({on_hand:7,reorder_threshold:5,target_stock:20}),0));
