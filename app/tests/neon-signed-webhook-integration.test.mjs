@@ -55,6 +55,23 @@ test('signed webhook reconciles a real Neon development transaction without pers
   assert.equal((await handler(sign('evt_'+nonce.slice(0,19)+'y',9800))).status,503);
   await client.query('ROLLBACK TO SAVEPOINT before_rejected_payment');
   await client.query('RELEASE SAVEPOINT before_rejected_payment');
+  // A previously reconciled Stripe event cannot pay for a different order.
+  const secondReservation=await client.query('SELECT * FROM orange_app.reserve_checkout_order($1,$2,$3,$4)',[m.rows[0].id,sku,1,9900]);
+  const secondOrder=secondReservation.rows[0].id;
+  const secondSession='cs_test_second_'+nonce;
+  assert.equal((await client.query('SELECT orange_app.attach_checkout_session($1,$2,$3) AS attached',[secondOrder,m.rows[0].id,secondSession])).rows[0].attached,true);
+  const crossOrder=sign('evt_'+nonce.slice(0,20));
+  const crossBody=JSON.parse(crossOrder.rawBody);
+  crossBody.data.object.id=secondSession;
+  const crossRaw=JSON.stringify(crossBody);
+  const crossTimestamp=Math.floor(Date.now()/1000);
+  const crossSignature=createHmac('sha256',secret).update(crossTimestamp+'.'+crossRaw).digest('hex');
+  await client.query('SAVEPOINT before_cross_order_replay');
+  assert.equal((await handler({method:'POST',headers:{'stripe-signature':`t=${crossTimestamp},v1=${crossSignature}`},rawBody:crossRaw})).status,503);
+  await client.query('ROLLBACK TO SAVEPOINT before_cross_order_replay');
+  await client.query('RELEASE SAVEPOINT before_cross_order_replay');
+  const secondStatus=await client.query('SELECT status FROM orange_app.orders WHERE id=$1',[secondOrder]);
+  assert.equal(secondStatus.rows[0].status,'pending');
   const altered=sign('evt_'+nonce.slice(0,19)+'z');
   assert.equal((await handler({...altered,rawBody:altered.rawBody+' '})).status,400);
   const counts=await client.query("SELECT (SELECT count(*)::int FROM orange_app.payment_events WHERE order_id=$1) AS events,(SELECT count(*)::int FROM orange_app.benefit_grants WHERE order_item_id IN (SELECT id FROM orange_app.order_items WHERE order_id=$1)) AS grants,(SELECT count(*)::int FROM orange_app.audit_events WHERE action='checkout.paid' AND target_id=$1) AS audits",[order]);
