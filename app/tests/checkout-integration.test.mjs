@@ -20,7 +20,7 @@ const query=async(sql,values)=>{
 const stripe=createStripeTestSessionAdapter({secretKey:"sk_test_synthetic",fetchImpl:async(url,options)=>{
  assert.equal(url,"https://api.stripe.com/v1/checkout/sessions");
  assert.equal(options.headers["idempotency-key"],"checkout-"+order);
- return {ok:true,json:async()=>({id:"cs_test_synthetic",url:"https://checkout.stripe.com/c/pay/synthetic"})};
+ return {ok:true,json:async()=>({id:"cs_test_synthetic",url:"https://checkout.stripe.com/c/pay/cs_test_synthetic"})};
 }});
 const db=createNeonCheckoutAdapters({query});
 const startCheckout=createCheckoutService({reserveOrder:db.reserveOrder,attachCheckout:db.attachCheckout,createStripeSession:stripe,approvedOrigin:"https://orangeaesthetics.com",enabled:true});
@@ -28,7 +28,7 @@ const handler=createCheckoutHttpHandler({verifySession:async()=>({id:member,acti
 test("synthetic authenticated checkout reaches Stripe test session and persists it",async()=>{
  const response=await handler({method:"POST",headers:{origin:"https://orangeaesthetics.com","content-type":"application/json"},rawBody:JSON.stringify({sku:"test_item",quantity:1})});
  assert.equal(response.status,200, response.body);
- assert.equal(JSON.parse(response.body).url,"https://checkout.stripe.com/c/pay/synthetic");
+ assert.equal(JSON.parse(response.body).url,"https://checkout.stripe.com/c/pay/cs_test_synthetic");
  assert.equal(calls.length,3);
  assert.deepEqual(calls[2].values,[order,member,"cs_test_synthetic"]);
 });

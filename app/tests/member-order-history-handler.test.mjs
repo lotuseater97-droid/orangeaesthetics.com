@@ -69,3 +69,10 @@ test("rejects scientific notation, fractional and padded order totals",async()=>
   assert.equal((await handle({method:"GET"})).status,503);
  }
 });
+
+test("rejects coerced epoch dates and malformed order timestamp types",async()=>{
+ for(const invalid of [0,1,"0","1","1970",[],{}]){
+  const handle=createMemberOrderHistoryHandler({enabled:true,verifySession:async()=>({id:member,active:true}),query:async()=>({rows:[{...row,created_at:invalid}]})});
+  assert.equal((await handle({method:"GET"})).status,503);
+ }
+});
