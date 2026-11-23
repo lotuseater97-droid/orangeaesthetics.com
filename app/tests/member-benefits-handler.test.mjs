@@ -57,3 +57,10 @@ test("rejects scientific notation, fractional and padded credit quantities",asyn
   assert.equal((await s.handle({method:"GET"})).status,503);
  }
 });
+
+test("rejects non-date expiration values instead of coercing them to epoch",async()=>{
+ for(const invalid of [false,0,"","0","not-a-date"]){
+  const s=build({rows:[{...row,expires_at:invalid}]});
+  assert.equal((await s.handle({method:"GET"})).status,503);
+ }
+});
