@@ -21,7 +21,7 @@ test("valid request delegates to trusted owner adapter without client identity",
 });
 test("rejects method, origin, type, malformed JSON and extraneous fields",async()=>{
  let calls=0;
- const handle=createOwnerCatalogHttpHandler({origin,enabled:true,approveCatalog:async()=>{calls++}});
+ const handle=createOwnerCatalogHttpHandler({origin,enabled:true,approveCatalog:async()=>{calls++;return {applied:true}}});
  const bad=[
   request(payload,{method:"GET"}),
   request(payload,{headers:{origin:"https://evil.example","content-type":"application/json"}}),
@@ -39,4 +39,13 @@ test("owner verification failure denies request without leaking errors",async()=
  const response=await handle(request());
  assert.equal(response.status,403);
  assert.doesNotMatch(response.body,/private database detail/);
+});
+
+test("unconfirmed approval never reports success",async()=>{
+ const handle=createOwnerCatalogHttpHandler({origin,enabled:true,approveCatalog:async()=>({applied:false})});
+ assert.equal((await handle(request())).status,503);
+});
+test("client-supplied audit request ID is rejected",async()=>{
+ const handle=createOwnerCatalogHttpHandler({origin,enabled:true,approveCatalog:async()=>({applied:true})});
+ assert.equal((await handle(request({...payload,requestId:"forged-id"}))).status,400);
 });
