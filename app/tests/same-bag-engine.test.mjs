@@ -24,3 +24,5 @@ test("malformed approved diluent collections fail closed",()=>{for(const approve
 
 test("null clinical review checks block without throwing",()=>{const result=evaluateSameBag({formulation,policy,clinicalClearance:true,clinicalChecks:null,now});assert.equal(result.allowed,false);assert.ok(result.codes.includes("PATIENT_REVIEW_INCOMPLETE"))});
 test("null or malformed approved ingredient entries block without throwing",()=>{for(const approvedIngredients of [[null,...policy.approvedIngredients.slice(1)],["bad",...policy.approvedIngredients.slice(1)],[{},...policy.approvedIngredients.slice(1)]]){const result=run(formulation,{...policy,approvedIngredients});assert.equal(result.allowed,false);assert.ok(result.codes.includes("INGREDIENT_NOT_APPROVED:aa"))}});
+
+test("null formulation ingredient in a multi-ingredient bag fails closed without throwing",()=>{for(const ingredients of [[null,formulation.ingredients[1]],[formulation.ingredients[0],null],[{},formulation.ingredients[1]],[formulation.ingredients[0],"invalid"]]){const result=run({...formulation,ingredients});assert.equal(result.allowed,false);assert.ok(result.codes.includes("INGREDIENT_DETAILS_MISSING"))}});
