@@ -1,0 +1,16 @@
+import test from "node:test";import assert from "node:assert/strict";import {evaluatePurchase,purchaseApprovalQueue} from "../lib/purchasing-controls.mjs";
+const request={id:"po1",organization_id:"oa",vendor_id:"vendor1",requested_by:"staff1",status:"submitted",total_cents:30000};
+const approval={purchase_id:"po1",organization_id:"oa",decision:"approved",role:"manager",actor_id:"manager1",active_staff:true};
+const receipts=[{purchase_id:"po1",organization_id:"oa",amount_cents:30000}];
+const invoices=[{purchase_id:"po1",organization_id:"oa",amount_cents:30000}];
+const valid={request,approvals:[approval],receipts,invoices};
+test("approved purchase with matching receipt and invoice is ready",()=>assert.equal(evaluatePurchase(valid).ready_for_payment,true));
+test("requires independent approval",()=>assert.ok(evaluatePurchase({...valid,approvals:[{...approval,actor_id:"staff1"}]}).issues.includes("APPROVAL_REQUIRED")));
+test("cross organization approval rejected",()=>assert.ok(evaluatePurchase({...valid,approvals:[{...approval,organization_id:"other"}]}).issues.includes("APPROVAL_REQUIRED")));
+test("manager approval has limit",()=>assert.ok(evaluatePurchase({...valid,request:{...request,total_cents:60000}}).issues.includes("APPROVAL_REQUIRED")));
+test("owner may approve higher amount",()=>assert.equal(evaluatePurchase({...valid,request:{...request,total_cents:60000},approvals:[{...approval,role:"owner"}]}).approval_satisfied,true));
+test("missing receipt blocks payment",()=>assert.ok(evaluatePurchase({...valid,receipts:[]}).issues.includes("RECEIPT_INCOMPLETE")));
+test("mismatched invoice blocks payment",()=>assert.ok(evaluatePurchase({...valid,invoices:[{...invoices[0],amount_cents:25000}]}).issues.includes("THREE_WAY_MISMATCH")));
+test("overbilling is flagged",()=>assert.ok(evaluatePurchase({...valid,invoices:[{...invoices[0],amount_cents:40000}]}).issues.includes("OVER_BILLED")));
+test("cancelled purchase cannot be paid",()=>assert.equal(evaluatePurchase({...valid,request:{...request,status:"cancelled"}}).ready_for_payment,false));
+test("queue lists pending approvals",()=>assert.equal(purchaseApprovalQueue([request],[{...approval,active_staff:false}]).length,1));
