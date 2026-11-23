@@ -10,8 +10,11 @@ export function createOwnerDashboardBackend({verifySession,lookupMembership,quer
   if(typeof token!=="string"||token.length<12)throw new BusinessError("UNAUTHENTICATED","Verified session required");
   const session=await verifySession(token);
   if(!session||session.active!==true||!uuid.test(session.user_id||""))throw new BusinessError("UNAUTHENTICATED","Verified session required");
-  const membership=await lookupMembership(session.user_id);
-  if(!membership||membership.active!==true||!uuid.test(membership.organization_id||"")||!["owner","manager","clinician","ma"].includes(membership.role))throw new BusinessError("FORBIDDEN","Active staff membership required");
+  // Never select an arbitrary membership for users who belong to multiple organizations.
+  // The trusted verified session must identify the active organization explicitly.
+  if(!uuid.test(session.organization_id||""))throw new BusinessError("FORBIDDEN","Active organization required");
+  const membership=await lookupMembership({user_id:session.user_id,organization_id:session.organization_id});
+  if(!membership||membership.active!==true||membership.organization_id!==session.organization_id||!["owner","manager","clinician","ma"].includes(membership.role))throw new BusinessError("FORBIDDEN","Active staff membership required");
   return {user_id:session.user_id,organization_id:membership.organization_id,role:membership.role,permissions:[]};
  };
  return createOwnerReadService({resolveActor,listRecords:createOwnerSqlListAdapter({query})});
