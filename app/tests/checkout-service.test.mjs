@@ -16,7 +16,7 @@ test("payment URL withheld when checkout attachment is not confirmed",async()=>{
 });
 
 test("rejects non-Stripe checkout redirects before database attachment",async()=>{
- for(const url of ["https://checkout.stripe.com.evil.test/c/pay/fake","https://checkout.stripe.com@evil.test/c/pay/fake","http://checkout.stripe.com/c/pay/fake","https://checkout.stripe.com/other","https://checkout.stripe.com/c/pay/fake#fragment"]){
+ for(const url of ["https://checkout.stripe.com.evil.test/c/pay/fake","https://checkout.stripe.com@evil.test/c/pay/fake","http://checkout.stripe.com/c/pay/fake","https://checkout.stripe.com/other"]){
   let attached=false;
   const start=createCheckoutService({enabled:true,approvedOrigin:"https://orangeaesthetics.com",reserveOrder:async()=>({id:order,status:"pending",memberId:member,totalAmount:9900,currency:"USD"}),createStripeSession:async()=>({id:"cs_test_123",url}),attachCheckout:async()=>{attached=true;return true}});
   await assert.rejects(start({verifiedMemberId:member,sku:"test_item",quantity:1,catalog}),/Invalid Stripe test session/);
@@ -38,4 +38,10 @@ test("rejects checkout URL with matching session prefix and extra path",async()=
   await assert.rejects(start({verifiedMemberId:member,sku:"test_item",quantity:1,catalog}),/Invalid Stripe test session/);
   assert.equal(attached,false);
  }
+});
+
+test("accepts Stripe-hosted checkout URL with fragment and returns it unchanged",async()=>{
+ const url="https://checkout.stripe.com/c/pay/cs_test_123#fidkdWxOYHwnPyd1blpx";
+ const start=createCheckoutService({enabled:true,approvedOrigin:"https://orangeaesthetics.com",reserveOrder:async()=>({id:order,status:"pending",memberId:member,totalAmount:9900,currency:"USD"}),createStripeSession:async()=>({id:"cs_test_123",url}),attachCheckout:async()=>true});
+ assert.equal((await start({verifiedMemberId:member,sku:"test_item",quantity:1,catalog})).url,url);
 });
