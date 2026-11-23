@@ -1,6 +1,7 @@
 // Fail-closed transaction orchestration contract for business writes.
 // The transaction adapter must commit mutation, idempotency and audit atomically.
-import {prepareCreate,prepareTransition,BusinessError} from "./business-api.mjs";
+import {prepareCreate,prepareTransition,requireActor,BusinessError} from "./business-api.mjs";
+import {requireIdempotencyKey} from "./workflow-rules.mjs";
 const id=x=>typeof x==="string"&&/^[a-zA-Z0-9_-]{1,128}$/.test(x);
 const financial=new Set(["invoice","expense"]);
 const types=new Set(["inquiry","appointment","invoice","expense"]);
@@ -20,21 +21,24 @@ export function createTransactionalBusinessService({verifySession,lookupStaff,wi
   // Transaction adapter owns row locking, durable idempotency uniqueness, and audit persistence.
   return withTransaction(async tx=>{
    if(!tx||typeof tx.create!=="function"||typeof tx.getForUpdate!=="function"||typeof tx.transition!=="function"||typeof tx.audit!=="function"||typeof tx.claimIdempotency!=="function")throw new TypeError("Incomplete transaction adapter");
-   let prepared;
-   if(operation==="create")prepared=prepareCreate({actor:a,kind,payload,idempotency_key});
-   else{
-    if(!id(recordId))throw new BusinessError("VALIDATION","Invalid record ID");
+   // Validate actor and request BEFORE looking up an existing idempotency result.
+   // A successful retry must not re-run a transition against the already-updated row.
+   const capability={inquiry:"leads.manage",appointment:"appointments.manage",expense:"expenses.manage",invoice:"invoices.manage"}[kind];
+   requireActor(a,capability);
+   if(operation==="transition"&&(!id(recordId)||typeof to!=="string"||!to))throw new BusinessError("VALIDATION","Invalid transition request");
+   let prepared=operation==="create"?prepareCreate({actor:a,kind,payload,idempotency_key}):null;
+   const key=financial.has(kind)?requireIdempotencyKey(idempotency_key):idempotency_key??null;
+   if(financial.has(kind)){
+    // Adapter compares a canonical request fingerprint and scopes the key to organization.
+    // It must reject key reuse for different payloads, target records or transitions.
+    const claim=await tx.claimIdempotency({organization_id:a.organization_id,key,operation,kind,record_id:recordId??null,payload:prepared?.data??null,to:to??null});
+    if(claim?.replayed===true){if(!claim.result||!id(claim.result.id))throw new BusinessError("CONFLICT","Invalid replay");return claim.result}
+    if(claim?.claimed!==true)throw new BusinessError("CONFLICT","Idempotency claim denied");
+   }
+   if(operation==="transition"){
     const record=await tx.getForUpdate({kind,id:recordId,organization_id:a.organization_id});
     if(!record||record.organization_id!==a.organization_id)throw new BusinessError("NOT_FOUND","Record not available");
     prepared=prepareTransition({actor:a,kind,record,to,idempotency_key});
-   }
-   const key=prepared.idempotency_key;
-   if(financial.has(kind)){
-    // The adapter MUST compare a canonical request fingerprint on retries, returning
-    // the committed result only for an identical request; conflicting reuse must fail.
-    const claim=await tx.claimIdempotency({organization_id:a.organization_id,key,operation,kind,record_id:recordId??null,payload:prepared.data??null,to:prepared.to??null});
-    if(claim?.replayed===true){if(!claim.result)throw new BusinessError("CONFLICT","Invalid replay");return claim.result}
-    if(claim?.claimed!==true)throw new BusinessError("CONFLICT","Idempotency claim denied");
    }
    const result=operation==="create"?await tx.create(prepared):await tx.transition(prepared);
    if(!result||!id(result.id))throw new BusinessError("INTERNAL","Invalid repository result");
