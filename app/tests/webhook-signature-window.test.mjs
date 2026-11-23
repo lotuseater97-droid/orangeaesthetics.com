@@ -24,3 +24,10 @@ test('rejects tampering, unsupported signature version and malformed timestamp',
  assert.equal(verifyStripeSignature(body,`t=${now},v0=${sign(now)}`,secret,now),false);
  assert.equal(verifyStripeSignature(body,`t=notatime,v1=${sign(now)}`,secret,now),false);
 });
+
+test('rejects ambiguous duplicate timestamp headers even with a valid HMAC',()=>{
+ const valid=sign(now);
+ assert.equal(verifyStripeSignature(body,`t=${now},t=${now},v1=${valid}`,secret,now),false);
+ assert.equal(verifyStripeSignature(body,`t=${now},t=${now+1},v1=${valid}`,secret,now),false);
+ assert.equal(verifyStripeSignature(body,`t=${now},v1=${valid},t=${now}`,secret,now),false);
+});
