@@ -26,8 +26,12 @@ export function createCheckoutService({reserveOrder,attachCheckout,createStripeS
    // No patient names, treatment details, medical history or email in metadata.
    metadata:{order_id:order.id}
   },{idempotencyKey:"checkout-"+order.id});
-  if(!session||typeof session.id!=="string"||!/^cs_test_[A-Za-z0-9_]+$/.test(session.id)||
-     typeof session.url!=="string"||!session.url.startsWith("https://checkout.stripe.com/"))throw new Error("Invalid Stripe test session");
+  let paymentUrl;
+  try{paymentUrl=new URL(session?.url)}catch{throw new Error("Invalid Stripe test session")}
+  if(typeof session?.id!=="string"||!/^cs_test_[A-Za-z0-9_]+$/.test(session.id)||
+     paymentUrl.protocol!=="https:"||paymentUrl.hostname!=="checkout.stripe.com"||
+     paymentUrl.username||paymentUrl.password||paymentUrl.port||paymentUrl.hash||
+     !paymentUrl.pathname.startsWith("/c/pay/"))throw new Error("Invalid Stripe test session");
   const attached=await attachCheckout({orderId:order.id,checkoutId:session.id,memberId:verifiedMemberId});
   if(attached!==true)throw new Error("Checkout session attachment not confirmed");
   return Object.freeze({url:session.url});
