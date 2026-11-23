@@ -1,11 +1,12 @@
 // Private owner verifier: OIDC signature/issuer/audience/expiry plus live DB role.
 // Never trust an owner role claim from a browser or unsigned token.
 import {createRemoteJWKSet,jwtVerify} from "jose";
-export function createOidcOwnerVerifier({issuer,audience,jwksUrl,query}={}){
+export function createOidcOwnerVerifier({issuer,audience,jwksUrl,query,keySet}={}){
  if(typeof issuer!=="string"||typeof audience!=="string"||typeof jwksUrl!=="string"||typeof query!=="function")throw new TypeError("OIDC owner configuration incomplete");
  const issuerUrl=new URL(issuer),keyUrl=new URL(jwksUrl);
  if(issuerUrl.protocol!=="https:"||keyUrl.protocol!=="https:"||issuerUrl.username||keyUrl.username||keyUrl.search||keyUrl.hash||keyUrl.origin!==issuerUrl.origin)throw new Error("Invalid OIDC owner issuer or JWKS URL");
- const jwks=createRemoteJWKSet(keyUrl,{timeoutDuration:5000,cooldownDuration:30000});
+ // Test-only keySet injection is supplied by trusted server code, never HTTP input.
+ const jwks=keySet??createRemoteJWKSet(keyUrl,{timeoutDuration:5000,cooldownDuration:30000});
  return async function verifyOwner({headers}={}){
   const auth=headers?.get?.("authorization")??headers?.authorization;
   if(typeof auth!=="string"||!/^Bearer [A-Za-z0-9_.-]+$/.test(auth))return null;
