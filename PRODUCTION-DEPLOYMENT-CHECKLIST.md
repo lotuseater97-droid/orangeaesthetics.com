@@ -17,6 +17,12 @@
 7. With the notification provider configured, submit one clearly synthetic contact-only request from the public form. Verify delivery at the approved destination, the success message, and the failure/phone fallback. Do not use real patient data or clinical details.
 8. Record tested deployment SHA, CI run URL, smoke run URL, date, and who approved the release. Do not claim launch readiness before these are documented.
 
+## Verified automated checks (2026-11-23)
+- Static audit passed for GitHub commit `20ad307`: https://github.com/lotuseater97-droid/orangeaesthetics.com/actions/runs/45280705190
+- Live production smoke passed for GitHub commit `20ad307`: https://github.com/lotuseater97-droid/orangeaesthetics.com/actions/runs/45280705292
+- The live test exercises 20 public page routes and 10 private/API/encoded-path routes; checks expected statuses, destination, security headers, and page-specific title markers.
+- **Important distinction:** the workflow checks the current public hostname using the test script at `20ad307`; it does **not** identify the deployed Cloudflare Worker revision or test POST notification delivery.
+
 ## Public smoke-test matrix
 - Homepage: hero slogan, equal aesthetics/IV links, six treatment cards, no standalone Flourish Longer promotion.
 - Navigation on 375px, 768px, 1280px: Home, Aesthetics, IV Therapy, Providers, Memberships, More, Pacific external, Request Appointment; dropdown keyboard focus and click behavior; no clipped menu.
@@ -27,12 +33,12 @@
 - Inspect browser console, 404s, images, mobile scrolling, HTTPS/canonical domain, SEO metadata, robots and sitemap.
 
 ## Release blockers
-- Live Cloudflare deployment and visual/browser tests unverified.
+- Live production GET smoke passed on 2026-11-23 (30 routes checked; later page-title validation also passed). Cloudflare deployment commit SHA and visual/browser tests remain unverified.
 - Notification endpoint, payment, member portal, staff and owner portals not production ready.
 - Legal/clinical approval of membership rollover and infusion marketing pending.
 - No real patient data in testing.
 
 ## Remaining work
-- Cloudflare deployment SHA, live CI/smoke outcomes, notification secrets, and end-to-end delivery remain unverified.
+- Static audit and live read-only production smoke passed for GitHub commit `20ad307` on 2026-11-23; these checks do not establish that Cloudflare serves that exact commit. Cloudflare deployed SHA, notification secrets, and end-to-end delivery remain unverified.
 - Responsive/mobile and accessibility QA, pricing/legal/clinical approval, and member/payment portals remain separate launch decisions.
 - No real patient data in tests. The public form is contact-only, not a clinical intake or confirmed booking system.
