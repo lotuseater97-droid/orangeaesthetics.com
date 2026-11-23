@@ -1,0 +1,15 @@
+import test from "node:test";import assert from "node:assert/strict";import {membershipOverview,renewalAlerts} from "../lib/membership-operations.mjs";
+const now="2026-11-22T12:00:00Z";
+const s={id:"sub1",member_id:"member1",state:"active",payment_verified:true,period_start:"2026-11-01T00:00:00Z",period_end:"2026-12-01T00:00:00Z"};
+const g={id:"grant1",subscription_id:"sub1",status:"paid",quantity:2,valid_from:s.period_start,expires_at:s.period_end};
+const input={member_id:"member1",subscriptions:[s],grants:[g],now};
+test("paid active member sees remaining credits",()=>assert.equal(membershipOverview(input).available_credits,2));
+test("confirmed redemption decreases credits",()=>assert.equal(membershipOverview({...input,redemptions:[{id:"r1",grant_id:"grant1",status:"confirmed"}]}).available_credits,1));
+test("past-due member cannot redeem credits",()=>assert.equal(membershipOverview({...input,subscriptions:[{...s,state:"past_due"}]}).available_credits,0));
+test("unverified payment blocks credits",()=>assert.equal(membershipOverview({...input,subscriptions:[{...s,payment_verified:false}]}).available_credits,0));
+test("other member subscriptions and grants are isolated",()=>assert.equal(membershipOverview({...input,member_id:"other"}).available_credits,0));
+test("expired period blocks credit use regardless of expiration legal gate",()=>assert.equal(membershipOverview({...input,now:"2027-01-01T00:00:00Z"}).available_credits,0));
+test("approved reversal restores credit",()=>assert.equal(membershipOverview({...input,redemptions:[{id:"r1",grant_id:"grant1",status:"confirmed"}],adjustments:[{grant_id:"grant1",kind:"reverse_redemption",redemption_id:"r1",approved:true}]}).available_credits,2));
+test("past-due subscription raises payment review",()=>assert.equal(renewalAlerts({subscriptions:[{...s,state:"past_due"}],now})[0].kind,"payment_review"));
+test("renewal approaching raises alert",()=>assert.equal(renewalAlerts({subscriptions:[s],now:"2026-11-28T00:00:00Z"})[0].kind,"renewal_approaching"));
+test("rejects duplicate subscription identifiers",()=>assert.throws(()=>membershipOverview({...input,subscriptions:[s,s]}),TypeError));
