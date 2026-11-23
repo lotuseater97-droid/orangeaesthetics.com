@@ -6,6 +6,7 @@ function setup({role="ma",membershipOrg=org,rows=[{id:"a1",organization_id:org,a
  const handler=createOwnerReadStack({
   verifySession:async()=>({active:true,user_id:user,organization_id:sessionOrg}),
   extractVerifiedToken:async()=>"verified_session_123",
+  allowedOrigin:"https://orange.example",
   query:async(text,values)=>{
    sql.push({text,values});
    if(text.includes("oa_team_members"))return {rows:[{active:true,organization_id:membershipOrg,role}]};
