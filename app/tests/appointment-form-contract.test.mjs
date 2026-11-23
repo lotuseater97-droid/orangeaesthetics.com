@@ -19,3 +19,12 @@ test('appointment form submits only contact fields',()=>{
   const names=[...form[1].matchAll(/<(?:input|select|textarea)\b[^>]*name="([^"]+)"/gi)].map(match=>match[1]);
   assert.deepEqual(names.sort(),['name','email','phone','service','website'].sort());
 });
+
+test('appointment phone field enforces telephone-friendly input',()=>{
+  const input=page.match(/<input\\b[^>]*id="phone"[^>]*>/i);
+  assert.ok(input,'phone input must exist');
+  assert.match(input[0],/type="tel"/);
+  assert.match(input[0],/inputmode="tel"/);
+  assert.match(input[0],/minlength="7"/);
+  assert.match(input[0],/pattern="\\[\\+0-9\\(\\)\\. -\\]\\+"/);
+});
