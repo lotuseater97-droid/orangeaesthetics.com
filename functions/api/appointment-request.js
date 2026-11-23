@@ -7,10 +7,29 @@ export async function onRequestPost({request,env}) {
   if(endpoint.protocol!=="https:" || endpoint.username || endpoint.password || endpoint.port) return json(503,"Secure notification endpoint required");
   const origin=request.headers.get("origin");
   if(origin){let parsed;try{parsed=new URL(origin)}catch{return json(403,"Invalid origin")};if(parsed.origin!==new URL(request.url).origin)return json(403,"Invalid origin")}
-  if(!(request.headers.get("content-type")||"").toLowerCase().startsWith("application/json"))return json(415,"JSON required");
-  if(Number(request.headers.get("content-length")||0)>4096)return json(413,"Request too large");
-  let data;try{const body=await request.text();if(body.length>4096)return json(413,"Request too large");data=JSON.parse(body)}catch{return json(400,"Invalid request")}
+  if(!/^application\/json(?:\s*;\s*charset\s*=\s*(?:utf-8|"utf-8"))?\s*$/i.test(request.headers.get("content-type")||""))return json(415,"JSON required");
+  const lengthHeader=request.headers.get("content-length");
+  if(lengthHeader!==null){const length=Number(lengthHeader);if(!Number.isSafeInteger(length)||length<0)return json(400,"Invalid content length");if(length>4096)return json(413,"Request too large");}
+  let data;
+  try {
+    if (!request.body) return json(400,"Invalid request");
+    const reader=request.body.getReader();
+    const chunks=[];let size=0;
+    try {
+      while (true) {
+        const {done,value}=await reader.read();
+        if(done)break;
+        size+=value.byteLength;
+        if(size>4096){await reader.cancel();return json(413,"Request too large");}
+        chunks.push(value);
+      }
+    }finally{reader.releaseLock();}
+    const bytes=new Uint8Array(size);let offset=0;
+    for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength;}
+    data=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(bytes));
+  }catch{return json(400,"Invalid request")}
   if(!data || typeof data!=="object" || Array.isArray(data))return json(400,"Invalid request");
+  if(Object.prototype.hasOwnProperty.call(data,"website")&&typeof data.website!=="string")return json(400,"Invalid fields");
   if(data.website)return json(200,"Received");
   // Contact-only form: reject extra fields so medical notes are not forwarded by accident.
   if(Object.keys(data).some(key=>!["name","email","phone","service","website"].includes(key)))return json(400,"Unsupported fields");
