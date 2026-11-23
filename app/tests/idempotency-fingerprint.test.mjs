@@ -1,0 +1,12 @@
+import test from "node:test";import assert from "node:assert/strict";import {fingerprintOperation,evaluateIdempotencyRecord} from "../lib/idempotency-fingerprint.mjs";
+const input={organization_id:"orange",operation:"create",kind:"expense",payload:{vendor_id:"v1",amount_cents:1200}};
+test("key ordering does not affect canonical fingerprint",()=>assert.equal(fingerprintOperation(input),fingerprintOperation({...input,payload:{amount_cents:1200,vendor_id:"v1"}})));
+test("different amount changes fingerprint",()=>assert.notEqual(fingerprintOperation(input),fingerprintOperation({...input,payload:{...input.payload,amount_cents:1201}})));
+test("different organization changes fingerprint",()=>assert.notEqual(fingerprintOperation(input),fingerprintOperation({...input,organization_id:"other"})));
+test("different target invoice changes fingerprint",()=>{const a={organization_id:"orange",operation:"transition",kind:"invoice",record_id:"i1",to:"paid"};assert.notEqual(fingerprintOperation(a),fingerprintOperation({...a,record_id:"i2"}))});
+test("different transition target changes fingerprint",()=>{const a={organization_id:"orange",operation:"transition",kind:"invoice",record_id:"i1",to:"paid"};assert.notEqual(fingerprintOperation(a),fingerprintOperation({...a,to:"void"}))});
+test("new record is claimable",()=>assert.deepEqual(evaluateIdempotencyRecord({existing:null,expectedFingerprint:fingerprintOperation(input)}),{claimed:true}));
+test("committed matching record replays",()=>{const fingerprint=fingerprintOperation(input);assert.deepEqual(evaluateIdempotencyRecord({existing:{fingerprint,status:"committed",result:{id:"expense1"}},expectedFingerprint:fingerprint}),{replayed:true,result:{id:"expense1"}})});
+test("conflicting reuse is rejected",()=>{const fingerprint=fingerprintOperation(input);assert.equal(evaluateIdempotencyRecord({existing:{fingerprint:"0".repeat(64),status:"committed",result:{id:"x"}},expectedFingerprint:fingerprint}).claimed,false)});
+test("incomplete record cannot replay",()=>{const fingerprint=fingerprintOperation(input);assert.equal(evaluateIdempotencyRecord({existing:{fingerprint,status:"pending"},expectedFingerprint:fingerprint}).claimed,false)});
+test("rejects unsafe numeric amounts",()=>assert.throws(()=>fingerprintOperation({...input,payload:{amount_cents:1.5}}),TypeError));
