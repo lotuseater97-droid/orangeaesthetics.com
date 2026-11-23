@@ -19,3 +19,5 @@ jobs:
         run: npm install --prefix app --no-package-lock --ignore-scripts --no-audit --no-fund
       - name: Test appointment intake and Worker security
         run: node scripts/test-worker.mjs
+      - name: Validate Cloudflare Worker deployment bundle (no publishing)
+        run: npx --yes wrangler@4 deploy --dry-run --outdir /tmp/orange-worker-dry-run --config wrangler.toml
