@@ -33,7 +33,7 @@ export function evaluateSameBag({formulation,policy,clinicalClearance=false,clin
  }
  if(ingredients.length>1){
   for(let i=0;i<ingredients.length;i++)for(let j=i+1;j<ingredients.length;j++){
-   const a=ingredients[i],b=ingredients[j];if(!id(a.ingredientId)||!id(b.ingredientId))continue;
+   const a=ingredients[i],b=ingredients[j];if(!id(a?.ingredientId)||!id(b?.ingredientId))continue;
    const rule=Array.isArray(policy?.rules)?policy.rules.find(r=>r&&id(r.a)&&id(r.b)&&pair(r.a,r.b)===pair(a.ingredientId,b.ingredientId)):undefined;
    if(!rule||rule.status!=="approved"||rule.administration!=="same_bag_same_line"||rule.formulationVersion!==formulation.version||rule.diluentId!==formulation.diluentId||!positive(rule.minVolumeMl)||!positive(rule.maxVolumeMl)||!positive(rule.maxInfusionMinutes)||!positive(rule.maxHoldMinutes)||!rule.sourceReference||!rule.reviewedBy||!evidenceCurrent(rule,now))errors.push("PAIR_NOT_VERIFIED:"+pair(a.ingredientId,b.ingredientId));
    else if(formulation.finalVolumeMl<rule.minVolumeMl||formulation.finalVolumeMl>rule.maxVolumeMl||formulation.infusionMinutes>rule.maxInfusionMinutes||formulation.holdMinutes>rule.maxHoldMinutes)errors.push("PAIR_PREPARATION_LIMIT:"+pair(a.ingredientId,b.ingredientId));
