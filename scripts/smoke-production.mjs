@@ -43,7 +43,7 @@ for (const [path, expected] of cases) {
     const marker = pageMarkers.get(path);
     const pageContentOk = marker ? (response.headers.get('content-type') || '').toLowerCase().includes('text/html') && (await response.text()).includes(marker) : true;
     const ok = statusOk && nosniff && framing && referrer && methodAllowed && pageContentOk;
-    console.log(`${ok ? 'PASS' : 'FAIL'} ${path}: HTTP ${response.status} (expected ${expected}), nosniff=${nosniff}${`, frame-deny=${framing}, referrer-policy=${referrer}`}${path === '/api/appointment-request' ? `, allow-post=${methodAllowed}` : ''}${marker ? `, page-content=${pageContentOk}` : ''}`);
+    console.log(`${ok ? 'PASS' : 'FAIL'} ${path}: HTTP ${response.status} (expected ${expected}), nosniff=${nosniff} , frame-deny=${framing}, referrer-policy=${referrer}${path === '/api/appointment-request' ? `, allow-post=${methodAllowed}` : ''}${marker ? `, page-content=${pageContentOk}` : ''}`);
     if (!ok) failures++;
   } catch (error) {
     console.error(`FAIL ${path}: ${error.message}`);
