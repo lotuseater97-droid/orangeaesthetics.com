@@ -12,6 +12,7 @@ import {createOidcOwnerVerifier} from "../lib/oidc-owner-verifier.mjs";
 import {createOwnerCatalogApproval} from "../lib/owner-catalog-approval.mjs";
 import {createOwnerCatalogHttpHandler} from "../lib/owner-catalog-http-handler.mjs";
 import {createMemberOrderHistoryHandler} from "../lib/member-order-history-handler.mjs";
+import {createMemberBenefitsHandler} from "../lib/member-benefits-handler.mjs";
 
 const {DATABASE_URL,STRIPE_WEBHOOK_SECRET,STRIPE_TEST_SECRET_KEY,PORT="8788",HOST="127.0.0.1",CHECKOUT_ORIGIN="https://orangeaesthetics.com"}=process.env;
 if(!DATABASE_URL||!STRIPE_WEBHOOK_SECRET||process.env.STRIPE_LIVEMODE==="true"){
@@ -55,8 +56,9 @@ const approveCatalog=createOwnerCatalogApproval({query:execute,verifyOwner});
 const ownerApproval=createOwnerCatalogHttpHandler({approveCatalog,origin:CHECKOUT_ORIGIN,enabled:false});
 // Member order history is wired but deliberately unavailable until real member OIDC is validated.
 const memberHistory=createMemberOrderHistoryHandler({verifySession,query:execute,enabled:false});
+const memberBenefits=createMemberBenefitsHandler({verifySession,query:execute,enabled:false});
 const server=createServer(async(req,res)=>{
- const handler=req.url==="/api/stripe/webhook"?webhook:req.url==="/api/checkout"?checkout:req.url==="/api/owner/catalog-approval"?ownerApproval:req.url==="/api/member/orders"?memberHistory:null;
+ const handler=req.url==="/api/stripe/webhook"?webhook:req.url==="/api/checkout"?checkout:req.url==="/api/owner/catalog-approval"?ownerApproval:req.url==="/api/member/orders"?memberHistory:req.url==="/api/member/benefits"?memberBenefits:null;
  if(!handler){res.writeHead(404);res.end();return;}
  let bytes=0;const chunks=[],limit=req.url==="/api/stripe/webhook"?65536:2048;
  try{
