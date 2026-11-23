@@ -19,7 +19,7 @@ export function createMemberOrderHistoryHandler({verifySession,query,enabled=fal
    if(!Array.isArray(result?.rows))throw new Error("Missing order rows");
    const orders=result.rows.map(row=>{
     const amount=Number(row.total_cents);
-    if(row.total_cents===null||row.total_cents===undefined||typeof row.total_cents==='boolean'||String(row.total_cents).trim()==='')throw new Error('Missing order total');
+    if(!((typeof row.total_cents==='string'&&/^(0|[1-9][0-9]*)$/.test(row.total_cents))||(typeof row.total_cents==='number'&&Number.isSafeInteger(row.total_cents))))throw new Error('Invalid order total');
     if(!uuid.test(row.id??"")||!Number.isSafeInteger(amount)||amount<0||amount>99999999||
        typeof row.status!=="string"||!/^[a-z_]{1,32}$/.test(row.status)||
        typeof row.currency!=="string"||row.currency.trim()!=="USD")throw new Error("Invalid order row");
