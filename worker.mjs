@@ -22,6 +22,11 @@ export default {
     const last = segments.at(-1) || '';
     const extension = last.includes('.') ? last.split('.').at(-1) : '';
     if (extension && !publicTypes.has(extension)) return reply(404,'Not found');
-    return env.ASSETS.fetch(request);
+    const asset = await env.ASSETS.fetch(request);
+    const headers = new Headers(asset.headers);
+    headers.set('x-content-type-options', 'nosniff');
+    headers.set('referrer-policy', 'strict-origin-when-cross-origin');
+    headers.set('x-frame-options', 'DENY');
+    return new Response(asset.body, {status:asset.status,statusText:asset.statusText,headers});
   }
 };
