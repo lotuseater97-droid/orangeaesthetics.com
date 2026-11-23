@@ -3,6 +3,11 @@ permissions:
   contents: read
 on:
   workflow_dispatch:
+    inputs:
+      run_neon_integration:
+        description: 'Run rollback-only signed webhook test against Neon development'
+        type: boolean
+        default: false
   push:
     paths:
       - 'app/lib/**'
@@ -46,3 +51,28 @@ jobs:
           name: checkout-test-results
           path: checkout-test-results.tap
           if-no-files-found: warn
+
+  neon-development-integration:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_neon_integration == true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: neon-development
+    env:
+      NEON_DEV_DATABASE_URL: ${{ secrets.NEON_DEV_DATABASE_URL }}
+      NEON_DEV_BRANCH_ID: br-nameless-wave-bfsa2x6n
+      ALLOW_ROLLBACK_DB_TEST: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify development database secret is configured
+        run: |
+          if [ -z "$NEON_DEV_DATABASE_URL" ]; then
+            echo 'NEON_DEV_DATABASE_URL must be configured in neon-development environment' >&2
+            exit 1
+          fi
+      - name: Install server dependencies
+        run: npm install --prefix app/server --no-audit --no-fund
+      - name: Run signed webhook against rollback-only Neon development transaction
+        run: node --test app/tests/neon-signed-webhook-integration.test.mjs
