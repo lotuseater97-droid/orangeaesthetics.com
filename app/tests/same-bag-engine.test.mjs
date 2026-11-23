@@ -18,3 +18,6 @@ test("future-dated ingredient evidence blocks",()=>assert.ok(run(formulation,{..
 test("future-dated pair evidence blocks",()=>assert.ok(run(formulation,{...policy,rules:[{...policy.rules[0],effectiveDate:"2027-01-01T00:00:00.000Z"}]}).codes.some(x=>x.startsWith("PAIR_NOT_VERIFIED"))));
 test("malformed or noncanonical evidence dates block",()=>{for(const invalid of ["2026-11-21","not-a-date","2026-99-99T00:00:00.000Z","2026-11-21T00:00:00Z"]){assert.equal(run(formulation,{...policy,rules:[{...policy.rules[0],expiresAt:invalid}]}).allowed,false)}});
 test("invalid evaluation clock blocks",()=>assert.deepEqual(evaluateSameBag({formulation,policy,clinicalClearance:true,clinicalChecks:checks,now:"invalid"}).codes,["INVALID_EVALUATION_TIME"]));
+
+test("missing or malformed pair rules fail closed without throwing",()=>{for(const rules of [null,"not-an-array",{},[null],["invalid"],[{a:null,b:"bb"}]]){const result=run(formulation,{...policy,rules});assert.equal(result.allowed,false);assert.ok(result.codes.some(code=>code.startsWith("PAIR_NOT_VERIFIED")||code==="RULES_UNAVAILABLE"))}});
+test("malformed approved diluent collections fail closed",()=>{for(const approvedDiluents of [null,"ns",{},["d5w"]]){const result=run(formulation,{...policy,approvedDiluents});assert.equal(result.allowed,false);assert.ok(result.codes.includes("DILUENT_NOT_APPROVED"))}});

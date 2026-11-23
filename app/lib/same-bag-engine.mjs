@@ -15,6 +15,7 @@ export function evaluateSameBag({formulation,policy,clinicalClearance=false,clin
  if(!clinicalClearance||clinicalChecks.contraindicationsCleared!==true||clinicalChecks.medicationsReviewed!==true||clinicalChecks.labsReviewed!==true||clinicalChecks.clinicianOrderVerified!==true)errors.push("PATIENT_REVIEW_INCOMPLETE");
  if(!id(formulation.diluentId)||!positive(formulation.finalVolumeMl)||!positive(formulation.infusionMinutes)||!positive(formulation.holdMinutes))errors.push("PREPARATION_DETAILS_MISSING");
  if(!Array.isArray(policy?.rules))errors.push("RULES_UNAVAILABLE");
+ if(!Array.isArray(policy?.approvedDiluents))errors.push("DILUENTS_UNAVAILABLE");
  const ingredients=formulation.ingredients;
  if(ingredients.length===0||ingredients.length>50)errors.push("INVALID_INGREDIENT_COUNT");
  const totals=new Map();
@@ -33,12 +34,12 @@ export function evaluateSameBag({formulation,policy,clinicalClearance=false,clin
  if(ingredients.length>1){
   for(let i=0;i<ingredients.length;i++)for(let j=i+1;j<ingredients.length;j++){
    const a=ingredients[i],b=ingredients[j];if(!id(a.ingredientId)||!id(b.ingredientId))continue;
-   const rule=policy.rules?.find(r=>pair(r.a,r.b)===pair(a.ingredientId,b.ingredientId));
+   const rule=Array.isArray(policy?.rules)?policy.rules.find(r=>r&&id(r.a)&&id(r.b)&&pair(r.a,r.b)===pair(a.ingredientId,b.ingredientId)):undefined;
    if(!rule||rule.status!=="approved"||rule.administration!=="same_bag_same_line"||rule.formulationVersion!==formulation.version||rule.diluentId!==formulation.diluentId||!positive(rule.minVolumeMl)||!positive(rule.maxVolumeMl)||!positive(rule.maxInfusionMinutes)||!positive(rule.maxHoldMinutes)||!rule.sourceReference||!rule.reviewedBy||!evidenceCurrent(rule,now))errors.push("PAIR_NOT_VERIFIED:"+pair(a.ingredientId,b.ingredientId));
    else if(formulation.finalVolumeMl<rule.minVolumeMl||formulation.finalVolumeMl>rule.maxVolumeMl||formulation.infusionMinutes>rule.maxInfusionMinutes||formulation.holdMinutes>rule.maxHoldMinutes)errors.push("PAIR_PREPARATION_LIMIT:"+pair(a.ingredientId,b.ingredientId));
   }
  }
- if(!policy?.approvedDiluents?.includes(formulation.diluentId))errors.push("DILUENT_NOT_APPROVED");
+ if(!Array.isArray(policy?.approvedDiluents)||!policy.approvedDiluents.includes(formulation.diluentId))errors.push("DILUENT_NOT_APPROVED");
  if(!positive(policy?.maxFinalVolumeMl)||formulation.finalVolumeMl>policy.maxFinalVolumeMl||!positive(policy?.maxInfusionMinutes)||formulation.infusionMinutes>policy.maxInfusionMinutes||!positive(policy?.maxHoldMinutes)||formulation.holdMinutes>policy.maxHoldMinutes)errors.push("GLOBAL_PREPARATION_LIMIT");
  if(errors.length)return fail(errors);
  return {allowed:true,status:"eligible_for_final_pharmacist_and_clinician_verification",codes:["POLICY_CHECKS_PASSED_NOT_ADMINISTRATION_AUTHORIZATION"]};
