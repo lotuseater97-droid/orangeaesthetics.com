@@ -30,3 +30,12 @@ test("rejects a checkout URL for a different Stripe session before attaching",as
  await assert.rejects(start({verifiedMemberId:member,sku:"test_item",quantity:1,catalog}),/Invalid Stripe test session/);
  assert.equal(attached,false);
 });
+
+test("rejects checkout URL with matching session prefix and extra path",async()=>{
+ for(const suffix of ["extra","/extra"]){
+  let attached=false;
+  const start=createCheckoutService({enabled:true,approvedOrigin:"https://orangeaesthetics.com",reserveOrder:async()=>({id:order,status:"pending",memberId:member,totalAmount:9900,currency:"USD"}),createStripeSession:async()=>({id:"cs_test_123",url:"https://checkout.stripe.com/c/pay/cs_test_123"+suffix}),attachCheckout:async()=>{attached=true;return true}});
+  await assert.rejects(start({verifiedMemberId:member,sku:"test_item",quantity:1,catalog}),/Invalid Stripe test session/);
+  assert.equal(attached,false);
+ }
+});
