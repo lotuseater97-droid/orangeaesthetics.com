@@ -13,6 +13,7 @@ export function createNeonCheckoutAdapters({query}={}){
   async attachCheckout({orderId,checkoutId,memberId}){
    const result=await query("SELECT orange_app.attach_checkout_session($1,$2,$3) AS attached",[orderId,memberId,checkoutId]);
    if(result?.rows?.[0]?.attached!==true)throw new Error("Checkout session not attached");
+   return true;
   }
  };
 }
