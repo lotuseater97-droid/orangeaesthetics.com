@@ -2,9 +2,6 @@
 const allowed = new Set(["Injectables","Skin rejuvenation","Laser","IV wellness","Membership","Other consultation"]);
 const json=(status,message)=>new Response(JSON.stringify({message}),{status,headers:{"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff","referrer-policy":"strict-origin-when-cross-origin","x-frame-options":"DENY"}});
 export async function onRequestPost({request,env}) {
-  if (!env.APPOINTMENT_NOTIFICATION_ENDPOINT || !env.APPOINTMENT_NOTIFICATION_TOKEN) return json(503,"Appointment requests are not configured");
-  let endpoint;try{endpoint=new URL(env.APPOINTMENT_NOTIFICATION_ENDPOINT)}catch{return json(503,"Notification endpoint is invalid")}
-  if(endpoint.protocol!=="https:" || endpoint.username || endpoint.password || endpoint.port) return json(503,"Secure notification endpoint required");
   const origin=request.headers.get("origin");
   if(origin){let parsed;try{parsed=new URL(origin)}catch{return json(403,"Invalid origin")};if(parsed.origin!==new URL(request.url).origin)return json(403,"Invalid origin")}
   if(!/^application\/json(?:\s*;\s*charset\s*=\s*(?:utf-8|"utf-8"))?\s*$/i.test(request.headers.get("content-type")||""))return json(415,"JSON required");
@@ -38,6 +35,9 @@ export async function onRequestPost({request,env}) {
   const phoneDigits=phone.replace(/\D/g,"");
   const phoneCharactersValid=/^[+0-9().\s-]+$/.test(phone);
   if(name.length<2||name.length>100||email.length>200||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||phone.length<7||phone.length>35||!phoneCharactersValid||phoneDigits.length<7||phoneDigits.length>15||!allowed.has(service)||/[\r\n]/.test(name+email+phone))return json(400,"Invalid fields");
+  if (!env.APPOINTMENT_NOTIFICATION_ENDPOINT || !env.APPOINTMENT_NOTIFICATION_TOKEN) return json(503,"Appointment requests are not configured");
+  let endpoint;try{endpoint=new URL(env.APPOINTMENT_NOTIFICATION_ENDPOINT)}catch{return json(503,"Notification endpoint is invalid")}
+  if(endpoint.protocol!=="https:" || endpoint.username || endpoint.password || endpoint.port) return json(503,"Secure notification endpoint required");
   // An approved endpoint must be configured as a server secret. No patient clinical details.
   try{
     const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
