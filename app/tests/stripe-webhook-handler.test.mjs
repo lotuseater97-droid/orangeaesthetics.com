@@ -38,3 +38,11 @@ test("missing database confirmation returns retryable error",async()=>{
  const h=createStripeWebhookHandler({secret,execute:async()=>({rows:[]})});
  assert.equal((await h(signed())).status,503);
 });
+
+test("signed test-mode event with live session ID never reaches reconciliation",async()=>{
+ let calls=0;
+ const h=createStripeWebhookHandler({secret,execute:async()=>{calls++;return {rows:[{order_id:"unexpected"}]}}});
+ const forged={...event,data:{object:{...event.data.object,id:"cs_live_123"}}};
+ assert.equal((await h(signed(forged))).status,200);
+ assert.equal(calls,0);
+});
