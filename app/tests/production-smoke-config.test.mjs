@@ -4,6 +4,8 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 const script = fileURLToPath(new URL('../../scripts/smoke-production.mjs', import.meta.url));
 for (const SITE_URL of [
+  'not-a-url',
+  'https://[invalid',
   'http://orangeaesthetics.com',
   'https://user:secret@orangeaesthetics.com',
   'https://orangeaesthetics.com/other',
