@@ -6,14 +6,18 @@ on:
   push:
     paths:
       - 'app/lib/**'
+      - 'app/migrations/**'
       - 'app/tests/**'
+      - 'app/server/index.mjs'
       - 'app/server/package.json'
       - 'app/package.json'
       - '.github/workflows/checkout-integration-tests.yml'
   pull_request:
     paths:
       - 'app/lib/**'
+      - 'app/migrations/**'
       - 'app/tests/**'
+      - 'app/server/index.mjs'
       - 'app/server/package.json'
 jobs:
   checkout:
@@ -28,6 +32,9 @@ jobs:
         run: |
           npm install --prefix app --no-audit --no-fund
           npm install --prefix app/server --no-audit --no-fund
+      - name: Verify all test modules parse
+        run: |
+          for file in app/tests/*.test.mjs; do node --check "$file"; done
       - name: Run complete application test suite
         run: |
           set -o pipefail
