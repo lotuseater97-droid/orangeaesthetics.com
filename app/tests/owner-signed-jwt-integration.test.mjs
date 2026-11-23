@@ -15,13 +15,13 @@ test("signed owner JWT reaches audited approval; revoked role and forged tokens 
  let active=true,approvals=0;
  const query=async(sql,params)=>{
   if(sql.includes("FROM orange_app.staff_roles"))return {rows:active?[{role:"owner",active:true}]:[]};
-  if(sql.includes("set_catalog_checkout_approval")){approvals++;assert.deepEqual(params,["owner-subject",itemId,true,false,"request-123"]);return {rows:[{applied:true}]}};
+  if(sql.includes("set_catalog_checkout_approval")){approvals++;assert.deepEqual(params.slice(0,4),["owner-subject",itemId,true,false]);assert.match(params[4],/^[0-9a-f-]{36}$/);return {rows:[{applied:true}]}};
   throw Error("Unexpected query");
  };
  const verifyOwner=createOidcOwnerVerifier({...claims,jwksUrl:issuer+"/jwks",query,keySet});
  const approveCatalog=createOwnerCatalogApproval({query,verifyOwner});
  const handle=createOwnerCatalogHttpHandler({approveCatalog,origin,enabled:true});
- const send=async token=>handle({method:"POST",headers:{origin,"content-type":"application/json",authorization:"Bearer "+token},rawBody:JSON.stringify({itemId,approved:true,requiresClinicalReview:false,requestId:"request-123"})});
+ const send=async token=>handle({method:"POST",headers:{origin,"content-type":"application/json",authorization:"Bearer "+token},rawBody:JSON.stringify({itemId,approved:true,requiresClinicalReview:false})});
  const valid=await sign("owner-subject");
  assert.equal((await send(valid)).status,200);
  assert.equal(approvals,1);
