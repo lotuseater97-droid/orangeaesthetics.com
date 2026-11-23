@@ -25,6 +25,9 @@ export function createMemberBenefitsHandler({verifySession,query,enabled=false}=
    if(!Array.isArray(result?.rows))throw Error("Invalid benefits result");
    const benefits=result.rows.map(row=>{
     const granted=Number(row.granted_quantity),redeemed=Number(row.redeemed_quantity);
+    if(row.granted_quantity===null||row.granted_quantity===undefined||row.redeemed_quantity===null||row.redeemed_quantity===undefined||
+       typeof row.granted_quantity==='boolean'||typeof row.redeemed_quantity==='boolean'||
+       String(row.granted_quantity).trim()===''||String(row.redeemed_quantity).trim()==='')throw Error('Missing benefit quantity');
     if(!uuid.test(row.id??"")||typeof row.sku!=="string"||!/^[a-z0-9_]{3,80}$/.test(row.sku)||
        !Number.isSafeInteger(granted)||granted<1||!Number.isSafeInteger(redeemed)||redeemed<0||redeemed>granted)throw Error("Invalid benefit");
     let expiresAt=null;
