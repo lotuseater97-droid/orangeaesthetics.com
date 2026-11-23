@@ -33,7 +33,7 @@ for (const page of pages) {
     if (relative(root, target).startsWith('..') || (isAbsolute(relative(root, target)))) {
       errors.push(label + ': unsafe local path ' + raw); continue;
     }
-    try { await stat(target); } catch { errors.push(label + ': missing local file ' + raw); }
+    try { const info = await stat(target); if (!info.isFile()) errors.push(label + ': local asset is not a file ' + raw); } catch { errors.push(label + ': missing local file ' + raw); }
   }
   for (const match of html.matchAll(/<img\b([^>]*)>/gi)) {
     if (!/\balt\s*=/.test(match[1])) warnings.push(label + ': image missing alt');
