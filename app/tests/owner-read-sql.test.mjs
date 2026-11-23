@@ -1,0 +1,12 @@
+import test from "node:test";import assert from "node:assert/strict";import {buildOwnerReadQuery,createOwnerSqlListAdapter} from "../lib/owner-read-sql.mjs";
+const org="123e4567-e89b-42d3-a456-426614174000",staff="123e4567-e89b-42d3-a456-426614174001";
+const base={organization_id:org,actor_id:staff,role:"owner",collection:"appointments"};
+test("owner appointment query uses bound organization and limit",()=>{const q=buildOwnerReadQuery(base);assert.match(q.text,/WHERE organization_id = \$1/);assert.deepEqual(q.values,[org,50])});
+test("MA appointment query restricts assignment in SQL",()=>{const q=buildOwnerReadQuery({...base,role:"ma"});assert.match(q.text,/assigned_to = \$2/);assert.deepEqual(q.values,[org,staff,50])});
+test("clinician task query restricts assignment before limit",()=>{const q=buildOwnerReadQuery({...base,role:"clinician",collection:"tasks",limit:7});assert.match(q.text,/assigned_to = \$2 ORDER BY/);assert.deepEqual(q.values,[org,staff,7])});
+test("MA financial query denied",()=>assert.throws(()=>buildOwnerReadQuery({...base,role:"ma",collection:"invoices"}),{code:"FORBIDDEN"}));
+test("inventory uses tenant-safe movement join and aggregate",()=>{const q=buildOwnerReadQuery({...base,collection:"inventory"});assert.match(q.text,/m.organization_id = i.organization_id AND m.item_id = i.id/);assert.match(q.text,/SUM\(m.quantity_delta\)/);assert.deepEqual(q.values,[org,50])});
+test("unknown collection denied without SQL injection",()=>assert.throws(()=>buildOwnerReadQuery({...base,collection:"appointments;DROP TABLE"}),{code:"VALIDATION"}));
+test("malformed tenant ID denied",()=>assert.throws(()=>buildOwnerReadQuery({...base,organization_id:"orange' OR TRUE"}),{code:"VALIDATION"}));
+test("invalid limit denied",()=>assert.throws(()=>buildOwnerReadQuery({...base,limit:10000}),{code:"VALIDATION"}));
+test("adapter forwards parameterized query and returns rows",async()=>{let seen;const list=createOwnerSqlListAdapter({query:async(text,values)=>{seen={text,values};return {rows:[{id:"a1",organization_id:org}]}}});const rows=await list(base);assert.equal(rows[0].id,"a1");assert.deepEqual(seen.values,[org,50])});
