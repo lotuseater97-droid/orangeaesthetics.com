@@ -1,0 +1,26 @@
+name: Credit selection safety tests
+on:
+  push:
+    paths:
+      - "app/lib/grant-selection.mjs"
+      - "app/tests/grant-selection.test.mjs"
+      - ".github/workflows/credit-selection-tests.yml"
+  pull_request:
+    paths:
+      - "app/lib/grant-selection.mjs"
+      - "app/tests/grant-selection.test.mjs"
+      - ".github/workflows/credit-selection-tests.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  credit-selection:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Test member-scoped credit selection
+        run: node --test app/tests/grant-selection.test.mjs
