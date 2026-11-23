@@ -1,0 +1,11 @@
+import test from "node:test";import assert from "node:assert/strict";import {createOwnerReadService} from "../lib/owner-read-service.mjs";
+const actor={user_id:"u1",organization_id:"orange",role:"owner"};
+const make=(a=actor,rows=[{id:"a1",organization_id:"orange",requested_at:"2026-11-22T09:00:00Z",service_code:"consult",status:"requested",diagnosis:"NEVER RETURN",email:"hidden"}])=>createOwnerReadService({resolveActor:async()=>a,listRecords:async()=>rows});
+test("owner sees allowlisted appointment fields only",async()=>{const [row]=await make().list({sessionToken:"valid",collection:"appointments"});assert.deepEqual(row,{id:"a1",requested_at:"2026-11-22T09:00:00Z",service_code:"consult",status:"requested"});assert.equal("diagnosis" in row,false)});
+test("unknown collection denied",async()=>assert.rejects(()=>make().list({sessionToken:"valid",collection:"patients"}),{code:"VALIDATION"}));
+test("missing actor denied",async()=>assert.rejects(()=>make(null).list({sessionToken:"valid",collection:"appointments"}),{code:"UNAUTHENTICATED"}));
+test("MA cannot read financial invoices",async()=>assert.rejects(()=>make({...actor,role:"ma"}).list({sessionToken:"valid",collection:"invoices"}),{code:"FORBIDDEN"}));
+test("cross-organization repository leak fails closed",async()=>assert.rejects(()=>make(actor,[{id:"x",organization_id:"other"}]).list({sessionToken:"valid",collection:"appointments"}),{code:"INTERNAL"}));
+test("limit validation blocks bulk reads",async()=>assert.rejects(()=>make().list({sessionToken:"valid",collection:"appointments",limit:1000}),{code:"VALIDATION"}));
+test("repository cannot return more than requested",async()=>assert.rejects(()=>make(actor,[{id:"a",organization_id:"orange"},{id:"b",organization_id:"orange"}]).list({sessionToken:"valid",collection:"appointments",limit:1}),{code:"INTERNAL"}));
+test("owner can view allowlisted financial totals",async()=>{const [row]=await make(actor,[{id:"i1",organization_id:"orange",status:"issued",currency:"USD",total_cents:10000,balance_cents:4000,customer_email:"private"}]).list({sessionToken:"valid",collection:"invoices"});assert.equal(row.balance_cents,4000);assert.equal("customer_email" in row,false)});
