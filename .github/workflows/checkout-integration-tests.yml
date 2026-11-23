@@ -5,6 +5,7 @@ on:
       - 'app/lib/**'
       - 'app/tests/**'
       - 'app/server/package.json'
+      - 'app/package.json'
       - '.github/workflows/checkout-integration-tests.yml'
   pull_request:
     paths:
@@ -19,7 +20,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Install server dependencies
-        run: npm install --prefix app/server --no-audit --no-fund
+      - name: Install app and server dependencies
+        run: |
+          npm install --prefix app --no-audit --no-fund
+          npm install --prefix app/server --no-audit --no-fund
       - name: Run checkout and authentication-independent unit tests
         run: node --test app/tests/*.test.mjs
