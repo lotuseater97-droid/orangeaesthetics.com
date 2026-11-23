@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 // Read-only production smoke test. Does not submit appointment data.
 const base = process.env.SITE_URL || 'https://orangeaesthetics.com';
-const target = new URL(base);
+let target;
+try { target = new URL(base); }
+catch {
+  console.error('SITE_URL must be a valid HTTPS origin');
+  process.exit(2);
+}
 if (target.protocol !== 'https:' || target.username || target.password || target.search || target.hash || target.pathname !== '/') {
   console.error('SITE_URL must be an HTTPS origin with no path, query, credentials or fragment');
   process.exit(2);
