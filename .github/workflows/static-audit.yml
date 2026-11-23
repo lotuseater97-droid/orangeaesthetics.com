@@ -15,5 +15,7 @@ jobs:
         run: node scripts/audit-static-site.mjs
       - name: Verify private files are excluded from static assets
         run: node scripts/check-assetsignore.mjs
+      - name: Install private app test dependencies
+        run: npm install --prefix app --no-package-lock --ignore-scripts --no-audit --no-fund
       - name: Test appointment intake and Worker security
         run: node scripts/test-worker.mjs
