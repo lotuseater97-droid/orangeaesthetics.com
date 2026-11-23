@@ -88,4 +88,27 @@ for (const [path, expected] of cases) {
     failures++;
   }
 }
+// HEAD should expose the same security protections without returning page content.
+for (const path of ['/', '/appointment-request.html', '/app/schema.sql', '/api/appointment-request']) {
+  try {
+    const expected = path === '/app/schema.sql' ? 404 : path === '/api/appointment-request' ? 405 : 200;
+    const response = await fetch(new URL(path, target), { method: 'HEAD', redirect: 'follow', signal: AbortSignal.timeout(10000) });
+    const finalUrl = new URL(response.url);
+    const destinationOk = finalUrl.origin === target.origin &&
+      [path, ...(path.endsWith('.html') ? [path.slice(0, -5)] : [])].includes(finalUrl.pathname) &&
+      !finalUrl.search && !finalUrl.hash;
+    const headersOk = response.headers.get('x-content-type-options') === 'nosniff' &&
+      response.headers.get('x-frame-options') === 'DENY' &&
+      response.headers.get('referrer-policy') === 'strict-origin-when-cross-origin';
+    const allowOk = path !== '/api/appointment-request' || response.headers.get('allow') === 'POST';
+    const ok = response.status === expected && destinationOk && headersOk && allowOk;
+    console.log(`${ok ? 'PASS' : 'FAIL'} HEAD ${path}: HTTP ${response.status} (expected ${expected}), destination-ok=${destinationOk}, security-headers=${headersOk}, allow-post=${allowOk}`);
+    if (!ok) failures++;
+    // Consume/cancel the response so the request is fully closed.
+    await response.body?.cancel();
+  } catch (error) {
+    console.error(`FAIL HEAD ${path}: ${error.message}`);
+    failures++;
+  }
+}
 process.exitCode = failures ? 1 : 0;
