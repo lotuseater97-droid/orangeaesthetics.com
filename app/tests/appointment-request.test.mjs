@@ -44,3 +44,10 @@ test("provider timeout or network failure does not claim receipt",async()=>{
     assert.deepEqual(await res.json(),{message:"Delivery unavailable"});
   });
 });
+
+test("invalid requests are rejected even when notification service is unconfigured",async()=>{
+  assert.equal((await onRequestPost({request:request(base,{"content-type":"text/plain"}),env:{}})).status,415);
+  assert.equal((await onRequestPost({request:request(base,{origin:"https://untrusted.example"}),env:{}})).status,403);
+  assert.equal((await onRequestPost({request:new Request("https://orangeaesthetics.com/api/appointment-request",{method:"POST",headers:{"content-type":"application/json"},body:"{invalid"}),env:{}})).status,400);
+  assert.equal((await onRequestPost({request:request(base),env:{}})).status,503);
+});
