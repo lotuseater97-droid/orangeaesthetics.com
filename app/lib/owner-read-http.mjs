@@ -4,14 +4,23 @@ import {BusinessError} from "./business-api.mjs";
 const allowed=new Set(["appointments","tasks","invoices","expenses","inventory"]);
 const statusFor=code=>({UNAUTHENTICATED:401,FORBIDDEN:403,NOT_FOUND:404,VALIDATION:400,CONFLICT:409})[code]??500;
 const json=(status,body)=>({status,headers:{"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff"},body:JSON.stringify(body)});
-export function createOwnerReadHttpHandler({backend,extractVerifiedToken}){
+export function createOwnerReadHttpHandler({backend,extractVerifiedToken,allowedOrigin}){
  if(!backend||typeof backend.list!=="function"||typeof extractVerifiedToken!=="function")throw new TypeError("Trusted HTTP adapters required");
+ if(typeof allowedOrigin!=="string"||!/^https:\/\/[^/]+$/.test(allowedOrigin))throw new TypeError("Explicit HTTPS origin required");
  return async request=>{
   if(!request||request.method!=="GET")return json(405,{error:"METHOD_NOT_ALLOWED"});
   // Caller must supply a trusted URL parser and an absolute request URL.
   let url;
   try{url=new URL(request.url)}catch{return json(400,{error:"VALIDATION"})}
+  if(url.origin!==allowedOrigin)return json(403,{error:"FORBIDDEN"});
   if(url.pathname!=="/api/owner/records")return json(404,{error:"NOT_FOUND"});
+  // Reject cross-site browser requests even for read-only business data.
+  const headers=request.headers;
+  const header=name=>headers?.get?.(name)??headers?.[name]??headers?.[name.toLowerCase()]??null;
+  const origin=header("origin");
+  if(origin!==null&&origin!==allowedOrigin)return json(403,{error:"FORBIDDEN"});
+  const site=header("sec-fetch-site");
+  if(site!==null&&!["same-origin","none"].includes(site))return json(403,{error:"FORBIDDEN"});
   const params=url.searchParams;
   if([...params.keys()].some(k=>!["collection","limit"].includes(k))||params.getAll("collection").length!==1||params.getAll("limit").length>1)return json(400,{error:"VALIDATION"});
   const collection=params.get("collection");
