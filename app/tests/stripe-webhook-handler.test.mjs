@@ -11,3 +11,30 @@ test("live events rejected in test mode",async()=>{const h=createStripeWebhookHa
 test("unpaid signed checkout ignored",async()=>{let calls=0;const h=createStripeWebhookHandler({secret,execute:async()=>{calls++}});assert.equal((await h(signed({...event,data:{object:{...event.data.object,payment_status:"unpaid"}}}))).status,200);assert.equal(calls,0);});
 test("database failure returns retryable status",async()=>{const h=createStripeWebhookHandler({secret,execute:async()=>{throw Error("DB down")}});assert.equal((await h(signed())).status,503);});
 test("oversized payload rejected",async()=>{const h=createStripeWebhookHandler({secret,execute:async()=>({rows:[]}),maxBytes:20});assert.equal((await h(signed())).status,413);});
+
+test("tampered signed payment is rejected without reconciliation",async()=>{
+ let calls=0;
+ const h=createStripeWebhookHandler({secret,execute:async()=>{calls++;return {rows:[{order_id:"unexpected"}]}}});
+ const request=signed();
+ const altered={...request,rawBody:request.rawBody.replace('"amount_total":9900','"amount_total":9901')};
+ assert.equal((await h(altered)).status,400);
+ assert.equal(calls,0);
+});
+test("valid signature with wrong checkout currency is ignored",async()=>{
+ let calls=0;
+ const h=createStripeWebhookHandler({secret,execute:async()=>{calls++}});
+ const request=signed({...event,data:{object:{...event.data.object,currency:"eur"}}});
+ assert.equal((await h(request)).status,200);
+ assert.equal(calls,0);
+});
+test("signed checkout with incomplete payment status cannot grant credits",async()=>{
+ let calls=0;
+ const h=createStripeWebhookHandler({secret,execute:async()=>{calls++}});
+ const request=signed({...event,data:{object:{...event.data.object,status:"open"}}});
+ assert.equal((await h(request)).status,200);
+ assert.equal(calls,0);
+});
+test("missing database confirmation returns retryable error",async()=>{
+ const h=createStripeWebhookHandler({secret,execute:async()=>({rows:[]})});
+ assert.equal((await h(signed())).status,503);
+});
