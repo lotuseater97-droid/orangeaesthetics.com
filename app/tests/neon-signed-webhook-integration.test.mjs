@@ -151,8 +151,11 @@ test('signed webhook reconciles a real Neon development transaction without pers
   try{
    await client.query('ROLLBACK');
    // Verify that synthetic members, catalog and payment records did not persist.
-   const remaining=await client.query("SELECT (SELECT count(*)::int FROM orange_app.members WHERE auth_subject=$1) AS members,(SELECT count(*)::int FROM orange_app.catalog_items WHERE sku=$2) AS catalog,(SELECT count(*)::int FROM orange_app.payment_events WHERE event_id=$3) AS payments",[memberSubject,sku,'evt_'+nonce.slice(0,20)]);
-   assert.deepEqual(remaining.rows[0],{members:0,catalog:0,payments:0});
+   const remaining=await client.query(
+    "SELECT (SELECT count(*)::int FROM orange_app.members WHERE auth_subject IN ($1,$4)) AS members,(SELECT count(*)::int FROM orange_app.catalog_items WHERE sku=$2) AS catalog,(SELECT count(*)::int FROM orange_app.payment_events WHERE event_id=$3) AS payments,(SELECT count(*)::int FROM orange_app.orders WHERE processor_checkout_id IN ($5,$6)) AS orders,(SELECT count(*)::int FROM orange_app.redemptions WHERE staff_subject=$1) AS redemptions",
+    [memberSubject,sku,'evt_'+nonce.slice(0,20),memberSubject+'_other',session,'cs_test_second_'+nonce]
+   );
+   assert.deepEqual(remaining.rows[0],{members:0,catalog:0,payments:0,orders:0,redemptions:0});
   }finally{await client.end();}
  }
 });
