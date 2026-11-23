@@ -27,8 +27,8 @@ export function evaluateSameBag({formulation,policy,clinicalClearance=false,clin
  if(totals.size!==ingredients.length)errors.push("DUPLICATE_INGREDIENT_REQUIRES_TOTAL_DOSE_REVIEW");
  const approved=Array.isArray(policy?.approvedIngredients)?policy.approvedIngredients:[];
  for(const ing of ingredients){
-  const entry=approved.find(x=>x&&x.ingredientId===ing.ingredientId&&x.sourceSku===ing.sourceSku&&x.unit===ing.unit&&x.concentrationUnit===ing.concentrationUnit);
-  if(!entry||entry.status!=="approved"||!positive(entry.maxDose)||!positive(entry.minConcentration)||!positive(entry.maxConcentration)||!positive(entry.maxTotalDose)||!entry.sourceReference||!entry.reviewedBy||!evidenceCurrent(entry,now))errors.push("INGREDIENT_NOT_APPROVED:"+ing.ingredientId);
+  const entry=approved.find(x=>x&&x.ingredientId===ing?.ingredientId&&x.sourceSku===ing?.sourceSku&&x.unit===ing?.unit&&x.concentrationUnit===ing?.concentrationUnit);
+  if(!entry||entry.status!=="approved"||!positive(entry.maxDose)||!positive(entry.minConcentration)||!positive(entry.maxConcentration)||!positive(entry.maxTotalDose)||!entry.sourceReference||!entry.reviewedBy||!evidenceCurrent(entry,now))errors.push("INGREDIENT_NOT_APPROVED:"+String(ing?.ingredientId??"unknown"));
   else if(ing.dose>entry.maxDose||ing.concentration<entry.minConcentration||ing.concentration>entry.maxConcentration||(totals.get(ing.ingredientId+"|"+ing.unit)||0)>entry.maxTotalDose)errors.push("INGREDIENT_LIMIT_EXCEEDED:"+ing.ingredientId);
  }
  if(ingredients.length>1){
