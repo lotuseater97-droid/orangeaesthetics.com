@@ -8,6 +8,7 @@ export function createStripeTestSessionAdapter({secretKey,fetchImpl=fetch}={}){
   const line=params.line_items[0],price=line.price_data;
   if(!Number.isSafeInteger(price?.unit_amount)||price.unit_amount<=0||
      price.currency!=="usd"||!Number.isSafeInteger(line.quantity)||line.quantity<1||line.quantity>10||
+     !Number.isSafeInteger(price.unit_amount*line.quantity)||price.unit_amount*line.quantity>99999999||
      !/^[a-z0-9_]{3,80}$/.test(price.product_data?.name??"")||
      !/^https:\/\//.test(params.success_url??"")||!/^https:\/\//.test(params.cancel_url??"")||
      !/^[0-9a-f-]{36}$/i.test(params.client_reference_id??"")||
