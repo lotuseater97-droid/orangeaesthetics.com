@@ -77,6 +77,16 @@ test('signed webhook reconciles a real Neon development transaction without pers
   assert.equal(secondStatus.rows[0].status,'pending');
   const altered=sign('evt_'+nonce.slice(0,19)+'z');
   assert.equal((await handler({...altered,rawBody:altered.rawBody+' '})).status,400);
+  // Signed but live-mode events must never be accepted by this test-only handler.
+  const live=sign('evt_'+nonce.slice(0,19)+'l');
+  const livePayload=JSON.parse(live.rawBody);
+  livePayload.livemode=true;
+  const liveRaw=JSON.stringify(livePayload);
+  const liveTimestamp=Math.floor(Date.now()/1000);
+  const liveSignature=createHmac('sha256',secret).update(liveTimestamp+'.'+liveRaw).digest('hex');
+  assert.equal((await handler({method:'POST',headers:{'stripe-signature':`t=${liveTimestamp},v1=${liveSignature}`},rawBody:liveRaw})).status,400);
+  // A missing signature cannot reach database reconciliation.
+  assert.equal((await handler({method:'POST',headers:{},rawBody:sign('evt_'+nonce.slice(0,19)+'u').rawBody})).status,400);
   const counts=await client.query("SELECT (SELECT count(*)::int FROM orange_app.payment_events WHERE order_id=$1) AS events,(SELECT count(*)::int FROM orange_app.benefit_grants WHERE order_item_id IN (SELECT id FROM orange_app.order_items WHERE order_id=$1)) AS grants,(SELECT count(*)::int FROM orange_app.audit_events WHERE action='checkout.paid' AND target_id=$1) AS audits",[order]);
   assert.deepEqual(counts.rows[0],{events:1,grants:1,audits:1});
 
