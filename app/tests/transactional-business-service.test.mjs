@@ -10,3 +10,18 @@ test("invoice transition locks record before update",async()=>{const {service,ev
 test("cross tenant record blocked",async()=>{const {service}=build({getForUpdate:async()=>({id:"inv1",organization_id:"other",status:"issued"})});await assert.rejects(()=>service.write({token:"verified_session_123",kind:"invoice",operation:"transition",id:"inv1",to:"paid",idempotency_key:"invoice_20261122_001"}),{code:"NOT_FOUND"})});
 test("rejects invalid session token",async()=>assert.rejects(()=>build().service.write({token:"short",kind:"expense",operation:"create",payload,idempotency_key:key}),{code:"UNAUTHENTICATED"}));
 test("rejects missing audit adapter",async()=>assert.rejects(()=>build({audit:null}).service.write({token:"verified_session_123",kind:"expense",operation:"create",payload,idempotency_key:key}),TypeError));
+
+test("invoice retry replays before checking a now-changed record",async()=>{
+ let locked=false;
+ const {service}=build({claimIdempotency:async()=>({replayed:true,result:{id:"inv1",status:"paid"}}),getForUpdate:async()=>{locked=true;throw Error("should not lock replay")}});
+ const result=await service.write({token:"verified_session_123",kind:"invoice",operation:"transition",id:"inv1",to:"paid",idempotency_key:"invoice_20261122_001"});
+ assert.equal(result.status,"paid");assert.equal(locked,false);
+});
+test("invalid transition target cannot retrieve a prior result",async()=>{
+ const {service}=build({claimIdempotency:async()=>({replayed:true,result:{id:"inv1"}})});
+ await assert.rejects(()=>service.write({token:"verified_session_123",kind:"invoice",operation:"transition",id:"inv1",to:"",idempotency_key:"invoice_20261122_001"}),{code:"VALIDATION"});
+});
+test("financial retry requires valid idempotency key before claim",async()=>{
+ const {service}=build();
+ await assert.rejects(()=>service.write({token:"verified_session_123",kind:"invoice",operation:"transition",id:"inv1",to:"paid",idempotency_key:"x"}),TypeError);
+});
