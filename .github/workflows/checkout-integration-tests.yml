@@ -39,6 +39,9 @@ jobs:
           npm install --prefix app/server --no-audit --no-fund
       - name: Verify development server parses
         run: node --check app/server/index.mjs
+      - name: Verify all application library modules parse
+        run: |
+          for file in app/lib/*.mjs; do node --check "$file"; done
       - name: Verify all test modules parse
         run: |
           for file in app/tests/*.test.mjs; do node --check "$file"; done
