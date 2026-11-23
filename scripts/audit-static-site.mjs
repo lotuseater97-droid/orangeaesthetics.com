@@ -25,8 +25,13 @@ for (const page of pages) {
   if (!/name=["']viewport["']/i.test(html)) warnings.push(label + ': missing viewport');
   if (!/name=["']description["']/i.test(html)) warnings.push(label + ': missing description');
   for (const match of html.matchAll(/<(a|link|script|img)\b[^>]*?\b(href|src)\s*=\s*["']([^"']+)["']/gi)) {
-    const raw = match[3];
-    if (/^(https?:|mailto:|tel:|data:|javascript:|#|\/\/)/i.test(raw)) continue;
+    const raw = match[3].trim();
+    const tag = match[1].toLowerCase();
+    if (/^javascript\s*:/i.test(raw) || (/^data\s*:/i.test(raw) && tag !== 'img')) {
+      errors.push(label + ': unsafe URL in ' + tag + ' ' + match[2] + ': ' + raw.slice(0, 80));
+      continue;
+    }
+    if (/^(https?:|mailto:|tel:|data:|#|\/\/)/i.test(raw)) continue;
     const path = raw.split(/[?#]/)[0];
     if (!path) continue;
     const target = path.startsWith('/') ? resolve(root, '.' + path) : resolve(dirname(page), path);
