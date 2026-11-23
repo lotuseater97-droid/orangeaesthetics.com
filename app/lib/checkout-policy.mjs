@@ -8,5 +8,6 @@ export function validateCheckoutRequest({sku, quantity, catalog, enabled = false
   if (!item || item.payment_eligible !== true || item.requires_clinical_review === true) throw new Error("Item not eligible for online checkout");
   if (!Number.isSafeInteger(item.price_cents) || item.price_cents < 1) throw new Error("Missing approved price");
   if (item.currency !== "usd") throw new Error("Unsupported currency");
+  if (!Number.isSafeInteger(item.price_cents * quantity) || item.price_cents * quantity > 99999999) throw new Error("Order total exceeds checkout limit");
   return Object.freeze({code:item.code,quantity,unitAmount:item.price_cents,currency:item.currency,totalAmount:item.price_cents*quantity});
 }
