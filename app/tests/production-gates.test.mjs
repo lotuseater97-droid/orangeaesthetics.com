@@ -6,7 +6,8 @@ const gatedFactories = [
  ['startCheckout','createCheckoutService'],
  ['checkout','createCheckoutHttpHandler'],
  ['ownerApproval','createOwnerCatalogHttpHandler'],
- ['memberHistory','createMemberOrderHistoryHandler']
+ ['memberHistory','createMemberOrderHistoryHandler'],
+ ['memberBenefits','createMemberBenefitsHandler']
 ];
 function assertGatesDisabled(source) {
  for (const [variable,factory] of gatedFactories) {
@@ -60,4 +61,10 @@ test('member order history is wired only to its private route',async()=>{
  const source=await readFile(new URL('../server/index.mjs',import.meta.url),'utf8');
  assert.match(source,/req\.url==="\/api\/member\/orders"\?memberHistory:null/);
  assert.match(source,/import \{createMemberOrderHistoryHandler\} from "\.\.\/lib\/member-order-history-handler\.mjs"/);
+});
+
+test('member benefits route remains private and disabled',async()=>{
+ const source=await readFile(new URL('../server/index.mjs',import.meta.url),'utf8');
+ assert.match(source,/req\.url==="\/api\/member\/benefits"\?memberBenefits:null/);
+ assert.match(source,/import \{createMemberBenefitsHandler\} from "\.\.\/lib\/member-benefits-handler\.mjs"/);
 });
