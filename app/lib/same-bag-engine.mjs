@@ -4,8 +4,11 @@ const fail=(codes)=>({allowed:false,status:"blocked",codes:[...new Set(codes)]})
 const positive=(v)=>typeof v==="number"&&Number.isFinite(v)&&v>0;
 const id=v=>typeof v==="string"&&/^[a-z0-9_-]{2,80}$/.test(v);
 const pair=(a,b)=>[a,b].sort().join("|");
+const timestamp=value=>typeof value==="string"&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(value)&&Number.isFinite(Date.parse(value))&&new Date(value).toISOString()===value;
+const evidenceCurrent=(entry,now)=>timestamp(entry?.effectiveDate)&&timestamp(entry?.expiresAt)&&entry.effectiveDate<=now&&now<entry.expiresAt;
 export function evaluateSameBag({formulation,policy,clinicalClearance=false,clinicalChecks={},now=new Date().toISOString()}) {
  const errors=[];
+ if(!timestamp(now))return fail(["INVALID_EVALUATION_TIME"]);
  if(!policy||policy.status!=="approved"||policy.administration!=="same_bag_same_line"||!id(policy.formulationVersion))errors.push("POLICY_NOT_APPROVED");
  if(!formulation||!Array.isArray(formulation.ingredients)||!id(formulation.id)||!id(formulation.version))return fail([...errors,"FORMULATION_INCOMPLETE"]);
  if(formulation.version!==policy?.formulationVersion)errors.push("FORMULATION_VERSION_MISMATCH");
@@ -24,14 +27,14 @@ export function evaluateSameBag({formulation,policy,clinicalClearance=false,clin
  const approved=Array.isArray(policy?.approvedIngredients)?policy.approvedIngredients:[];
  for(const ing of ingredients){
   const entry=approved.find(x=>x.ingredientId===ing.ingredientId&&x.sourceSku===ing.sourceSku&&x.unit===ing.unit&&x.concentrationUnit===ing.concentrationUnit);
-  if(!entry||entry.status!=="approved"||!positive(entry.maxDose)||!positive(entry.minConcentration)||!positive(entry.maxConcentration)||!positive(entry.maxTotalDose)||!entry.sourceReference||!entry.reviewedBy||!entry.effectiveDate||entry.expiresAt<=now)errors.push("INGREDIENT_NOT_APPROVED:"+ing.ingredientId);
+  if(!entry||entry.status!=="approved"||!positive(entry.maxDose)||!positive(entry.minConcentration)||!positive(entry.maxConcentration)||!positive(entry.maxTotalDose)||!entry.sourceReference||!entry.reviewedBy||!evidenceCurrent(entry,now))errors.push("INGREDIENT_NOT_APPROVED:"+ing.ingredientId);
   else if(ing.dose>entry.maxDose||ing.concentration<entry.minConcentration||ing.concentration>entry.maxConcentration||(totals.get(ing.ingredientId+"|"+ing.unit)||0)>entry.maxTotalDose)errors.push("INGREDIENT_LIMIT_EXCEEDED:"+ing.ingredientId);
  }
  if(ingredients.length>1){
   for(let i=0;i<ingredients.length;i++)for(let j=i+1;j<ingredients.length;j++){
    const a=ingredients[i],b=ingredients[j];if(!id(a.ingredientId)||!id(b.ingredientId))continue;
    const rule=policy.rules?.find(r=>pair(r.a,r.b)===pair(a.ingredientId,b.ingredientId));
-   if(!rule||rule.status!=="approved"||rule.administration!=="same_bag_same_line"||rule.formulationVersion!==formulation.version||rule.diluentId!==formulation.diluentId||!positive(rule.minVolumeMl)||!positive(rule.maxVolumeMl)||!positive(rule.maxInfusionMinutes)||!positive(rule.maxHoldMinutes)||!rule.sourceReference||!rule.reviewedBy||!rule.effectiveDate||rule.expiresAt<=now)errors.push("PAIR_NOT_VERIFIED:"+pair(a.ingredientId,b.ingredientId));
+   if(!rule||rule.status!=="approved"||rule.administration!=="same_bag_same_line"||rule.formulationVersion!==formulation.version||rule.diluentId!==formulation.diluentId||!positive(rule.minVolumeMl)||!positive(rule.maxVolumeMl)||!positive(rule.maxInfusionMinutes)||!positive(rule.maxHoldMinutes)||!rule.sourceReference||!rule.reviewedBy||!evidenceCurrent(rule,now))errors.push("PAIR_NOT_VERIFIED:"+pair(a.ingredientId,b.ingredientId));
    else if(formulation.finalVolumeMl<rule.minVolumeMl||formulation.finalVolumeMl>rule.maxVolumeMl||formulation.infusionMinutes>rule.maxInfusionMinutes||formulation.holdMinutes>rule.maxHoldMinutes)errors.push("PAIR_PREPARATION_LIMIT:"+pair(a.ingredientId,b.ingredientId));
   }
  }
