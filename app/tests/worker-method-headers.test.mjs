@@ -12,5 +12,7 @@ for(const [path,method,allow] of [
     assert.equal(response.headers.get('allow'),allow);
     assert.equal(response.headers.get('cache-control'),'no-store');
     assert.equal(response.headers.get('x-content-type-options'),'nosniff');
+    assert.equal(response.headers.get('referrer-policy'),'strict-origin-when-cross-origin');
+    assert.equal(response.headers.get('x-frame-options'),'DENY');
   });
 }
