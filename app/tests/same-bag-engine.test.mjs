@@ -13,3 +13,8 @@ test("duplicate ingredient blocks",()=>assert.ok(run({...formulation,ingredients
 test("missing medication review blocks",()=>assert.equal(run(formulation,policy,{...checks,medicationsReviewed:false}).allowed,false));
 test("excessive hold time blocks",()=>assert.equal(run({...formulation,holdMinutes:200}).allowed,false));
 test("complete synthetic approved policy reaches final verification",()=>assert.equal(run().status,"eligible_for_final_pharmacist_and_clinician_verification"));
+
+test("future-dated ingredient evidence blocks",()=>assert.ok(run(formulation,{...policy,approvedIngredients:[{...policy.approvedIngredients[0],effectiveDate:"2027-01-01T00:00:00.000Z"},policy.approvedIngredients[1]]}).codes.some(x=>x.startsWith("INGREDIENT_NOT_APPROVED"))));
+test("future-dated pair evidence blocks",()=>assert.ok(run(formulation,{...policy,rules:[{...policy.rules[0],effectiveDate:"2027-01-01T00:00:00.000Z"}]}).codes.some(x=>x.startsWith("PAIR_NOT_VERIFIED"))));
+test("malformed or noncanonical evidence dates block",()=>{for(const invalid of ["2026-11-21","not-a-date","2026-99-99T00:00:00.000Z","2026-11-21T00:00:00Z"]){assert.equal(run(formulation,{...policy,rules:[{...policy.rules[0],expiresAt:invalid}]}).allowed,false)}});
+test("invalid evaluation clock blocks",()=>assert.deepEqual(evaluateSameBag({formulation,policy,clinicalClearance:true,clinicalChecks:checks,now:"invalid"}).codes,["INVALID_EVALUATION_TIME"]));
