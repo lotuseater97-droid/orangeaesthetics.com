@@ -5,7 +5,14 @@
 - `wrangler.toml` uses `main = "worker.mjs"`, `ASSETS` binding, `[assets] directory = "."`, and `run_worker_first = true`.
 - `worker.mjs` handles `POST /api/appointment-request` and imports the contact-only handler from `functions/api/appointment-request.js`. The handler is not deployed automatically as a Pages Function.
 - Repository commits do **not** prove Cloudflare deployment. Latest production SHA, connected branch, custom domain and secret configuration remain unverified.
+- Repository inspection on 2026-11-23 found **no GitHub Actions deployment workflow** (only test and smoke workflows). A successful GitHub commit/CI run does not automatically establish a Cloudflare deployment; verify any separately configured Cloudflare Git integration in the Cloudflare dashboard.
 - The API returns HTTP 503 when `APPOINTMENT_NOTIFICATION_ENDPOINT` or `APPOINTMENT_NOTIFICATION_TOKEN` is missing; do not treat the contact form as operational until delivery is confirmed.
+
+## Latest appointment readiness finding (2026-11-23)
+- Live smoke run https://github.com/lotuseater97-droid/orangeaesthetics.com/actions/runs/45281401842 reported HTTP 503 for all three invalid POST probes. The handler at that time checked notification configuration before payload validation.
+- GitHub commits `8d89ca7` and `362d439` moved payload validation ahead of notification configuration and added regression coverage. Static audit, business foundation and checkout integration tests passed for `362d439`.
+- **The fix is not confirmed deployed.** Re-run production smoke only after verifying the updated Worker is deployed; expected invalid POST statuses are 400 (malformed JSON), 415 (unsupported content type) and 403 (wrong origin). If all remain 503, investigate deployed revision/configuration; do not weaken smoke expectations to make the run green.
+- Even after these probes pass, a valid contact request must remain unavailable (503) unless the approved notification endpoint and token are configured. End-to-end delivery requires a separate synthetic submission with explicit destination approval.
 
 ## Deployment verification (required before announcing launch)
 1. In Cloudflare Workers & Pages, open `orangeaesthetics-com` and confirm the service is a Worker, the route/custom domain is `orangeaesthetics.com`, and deployment source points to the intended repository and branch.
