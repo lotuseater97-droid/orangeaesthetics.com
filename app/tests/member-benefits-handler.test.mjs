@@ -40,3 +40,12 @@ test("returns no patient information from extra database columns",async()=>{
  assert.equal(response.status,200);
  assert.doesNotMatch(response.body,/Private|patient_name/);
 });
+
+test("rejects missing quantities rather than converting null to zero",async()=>{
+ for(const field of ["granted_quantity","redeemed_quantity"]){
+  for(const invalid of [null,"",false]){
+   const s=build({rows:[{...row,[field]:invalid}]});
+   assert.equal((await s.handle({method:"GET"})).status,503);
+  }
+ }
+});
