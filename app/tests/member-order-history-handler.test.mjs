@@ -62,3 +62,10 @@ test("rejects absent order timestamps instead of treating null as 1970",async()=
   assert.equal((await handle({method:"GET"})).status,503);
  }
 });
+
+test("rejects scientific notation, fractional and padded order totals",async()=>{
+ for(const invalid of ["1e2","99.5"," 9900","09900","-1"]){
+  const handle=createMemberOrderHistoryHandler({enabled:true,verifySession:async()=>({id:member,active:true}),query:async()=>({rows:[{...row,total_cents:invalid}]})});
+  assert.equal((await handle({method:"GET"})).status,503);
+ }
+});
