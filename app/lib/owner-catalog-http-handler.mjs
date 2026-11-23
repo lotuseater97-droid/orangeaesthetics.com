@@ -13,7 +13,7 @@ export function createOwnerCatalogHttpHandler({approveCatalog,origin,enabled=fal
   let body;try{body=JSON.parse(rawBody)}catch{return reply(400,"Invalid JSON")}
   if(!body||typeof body!=="object"||Array.isArray(body)||Object.keys(body).sort().join(",")!=="approved,itemId,requiresClinicalReview")return reply(400,"Invalid fields");
   if(typeof body.itemId!=="string"||typeof body.approved!=="boolean"||typeof body.requiresClinicalReview!=="boolean")return reply(400,"Invalid fields");
-  try{await approveCatalog({headers,itemId:body.itemId,approved:body.approved,requiresClinicalReview:body.requiresClinicalReview,requestId:randomUUID()});return reply(200,"Approval recorded")}
+  try{const result=await approveCatalog({headers,itemId:body.itemId,approved:body.approved,requiresClinicalReview:body.requiresClinicalReview,requestId:randomUUID()});if(result?.applied!==true)return reply(503,"Approval not confirmed");return reply(200,"Approval recorded")}
   catch{return reply(403,"Approval denied")}
  };
 }
