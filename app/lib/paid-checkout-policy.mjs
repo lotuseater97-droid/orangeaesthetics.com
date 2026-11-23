@@ -5,12 +5,13 @@ export function paidCheckoutCandidate(event) {
     !/^evt_[A-Za-z0-9]+$/.test(event.id)) return null;
  const session=event.data?.object;
  if(!session||session.object!=="checkout.session"||
-    typeof session.id!=="string"||!/^cs_(?:test_|live_)?[A-Za-z0-9_]+$/.test(session.id)||
+    typeof session.id!=="string"||!/^cs_(?:test_|live_)[A-Za-z0-9_]+$/.test(session.id)||
     (event.livemode===false&&!session.id.startsWith("cs_test_"))||
-    (event.livemode===true&&session.id.startsWith("cs_test_"))||
+    (event.livemode===true&&!session.id.startsWith("cs_live_"))||
+    typeof event.livemode!=="boolean"||
     session.mode!=="payment"||session.payment_status!=="paid"||
     session.status!=="complete"||session.currency!=="usd"||
-    !Number.isSafeInteger(session.amount_total)||session.amount_total<=0) return null;
+    !Number.isSafeInteger(session.amount_total)||session.amount_total<=0||session.amount_total>99999999) return null;
  // Lookup MUST be by server-stored Stripe checkout ID, not metadata/customer email.
  return Object.freeze({eventId:event.id,checkoutId:session.id,amountCents:session.amount_total,currency:"USD"});
 }
