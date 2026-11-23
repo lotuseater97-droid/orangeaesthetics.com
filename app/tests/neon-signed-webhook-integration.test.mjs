@@ -41,7 +41,7 @@ test('signed webhook reconciles a real Neon development transaction without pers
   assert.equal((await handler(sign('evt_'+nonce.slice(0,20)))).status,200);
   assert.equal((await handler(sign('evt_'+nonce.slice(0,20)))).status,200);
   assert.equal((await handler(sign('evt_'+nonce.slice(0,19)+'x'))).status,200);
-  assert.equal((await handler(sign('evt_'+nonce.slice(0,19)+'y',9800))).status,503);
+  // A PostgreSQL exception aborts the current transaction until we roll back\n  // to a savepoint; otherwise later assertions fail for the wrong reason.\n  await client.query('SAVEPOINT before_rejected_payment');\n  assert.equal((await handler(sign('evt_'+nonce.slice(0,19)+'y',9800))).status,503);\n  await client.query('ROLLBACK TO SAVEPOINT before_rejected_payment');\n  await client.query('RELEASE SAVEPOINT before_rejected_payment');
   const altered=sign('evt_'+nonce.slice(0,19)+'z');
   assert.equal((await handler({...altered,rawBody:altered.rawBody+' '})).status,400);
   const counts=await client.query("SELECT (SELECT count(*)::int FROM orange_app.payment_events WHERE order_id=$1) AS events,(SELECT count(*)::int FROM orange_app.benefit_grants WHERE order_item_id IN (SELECT id FROM orange_app.order_items WHERE order_id=$1)) AS grants,(SELECT count(*)::int FROM orange_app.audit_events WHERE action='checkout.paid' AND target_id=$1) AS audits",[order]);
