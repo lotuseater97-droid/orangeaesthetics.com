@@ -1,0 +1,53 @@
+name: Deploy Cloudflare Worker (manual)
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type DEPLOY to publish the current main branch to production'
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: orange-aesthetics-production-deploy
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirmation == 'DEPLOY' }}
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify website and private asset exclusion
+        run: |
+          node scripts/audit-static-site.mjs
+          node scripts/check-assetsignore.mjs
+      - name: Install test dependencies
+        run: npm install --prefix app --no-package-lock --ignore-scripts --no-audit --no-fund
+      - name: Run Worker and appointment tests
+        run: node scripts/test-worker.mjs
+      - name: Check Cloudflare deployment credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::Missing CLOUDFLARE_API_TOKEN secret"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "::error::Missing CLOUDFLARE_ACCOUNT_ID secret"; exit 1; }
+      - name: Deploy Worker and public assets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx --yes wrangler@4 deploy --config wrangler.toml
+      - name: Verify production routes after deployment
+        run: node scripts/smoke-production.mjs
+      - name: Record deployment evidence
+        if: always()
+        run: |
+          echo "## Cloudflare deployment attempt" >> "$GITHUB_STEP_SUMMARY"
+          echo "GitHub commit: \`$GITHUB_SHA\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "Workflow run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" >> "$GITHUB_STEP_SUMMARY"
+          echo "A passing smoke test validates public routes, not appointment notification delivery." >> "$GITHUB_STEP_SUMMARY"
