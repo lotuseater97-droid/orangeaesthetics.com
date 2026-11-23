@@ -14,7 +14,7 @@ test('appointment form times out stalled requests and re-enables submit',()=>{
 test('failed requests preserve a click-to-call fallback',()=>{
   assert.match(html,/msg\.replaceChildren\(/);
   assert.match(html,/href:"tel:\+17149213870"/);
-  assert.match(html,/if\(!response\.ok\)throw/);
+  assert.match(html,/if\(!response\.ok\|\|/);
 });
 test('appointment page avoids collecting clinical details',()=>{
   assert.doesNotMatch(html,/<textarea\b/i);
