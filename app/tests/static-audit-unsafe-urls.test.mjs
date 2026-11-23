@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,writeFileSync,rmSync} from 'node:fs';
+import {mkdtempSync,writeFileSync,rmSync,mkdirSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
@@ -28,4 +28,20 @@ test('rejects data-backed script sources',()=>{
 test('permits data-backed image sources',()=>{
   const result=runWithLink('<img src="data:image/png;base64,iVBORw0KGgo=" alt="Example">');
   assert.equal(result.status,0,result.stdout+result.stderr);
+});
+
+test('ignores unpublished HTML inside private and internal directories',()=>{
+  const dir=mkdtempSync(join(tmpdir(),'orange-audit-private-'));
+  try {
+    const head='<!doctype html><html lang="en"><head><title>Public</title><meta name="viewport" content="width=device-width"><meta name="description" content="Test"></head><body></body></html>';
+    writeFileSync(join(dir,'index.html'),head);
+    writeFileSync(join(dir,'appointment-request.html'),head);
+    for (const folder of ['private','internal','src','tests']) {
+      mkdirSync(join(dir,folder));
+      writeFileSync(join(dir,folder,'draft.html'),'<a href="/missing-draft-only.png">Draft</a>');
+    }
+    const result=spawnSync(process.execPath,[script],{cwd:dir,encoding:'utf8',timeout:5000});
+    assert.equal(result.status,0,result.stdout+result.stderr);
+    assert.match(result.stdout,/Pages: 2\b/);
+  } finally {rmSync(dir,{recursive:true,force:true});}
 });
