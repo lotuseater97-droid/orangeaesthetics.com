@@ -8,6 +8,9 @@ import {createNeonCheckoutAdapters} from "../lib/neon-checkout-adapters.mjs";
 import {createNeonCatalogLoader} from "../lib/neon-catalog-loader.mjs";
 import {createStripeTestSessionAdapter} from "../lib/stripe-test-session.mjs";
 import {createOidcMemberVerifier} from "../lib/oidc-member-verifier.mjs";
+import {createOidcOwnerVerifier} from "../lib/oidc-owner-verifier.mjs";
+import {createOwnerCatalogApproval} from "../lib/owner-catalog-approval.mjs";
+import {createOwnerCatalogHttpHandler} from "../lib/owner-catalog-http-handler.mjs";
 
 const {DATABASE_URL,STRIPE_WEBHOOK_SECRET,STRIPE_TEST_SECRET_KEY,PORT="8788",HOST="127.0.0.1",CHECKOUT_ORIGIN="https://orangeaesthetics.com"}=process.env;
 if(!DATABASE_URL||!STRIPE_WEBHOOK_SECRET||process.env.STRIPE_LIVEMODE==="true"){
@@ -27,10 +30,14 @@ const checkout=createCheckoutHttpHandler({
  verifySession,
  loadCatalog,startCheckout,origin:CHECKOUT_ORIGIN,enabled:false
 });
+const verifyOwner=oidcReady?createOidcOwnerVerifier({issuer:process.env.OIDC_ISSUER,audience:process.env.OIDC_AUDIENCE,jwksUrl:process.env.OIDC_JWKS_URL,query:execute}):async()=>null;
+const approveCatalog=createOwnerCatalogApproval({query:execute,verifyOwner});
+// Intentionally disabled until the owner identity provider and deployment are validated.
+const ownerApproval=createOwnerCatalogHttpHandler({approveCatalog,origin:CHECKOUT_ORIGIN,enabled:false});
 const server=createServer(async(req,res)=>{
- const handler=req.url==="/api/stripe/webhook"?webhook:req.url==="/api/checkout"?checkout:null;
+ const handler=req.url==="/api/stripe/webhook"?webhook:req.url==="/api/checkout"?checkout:req.url==="/api/owner/catalog-approval"?ownerApproval:null;
  if(!handler){res.writeHead(404);res.end();return;}
- let bytes=0;const chunks=[],limit=req.url==="/api/checkout"?2048:65536;
+ let bytes=0;const chunks=[],limit=req.url==="/api/stripe/webhook"?65536:2048;
  try{
   for await(const chunk of req){bytes+=chunk.length;if(bytes>limit){res.writeHead(413);res.end();return;}chunks.push(chunk);}
   const output=await handler({method:req.method,headers:req.headers,rawBody:Buffer.concat(chunks).toString("utf8")});
