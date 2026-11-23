@@ -41,7 +41,7 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: npx --yes wrangler@4 deploy --config wrangler.toml
+        run: npx --yes wrangler@4.167.0 deploy --config wrangler.toml
       - name: Verify production routes after deployment
         run: node scripts/smoke-production.mjs
       - name: Record deployment evidence
