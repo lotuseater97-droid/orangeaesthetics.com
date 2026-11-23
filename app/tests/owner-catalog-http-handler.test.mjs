@@ -30,6 +30,8 @@ test("rejects method, origin, type, malformed JSON and extraneous fields",async(
   request(payload,{rawBody:"{"}),
   request({...payload,actorSubject:"forged"}),
   request({...payload,approved:"true"}),
+  request({...payload,itemId:"invalid-uuid"}),
+  request({...payload,requiresClinicalReview:true}),
   request(payload,{rawBody:"x".repeat(2049)})
  ];
  for(const input of bad)assert.notEqual((await handle(input)).status,200);
