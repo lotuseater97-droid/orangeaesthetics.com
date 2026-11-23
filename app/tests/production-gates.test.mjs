@@ -43,3 +43,14 @@ test('development runtime is pinned to its Neon development compute before conne
  assert.match(source,/databaseAddress\.pathname!=="\/neondb"/);
  assert.ok(source.indexOf('Development runtime requires the approved Neon development database')<source.indexOf('const pool=new Pool('));
 });
+
+test('development server port guard accepts numeric ports and rejects nonnumeric values',async()=>{
+ const source=await readFile(new URL('../server/index.mjs',import.meta.url),'utf8');
+ const guard=source.match(/if\(!\/(.*?)\/\.test\(String\(PORT\)\)\|\|Number\(PORT\)<1\|\|Number\(PORT\)>65535\)/);
+ assert.ok(guard,'expected port guard');
+ const digits=new RegExp(guard[1]);
+ assert.equal(digits.test('8788'),true);
+ assert.equal(digits.test('443'),true);
+ assert.equal(digits.test('abc'),false);
+ assert.equal(digits.test('8x'),false);
+});
