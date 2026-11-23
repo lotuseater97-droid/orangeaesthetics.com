@@ -4,7 +4,9 @@ import {createHmac,timingSafeEqual} from "node:crypto";
 export function verifyStripeSignature(rawBody, header, secret, nowSeconds = Math.floor(Date.now()/1000), tolerance = 300) {
   if (typeof rawBody !== "string" || typeof header !== "string" || typeof secret !== "string" || secret.length < 8) return false;
   const segments = header.split(",").map(x => x.trim().split("="));
-  const timestamp = segments.find(([key]) => key === "t")?.[1];
+  const timestamps = segments.filter(([key]) => key === "t").map(([,value]) => value);
+  if (timestamps.length !== 1) return false;
+  const timestamp = timestamps[0];
   const signatures = segments.filter(([key]) => key === "v1").map(([,v]) => v);
   if (!/^\d{10,}$/.test(timestamp || "") || signatures.length === 0 || !Number.isFinite(nowSeconds)) return false;
   const time = Number(timestamp);
