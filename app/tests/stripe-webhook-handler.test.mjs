@@ -46,3 +46,14 @@ test("signed test-mode event with live session ID never reaches reconciliation",
  assert.equal((await h(signed(forged))).status,200);
  assert.equal(calls,0);
 });
+
+test("oversized signed payment is ignored before DB reconciliation",async()=>{
+ let calls=0;const h=createStripeWebhookHandler({secret,execute:async()=>{calls++;return {rows:[{order_id:"unexpected"}]}}});
+ const e={...event,data:{object:{...event.data.object,amount_total:100000000}}};
+ assert.equal((await h(signed(e))).status,200);assert.equal(calls,0);
+});
+test("malformed Stripe session ID is ignored",async()=>{
+ let calls=0;const h=createStripeWebhookHandler({secret,execute:async()=>{calls++;return {rows:[{order_id:"unexpected"}]}}});
+ const e={...event,data:{object:{...event.data.object,id:"cs_123"}}};
+ assert.equal((await h(signed(e))).status,200);assert.equal(calls,0);
+});
