@@ -3,7 +3,12 @@ import {createHmac,timingSafeEqual} from "node:crypto";
 // Production endpoint must also enforce body size, TLS, rate limits and durable event deduplication.
 export function verifyStripeSignature(rawBody, header, secret, nowSeconds = Math.floor(Date.now()/1000), tolerance = 300) {
   if (typeof rawBody !== "string" || typeof header !== "string" || typeof secret !== "string" || secret.length < 8) return false;
-  const segments = header.split(",").map(x => x.trim().split("="));
+  const segments = header.split(",").map(part => {
+    const segment = part.trim();
+    const separator = segment.indexOf("=");
+    if (separator <= 0) return [segment, undefined];
+    return [segment.slice(0, separator), segment.slice(separator + 1)];
+  });
   const timestamps = segments.filter(([key]) => key === "t").map(([,value]) => value);
   if (timestamps.length !== 1) return false;
   const timestamp = timestamps[0];
