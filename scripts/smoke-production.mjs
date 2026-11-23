@@ -49,6 +49,21 @@ const pageMarkers = new Map([
   ['/iv-therapy.html', '<title>IV Therapy & Hydration in Orange CA'],
   ['/memberships.html', '<title>IV Memberships'],
   ['/appointment-request.html', '<title>Request an Appointment'],
+  ['/about.html', "<title>About | Orange Aesthetics & Wellness"],
+  ['/aesthetic-pricing.html', "<title>Aesthetic Treatment Price List | Orange Aesthetics & Wellness"],
+  ['/botox.html', "<title>Botox & Wrinkle Relaxers | Orange Aesthetics & Wellness"],
+  ['/contact.html', "<title>Contact & Visit Us | Orange Aesthetics & Wellness"],
+  ['/fillers.html', "<title>Dermal Fillers | Orange Aesthetics & Wellness"],
+  ['/iv-combinations.html', "<title>IV Combination Review Chart | Orange Aesthetics"],
+  ['/laser-hair-removal.html', "<title>Laser Hair Removal | Orange Aesthetics & Wellness"],
+  ['/microneedling.html', "<title>Microneedling & RF Skin Rejuvenation | Orange Aesthetics & Wellness"],
+  ['/pricing.html', "<title>IV Therapy Price List | Orange Aesthetics & Wellness"],
+  ['/provider.html', "<title>Our Provider | Orange Aesthetics & Wellness"],
+  ['/prp.html', "<title>PRP & Hair Restoration | Orange Aesthetics & Wellness"],
+  ['/shop.html', "<title>Neocutis Skincare | Orange Aesthetics"],
+  ['/skin-tightening.html', "<title>Skin Tightening | Orange Aesthetics & Wellness"],
+  ['/weight-loss.html', "<title>Medical Weight Management | Orange Aesthetics"],
+  ['/wellness.html', "<title>Wellness & IV Therapy | Orange Aesthetics & Wellness"],
 ]);
 let failures = 0;
 for (const [path, expected] of cases) {
