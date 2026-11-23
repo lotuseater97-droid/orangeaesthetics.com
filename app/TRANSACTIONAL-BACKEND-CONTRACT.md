@@ -13,3 +13,6 @@ The caller supplies only a session token and operation; effective organization, 
 - Never send clinical chart data or PHI into this business layer.
 
 The previous `business-service.mjs` remains for compatibility but is not suitable as the production write path because its audit callback runs outside the database mutation.
+
+## Verified organization binding (security update)
+The transactional write service now requires `verifySession(token)` to return both an active `user_id` and an explicit `organization_id`. It calls `lookupStaff({user_id,organization_id})` and rejects any membership whose organization differs from the verified session. This prevents multi-organization users from accidentally or maliciously writing to a different organization's financial records. Missing organization or mismatched membership is denied **before starting a transaction**. Update any server integration that previously used `lookupStaff(user_id)`; do not derive the active organization from unverified request input.
