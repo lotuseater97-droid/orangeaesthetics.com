@@ -103,8 +103,8 @@ test('signed webhook reconciles a real Neon development transaction without pers
   assert.equal(paidOrder.status,'paid');
   assert.equal(paidOrder.totalCents,9900);
   // Completed redemptions consume credits. Reversed redemptions do not.
-  await client.query(
-   "INSERT INTO orange_app.redemptions(member_id,grant_id,quantity,status,staff_subject) VALUES($1,$2,1,'completed',$3)",
+  const redeemed=await client.query(
+   "INSERT INTO orange_app.redemptions(member_id,grant_id,quantity,status,staff_subject) VALUES($1,$2,1,'completed',$3) RETURNING id",
    [memberId,initialGrant.id,memberSubject]
   );
   const consumed=await benefits({method:'GET'});
@@ -112,13 +112,23 @@ test('signed webhook reconciles a real Neon development transaction without pers
   const consumedGrant=JSON.parse(consumed.body).benefits.find(item=>item.id===initialGrant.id);
   assert.equal(consumedGrant.redeemed,1);
   assert.equal(consumedGrant.remaining,0);
+  // Reverse the actual completed redemption, rather than adding an unrelated
+  // reversed row: its credit must become available again.
   await client.query(
-   "INSERT INTO orange_app.redemptions(member_id,grant_id,quantity,status,staff_subject) VALUES($1,$2,1,'reversed',$3)",
+   "UPDATE orange_app.redemptions SET status='reversed' WHERE id=$1",
+   [redeemed.rows[0].id]
+  );
+  const restored=JSON.parse((await benefits({method:'GET'})).body).benefits.find(item=>item.id===initialGrant.id);
+  assert.equal(restored.redeemed,0);
+  assert.equal(restored.remaining,1);
+  // A new completed redemption must consume the restored credit exactly once.
+  await client.query(
+   "INSERT INTO orange_app.redemptions(member_id,grant_id,quantity,status,staff_subject) VALUES($1,$2,1,'completed',$3)",
    [memberId,initialGrant.id,memberSubject]
   );
-  const afterReversal=JSON.parse((await benefits({method:'GET'})).body).benefits.find(item=>item.id===initialGrant.id);
-  assert.equal(afterReversal.redeemed,1);
-  assert.equal(afterReversal.remaining,0);
+  const afterReRedemption=JSON.parse((await benefits({method:'GET'})).body).benefits.find(item=>item.id===initialGrant.id);
+  assert.equal(afterReRedemption.redeemed,1);
+  assert.equal(afterReRedemption.remaining,0);
   // A second active member must not see the first member's paid orders or grants.
   const other=await client.query(
    "INSERT INTO orange_app.members(display_name,auth_subject,status) VALUES($1,$2,'active') RETURNING id",
