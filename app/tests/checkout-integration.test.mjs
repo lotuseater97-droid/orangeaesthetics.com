@@ -12,7 +12,7 @@ const order="00000000-0000-4000-8000-000000000002";
 const calls=[];
 const query=async(sql,values)=>{
  calls.push({sql,values});
- if(sql.includes("FROM orange_app.catalog_items"))return {rows:[{sku:"test_item",price_cents:"9900",active:true,kind:"addon"}]};
+ if(sql.includes("FROM orange_app.catalog_items"))return {rows:[{sku:"test_item",price_cents:"9900",active:true,kind:"addon",checkout_approved:true,requires_clinical_review:false}]};
  if(sql.includes("reserve_checkout_order"))return {rows:[{id:order,status:"pending",member_id:member,total_cents:"9900",currency:"USD"}]};
  if(sql.includes("attach_checkout_session"))return {rows:[{attached:true}]};
  throw Error("Unexpected SQL");
