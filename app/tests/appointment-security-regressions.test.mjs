@@ -33,3 +33,13 @@ test('stops reading oversized streamed bodies',async()=>{
   assert.equal(response.status,413);
   assert.ok(reads<6,'oversized input should not be fully consumed');
 });
+
+
+test('appointment API error responses include browser security headers',async()=>{
+  const response=await onRequestPost({request:req('{not json'),env});
+  assert.equal(response.status,400);
+  assert.equal(response.headers.get('cache-control'),'no-store');
+  assert.equal(response.headers.get('x-content-type-options'),'nosniff');
+  assert.equal(response.headers.get('referrer-policy'),'strict-origin-when-cross-origin');
+  assert.equal(response.headers.get('x-frame-options'),'DENY');
+});
