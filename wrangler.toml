@@ -1,8 +1,12 @@
 name = "orangeaesthetics-com"
+main = "worker.mjs"
 compatibility_date = "2026-11-22"
 
-# Static public website. Existing custom domains remain managed in Cloudflare.
-# This is an assets-only Worker; Pages Functions in /functions are NOT deployed.
+# Static assets plus appointment-request API handled by worker.mjs.
+# No delivery occurs until APPOINTMENT_NOTIFICATION_ENDPOINT and
+# APPOINTMENT_NOTIFICATION_TOKEN are configured as Cloudflare secrets.
 [assets]
 directory = "."
+binding = "ASSETS"
 not_found_handling = "404-page"
+run_worker_first = ["/api/*", "/app/*", "/functions/*", "/scripts/*", "/.github/*"]
