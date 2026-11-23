@@ -27,3 +27,15 @@ test("rejects malformed order UUID in idempotency key",async()=>{
  await assert.rejects(fn(params,{idempotencyKey:"checkout-zzzzzzzz-zzzz-zzzz-zzzz-zzzzzzzzzzzz"}),/Invalid checkout request/);
  assert.equal(contacted,false);
 });
+
+test("rejects oversized Stripe line total without contacting Stripe",async()=>{
+ let contacted=false;
+ const fn=createStripeTestSessionAdapter({secretKey:"sk_test_example",fetchImpl:async()=>{contacted=true;throw Error("unexpected network")}});
+ await assert.rejects(fn({...params,line_items:[{...params.line_items[0],price_data:{...params.line_items[0].price_data,unit_amount:10000000},quantity:10}]},{idempotencyKey:"checkout-"+id}),/Invalid checkout fields/);
+ assert.equal(contacted,false);
+});
+test("accepts maximum permitted Stripe amount",async()=>{
+ const fn=createStripeTestSessionAdapter({secretKey:"sk_test_example",fetchImpl:async()=>({ok:true,json:async()=>({id:"cs_test_abc",url:"https://checkout.stripe.com/c/pay/test"})})});
+ const result=await fn({...params,line_items:[{...params.line_items[0],price_data:{...params.line_items[0].price_data,unit_amount:99999999},quantity:1}]},{idempotencyKey:"checkout-"+id});
+ assert.equal(result.id,"cs_test_abc");
+});
