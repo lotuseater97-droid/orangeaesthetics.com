@@ -23,7 +23,9 @@ jobs:
           echo 'Run time (UTC): '$(date -u '+%Y-%m-%d %H:%M:%S') >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo '~~~text' >> "$GITHUB_STEP_SUMMARY"
+          set +e
           node scripts/smoke-production.mjs 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
           result=${PIPESTATUS[0]}
+          set -e
           echo '~~~' >> "$GITHUB_STEP_SUMMARY"
           exit "$result"
