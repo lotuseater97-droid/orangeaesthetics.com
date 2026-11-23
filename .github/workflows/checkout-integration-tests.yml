@@ -1,5 +1,6 @@
 name: Checkout integration tests
 on:
+  workflow_dispatch:
   push:
     paths:
       - 'app/lib/**'
@@ -25,4 +26,13 @@ jobs:
           npm install --prefix app --no-audit --no-fund
           npm install --prefix app/server --no-audit --no-fund
       - name: Run checkout and authentication-independent unit tests
-        run: node --test app/tests/*.test.mjs
+        run: |
+          set -o pipefail
+          node --test --test-reporter=tap app/tests/*.test.mjs | tee checkout-test-results.tap
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkout-test-results
+          path: checkout-test-results.tap
+          if-no-files-found: warn
