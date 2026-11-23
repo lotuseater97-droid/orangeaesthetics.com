@@ -21,7 +21,7 @@ if(!DATABASE_URL||!STRIPE_WEBHOOK_SECRET||process.env.STRIPE_LIVEMODE==="true"){
 if(!["127.0.0.1","::1","localhost"].includes(HOST)){
  throw new Error("Development runtime must bind to loopback only");
 }
-if(!/^\\d+$/.test(String(PORT))||Number(PORT)<1||Number(PORT)>65535){
+if(!/^\d+$/.test(String(PORT))||Number(PORT)<1||Number(PORT)>65535){
  throw new Error("Invalid development runtime port");
 }
 // Prevent the local test webhook runtime from modifying the production branch.
