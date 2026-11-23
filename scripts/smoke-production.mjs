@@ -38,7 +38,10 @@ const pageMarkers = new Map([
 let failures = 0;
 for (const [path, expected] of cases) {
   try {
-    const response = await fetch(new URL(path, target), { method: 'GET', redirect: 'manual', signal: AbortSignal.timeout(10000) });
+    const response = await fetch(new URL(path, target), { method: 'GET', redirect: 'follow', signal: AbortSignal.timeout(10000) });
+    const finalUrl = new URL(response.url);
+    const allowedFinalPaths = path.endsWith('.html') ? [path, path.slice(0,-5)] : [path];
+    const destinationOk = finalUrl.origin === target.origin && allowedFinalPaths.includes(finalUrl.pathname) && !finalUrl.search && !finalUrl.hash;
     const statusOk = response.status === expected;
     const nosniff = response.headers.get('x-content-type-options') === 'nosniff';
     const framing = response.headers.get('x-frame-options') === 'DENY';
@@ -47,8 +50,8 @@ for (const [path, expected] of cases) {
     // A generic fallback page may return 200 for a missing route. Check page identity too.
     const marker = pageMarkers.get(path);
     const pageContentOk = marker ? (response.headers.get('content-type') || '').toLowerCase().includes('text/html') && (await response.text()).includes(marker) : true;
-    const ok = statusOk && nosniff && framing && referrer && methodAllowed && pageContentOk;
-    console.log(`${ok ? 'PASS' : 'FAIL'} ${path}: HTTP ${response.status} (expected ${expected}), nosniff=${nosniff} , frame-deny=${framing}, referrer-policy=${referrer}${path === '/api/appointment-request' ? `, allow-post=${methodAllowed}` : ''}${marker ? `, page-content=${pageContentOk}` : ''}`);
+    const ok = statusOk && destinationOk && nosniff && framing && referrer && methodAllowed && pageContentOk;
+    console.log(`${ok ? 'PASS' : 'FAIL'} ${path}: HTTP ${response.status} (expected ${expected}), destination-ok=${destinationOk}, nosniff=${nosniff}, frame-deny=${framing}, referrer-policy=${referrer}${path === '/api/appointment-request' ? `, allow-post=${methodAllowed}` : ''}${marker ? `, page-content=${pageContentOk}` : ''}`);
     if (!ok) failures++;
   } catch (error) {
     console.error(`FAIL ${path}: ${error.message}`);
