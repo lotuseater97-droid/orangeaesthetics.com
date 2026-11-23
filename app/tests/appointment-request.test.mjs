@@ -14,3 +14,33 @@ test("rejects mismatched origin",async()=>{const res=await onRequestPost({reques
 test("fails closed without provider configuration",async()=>{const res=await onRequestPost({request:request(base),env:{}});assert.equal(res.status,503)});
 test("rejects insecure notification destination",async()=>{const res=await onRequestPost({request:request(base),env:{...env,APPOINTMENT_NOTIFICATION_ENDPOINT:"http://notifications.example.test"}});assert.equal(res.status,503)});
 test("returns delivery error without claiming receipt",async()=>{await withFetch(async()=>new Response("",{status:500}),async()=>{const res=await onRequestPost({request:request(base),env});assert.equal(res.status,502)})});
+
+test("notification forwarding uses bearer authorization and blocks redirects",async()=>{
+  let observed;
+  await withFetch(async(url,options)=>{
+    observed={url,options};
+    return new Response("",{status:307,headers:{location:"https://untrusted.example.test/receive"}});
+  },async()=>{
+    const res=await onRequestPost({request:request(base),env});
+    assert.equal(res.status,502,"a redirect must not count as successful delivery");
+  });
+  assert.equal(observed.url,endpoint);
+  assert.equal(observed.options.redirect,"error");
+  assert.equal(observed.options.headers.authorization,"Bearer test-secret");
+  assert.equal(observed.options.headers["content-type"],"application/json");
+  assert.equal(JSON.parse(observed.options.body).source,"Orange Aesthetics appointment request");
+});
+test("provider acceptance status 202 is treated as receipt, not confirmed booking",async()=>{
+  await withFetch(async()=>new Response("",{status:202}),async()=>{
+    const res=await onRequestPost({request:request(base),env});
+    assert.equal(res.status,200);
+    assert.deepEqual(await res.json(),{message:"Received"});
+  });
+});
+test("provider timeout or network failure does not claim receipt",async()=>{
+  await withFetch(async()=>{throw new Error("network unavailable")},async()=>{
+    const res=await onRequestPost({request:request(base),env});
+    assert.equal(res.status,502);
+    assert.deepEqual(await res.json(),{message:"Delivery unavailable"});
+  });
+});
