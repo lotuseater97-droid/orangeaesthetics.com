@@ -8,7 +8,9 @@ export function createNeonCheckoutAdapters({query}={}){
    const result=await query("SELECT * FROM orange_app.reserve_checkout_order($1,$2,$3,$4)",[memberId,sku,quantity,unitAmount]);
    const row=result?.rows?.[0];
    if(!row)throw new Error("Order reservation failed");
-   return {id:row.id,status:row.status,memberId:row.member_id,totalAmount:Number(row.total_cents),currency:row.currency?.trim()};
+   const totalAmount=Number(row.total_cents);
+   if(!Number.isSafeInteger(totalAmount)||totalAmount<1||totalAmount>99999999)throw new Error("Invalid reserved order amount");
+   return {id:row.id,status:row.status,memberId:row.member_id,totalAmount,currency:row.currency?.trim()};
   },
   async attachCheckout({orderId,checkoutId,memberId}){
    const result=await query("SELECT orange_app.attach_checkout_session($1,$2,$3) AS attached",[orderId,memberId,checkoutId]);
