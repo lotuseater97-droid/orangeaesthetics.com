@@ -9,7 +9,7 @@ test("rejects client supplied extra line items",async()=>{const fn=createStripeT
 test("Stripe error does not leak response body",async()=>{const fn=createStripeTestSessionAdapter({secretKey:"sk_test_example",fetchImpl:async()=>({ok:false})});await assert.rejects(fn(params,{idempotencyKey:"checkout-"+id}),/unavailable/)});
 
 test("rejects forged Stripe checkout response URLs",async()=>{
- for(const url of ["https://checkout.stripe.com.evil.test/c/pay/fake","https://checkout.stripe.com@evil.test/c/pay/fake","http://checkout.stripe.com/c/pay/fake","https://checkout.stripe.com/other","https://checkout.stripe.com/c/pay/fake#fragment"]){
+ for(const url of ["https://checkout.stripe.com.evil.test/c/pay/fake","https://checkout.stripe.com@evil.test/c/pay/fake","http://checkout.stripe.com/c/pay/fake","https://checkout.stripe.com/other"]){
   const fn=createStripeTestSessionAdapter({secretKey:"sk_test_example",fetchImpl:async()=>({ok:true,json:async()=>({id:"cs_test_abc",url})})});
   await assert.rejects(fn(params,{idempotencyKey:"checkout-"+id}),/Invalid Stripe response/,url);
  }
@@ -50,4 +50,10 @@ test("rejects Stripe URL with matching session prefix but extra path",async()=>{
   const fn=createStripeTestSessionAdapter({secretKey:"sk_test_example",fetchImpl:async()=>({ok:true,json:async()=>({id:"cs_test_abc",url:"https://checkout.stripe.com/c/pay/cs_test_abc"+suffix})})});
   await assert.rejects(fn(params,{idempotencyKey:"checkout-"+id}),/Invalid Stripe response/);
  }
+});
+
+test("preserves a Stripe-hosted Checkout URL fragment",async()=>{
+ const url="https://checkout.stripe.com/c/pay/cs_test_abc#fidkdWxOYHwnPyd1blpx";
+ const fn=createStripeTestSessionAdapter({secretKey:"sk_test_example",fetchImpl:async()=>({ok:true,json:async()=>({id:"cs_test_abc",url})})});
+ assert.equal((await fn(params,{idempotencyKey:"checkout-"+id})).url,url);
 });
