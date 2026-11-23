@@ -31,7 +31,7 @@ export function createCheckoutService({reserveOrder,attachCheckout,createStripeS
   if(typeof session?.id!=="string"||!/^cs_test_[A-Za-z0-9_]+$/.test(session.id)||
      paymentUrl.protocol!=="https:"||paymentUrl.hostname!=="checkout.stripe.com"||
      paymentUrl.username||paymentUrl.password||paymentUrl.port||paymentUrl.hash||
-     !paymentUrl.pathname.startsWith("/c/pay/"))throw new Error("Invalid Stripe test session");
+     !paymentUrl.pathname.startsWith("/c/pay/"+session.id))throw new Error("Invalid Stripe test session");
   const attached=await attachCheckout({orderId:order.id,checkoutId:session.id,memberId:verifiedMemberId});
   if(attached!==true)throw new Error("Checkout session attachment not confirmed");
   return Object.freeze({url:session.url});
