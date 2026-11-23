@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {createOwnerCatalogHttpHandler} from "../lib/owner-catalog-http-handler.mjs";
 const origin="https://orangeaesthetics.com";
-const payload={itemId:"00000000-0000-4000-8000-000000000001",approved:true,requiresClinicalReview:false,requestId:"request-123"};
+const payload={itemId:"00000000-0000-4000-8000-000000000001",approved:true,requiresClinicalReview:false};
 const request=(body=payload,overrides={})=>({method:"POST",headers:{origin,"content-type":"application/json",authorization:"Bearer synthetic"},rawBody:JSON.stringify(body),...overrides});
 test("disabled endpoint refuses all requests",async()=>{
  const handle=createOwnerCatalogHttpHandler({origin,approveCatalog:async()=>{throw Error("should not call")}});
@@ -14,6 +14,7 @@ test("valid request delegates to trusted owner adapter without client identity",
  const response=await handle(request());
  assert.equal(response.status,200);
  assert.deepEqual(received.itemId,payload.itemId);
+ assert.match(received.requestId,/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
  assert.equal(received.headers.authorization,"Bearer synthetic");
  assert.equal(received.approved,true);
  assert.equal(received.requiresClinicalReview,false);
