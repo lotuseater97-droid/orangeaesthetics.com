@@ -1,6 +1,6 @@
 // Cloudflare Pages Function. Contact-only intake; no PHI or private recipient in source.
 const allowed = new Set(["Injectables","Skin rejuvenation","Laser","IV wellness","Membership","Other consultation"]);
-const json=(status,message)=>new Response(JSON.stringify({message}),{status,headers:{"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff"}});
+const json=(status,message)=>new Response(JSON.stringify({message}),{status,headers:{"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff","referrer-policy":"strict-origin-when-cross-origin","x-frame-options":"DENY"}});
 export async function onRequestPost({request,env}) {
   if (!env.APPOINTMENT_NOTIFICATION_ENDPOINT || !env.APPOINTMENT_NOTIFICATION_TOKEN) return json(503,"Appointment requests are not configured");
   let endpoint;try{endpoint=new URL(env.APPOINTMENT_NOTIFICATION_ENDPOINT)}catch{return json(503,"Notification endpoint is invalid")}
