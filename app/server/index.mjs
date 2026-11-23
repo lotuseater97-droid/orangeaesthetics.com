@@ -7,6 +7,7 @@ import {createCheckoutService} from "../lib/checkout-service.mjs";
 import {createNeonCheckoutAdapters} from "../lib/neon-checkout-adapters.mjs";
 import {createNeonCatalogLoader} from "../lib/neon-catalog-loader.mjs";
 import {createStripeTestSessionAdapter} from "../lib/stripe-test-session.mjs";
+import {createOidcMemberVerifier} from "../lib/oidc-member-verifier.mjs";
 
 const {DATABASE_URL,STRIPE_WEBHOOK_SECRET,STRIPE_TEST_SECRET_KEY,PORT="8788",HOST="127.0.0.1",CHECKOUT_ORIGIN="https://orangeaesthetics.com"}=process.env;
 if(!DATABASE_URL||!STRIPE_WEBHOOK_SECRET||process.env.STRIPE_LIVEMODE==="true"){
@@ -19,10 +20,11 @@ const db=createNeonCheckoutAdapters({query:execute});
 const loadCatalog=createNeonCatalogLoader({query:execute,approvedSkus:(process.env.CHECKOUT_APPROVED_SKUS??"").split(",").filter(Boolean)});
 const createStripeSession=STRIPE_TEST_SECRET_KEY?createStripeTestSessionAdapter({secretKey:STRIPE_TEST_SECRET_KEY}):async()=>{throw new Error("Stripe test checkout not configured")};
 const startCheckout=createCheckoutService({reserveOrder:db.reserveOrder,attachCheckout:db.attachCheckout,createStripeSession,approvedOrigin:CHECKOUT_ORIGIN,enabled:false});
+const oidcReady=Boolean(process.env.OIDC_ISSUER&&process.env.OIDC_AUDIENCE&&process.env.OIDC_JWKS_URL);
+const verifySession=oidcReady?createOidcMemberVerifier({issuer:process.env.OIDC_ISSUER,audience:process.env.OIDC_AUDIENCE,jwksUrl:process.env.OIDC_JWKS_URL,query:execute}):async()=>null;
 const checkout=createCheckoutHttpHandler({
- // Authentication deliberately fails closed until verified OIDC/JWT provider and
- // DB auth_subject-to-member mapping are implemented. No development bypass.
- verifySession:async()=>{throw new Error("Authentication provider not configured")},
+ // Explicit operator approval remains necessary even when OIDC is configured.
+ verifySession,
  loadCatalog,startCheckout,origin:CHECKOUT_ORIGIN,enabled:false
 });
 const server=createServer(async(req,res)=>{
