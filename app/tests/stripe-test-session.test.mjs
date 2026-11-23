@@ -44,3 +44,10 @@ test("rejects Stripe response URL for a different checkout session",async()=>{
  const fn=createStripeTestSessionAdapter({secretKey:"sk_test_example",fetchImpl:async()=>({ok:true,json:async()=>({id:"cs_test_abc",url:"https://checkout.stripe.com/c/pay/cs_test_other"})})});
  await assert.rejects(fn(params,{idempotencyKey:"checkout-"+id}),/Invalid Stripe response/);
 });
+
+test("rejects Stripe URL with matching session prefix but extra path",async()=>{
+ for(const suffix of ["extra","/extra"]){
+  const fn=createStripeTestSessionAdapter({secretKey:"sk_test_example",fetchImpl:async()=>({ok:true,json:async()=>({id:"cs_test_abc",url:"https://checkout.stripe.com/c/pay/cs_test_abc"+suffix})})});
+  await assert.rejects(fn(params,{idempotencyKey:"checkout-"+id}),/Invalid Stripe response/);
+ }
+});
