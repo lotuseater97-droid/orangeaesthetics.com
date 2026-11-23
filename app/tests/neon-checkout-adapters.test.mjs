@@ -11,3 +11,14 @@ test("missing attach confirmation rejects",async()=>{
  const a=createNeonCheckoutAdapters({query:async()=>({rows:[]})});
  await assert.rejects(a.attachCheckout({orderId:order,memberId:member,checkoutId:"cs_test_123"}),/not attached/);
 });
+
+test("rejects oversized or unsafe Neon bigint totals",async()=>{
+ for(const amount of ["100000000","9007199254740993","-1","NaN"]){
+  const a=createNeonCheckoutAdapters({query:async()=>({rows:[{id:order,status:"pending",member_id:member,total_cents:amount,currency:"USD"}]})});
+  await assert.rejects(a.reserveOrder({memberId:member,sku:"test_item",quantity:1,unitAmount:9900,currency:"USD"}),/Invalid reserved order amount/,amount);
+ }
+});
+test("accepts exact maximum safe checkout amount from Neon",async()=>{
+ const a=createNeonCheckoutAdapters({query:async()=>({rows:[{id:order,status:"pending",member_id:member,total_cents:"99999999",currency:"USD"}]})});
+ assert.equal((await a.reserveOrder({memberId:member,sku:"test_item",quantity:1,unitAmount:99999999,currency:"USD"})).totalAmount,99999999);
+});
