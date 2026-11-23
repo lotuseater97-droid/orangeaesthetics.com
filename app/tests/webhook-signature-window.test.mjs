@@ -31,3 +31,10 @@ test('rejects ambiguous duplicate timestamp headers even with a valid HMAC',()=>
  assert.equal(verifyStripeSignature(body,`t=${now},t=${now+1},v1=${valid}`,secret,now),false);
  assert.equal(verifyStripeSignature(body,`t=${now},v1=${valid},t=${now}`,secret,now),false);
 });
+
+test('rejects signature fields with appended equals-sign data',()=>{
+ const valid=sign(now);
+ assert.equal(verifyStripeSignature(body,`t=${now},v1=${valid}=extra`,secret,now),false);
+ assert.equal(verifyStripeSignature(body,`t=${now}=extra,v1=${valid}`,secret,now),false);
+ assert.equal(verifyStripeSignature(body,`t=${now},v1=${valid}`,secret,now),true);
+});
