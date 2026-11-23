@@ -1,0 +1,10 @@
+import test from "node:test";import assert from "node:assert/strict";import {prepareNotification,notificationTypes,retryDecision} from "../lib/notification-outbox.mjs";
+const base={type:"appointment_confirmed",recipient:{id:"contact_1",email:"example@example.com"},fields:{first_name:"Alex",date_label:"Dec 1",time_label:"10 AM"},consent:{transactional_email:true},idempotency_key:"notify_20261122_0001"};
+test("prepares nonclinical appointment notification",()=>{const n=prepareNotification(base);assert.equal(n.classification,"business_nonclinical");assert.equal(n.subject,"Appointment confirmed")});
+test("rejects unapproved clinical data",()=>assert.throws(()=>prepareNotification({...base,fields:{...base.fields,diagnosis:"private"}}),TypeError));
+test("rejects unverified consent",()=>assert.throws(()=>prepareNotification({...base,consent:{}}),TypeError));
+test("rejects invalid recipient",()=>assert.throws(()=>prepareNotification({...base,recipient:{id:"contact_1",email:"bad"}}),TypeError));
+test("rejects missing idempotency key",()=>assert.throws(()=>prepareNotification({...base,idempotency_key:"short"}),TypeError));
+test("staff notification does not require customer consent",()=>assert.equal(prepareNotification({type:"task_assigned",recipient:{id:"staff1",email:"staff@example.com"},fields:{task_id:"task_123"},idempotency_key:"notify_20261122_0002"}).type,"task_assigned"));
+test("retry backoff and dead-letter",()=>{assert.deepEqual(retryDecision({attempts:0}),{action:"retry",delay_seconds:30});assert.deepEqual(retryDecision({attempts:5}),{action:"dead_letter",delay_seconds:null});assert.deepEqual(retryDecision({attempts:1,permanent_failure:true}),{action:"dead_letter",delay_seconds:null})});
+test("types include invoice and inventory",()=>{assert.ok(notificationTypes().includes("invoice_issued"));assert.ok(notificationTypes().includes("inventory_reorder_needed"))});
