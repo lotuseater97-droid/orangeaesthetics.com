@@ -29,8 +29,12 @@ export function createStripeTestSessionAdapter({secretKey,fetchImpl=fetch}={}){
   });
   if(!result.ok)throw new Error("Stripe test checkout unavailable");
   const data=await result.json();
+  let checkoutUrl;
+  try{checkoutUrl=new URL(data?.url)}catch{throw new Error("Invalid Stripe response")}
   if(typeof data?.id!=="string"||!/^cs_test_[A-Za-z0-9_]+$/.test(data.id)||
-     typeof data.url!=="string"||!/^https:\/\/checkout\.stripe\.com\//.test(data.url))throw new Error("Invalid Stripe response");
+     checkoutUrl.protocol!=="https:"||checkoutUrl.hostname!=="checkout.stripe.com"||
+     checkoutUrl.username||checkoutUrl.password||checkoutUrl.port||checkoutUrl.hash||
+     !checkoutUrl.pathname.startsWith("/c/pay/"))throw new Error("Invalid Stripe response");
   return {id:data.id,url:data.url};
  };
 }
