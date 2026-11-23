@@ -18,6 +18,7 @@ test('signed webhook reconciles a real Neon development transaction without pers
  assert.equal(url.protocol,'postgresql:');
  assert.match(url.hostname,/\.neon\.tech$/);
  assert.equal(process.env.NEON_DEV_BRANCH_ID,devBranch);
+ assert.equal(url.searchParams.get('sslmode') === 'disable',false,'TLS cannot be disabled');
  const client=new Client({connectionString:url.toString(),ssl:{rejectUnauthorized:true},connectionTimeoutMillis:5000,statement_timeout:10000});
  const secret='whsec_synthetic_integration_123456';
  const nonce=randomUUID().replaceAll('-','');
@@ -54,6 +55,11 @@ test('signed webhook reconciles a real Neon development transaction without pers
   const counts=await client.query("SELECT (SELECT count(*)::int FROM orange_app.payment_events WHERE order_id=$1) AS events,(SELECT count(*)::int FROM orange_app.benefit_grants WHERE order_item_id IN (SELECT id FROM orange_app.order_items WHERE order_id=$1)) AS grants,(SELECT count(*)::int FROM orange_app.audit_events WHERE action='checkout.paid' AND target_id=$1) AS audits",[order]);
   assert.deepEqual(counts.rows[0],{events:1,grants:1,audits:1});
  }finally{
-  try{await client.query('ROLLBACK');}finally{await client.end();}
+  try{
+   await client.query('ROLLBACK');
+   // Verify that synthetic members, catalog and payment records did not persist.
+   const remaining=await client.query("SELECT (SELECT count(*)::int FROM orange_app.members WHERE auth_subject=$1) AS members,(SELECT count(*)::int FROM orange_app.catalog_items WHERE sku=$2) AS catalog,(SELECT count(*)::int FROM orange_app.payment_events WHERE event_id=$3) AS payments",[memberSubject,sku,'evt_'+nonce.slice(0,20)]);
+   assert.deepEqual(remaining.rows[0],{members:0,catalog:0,payments:0});
+  }finally{await client.end();}
  }
 });
