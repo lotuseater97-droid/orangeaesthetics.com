@@ -14,6 +14,10 @@ async function walk(dir) {
   return out;
 }
 const pages = await walk(root), errors = [], warnings = [];
+if (pages.length === 0) errors.push('No public HTML pages found; refusing to pass an empty site audit');
+for (const required of ['index.html', 'appointment-request.html']) {
+  if (!pages.some(page => relative(root, page) === required)) errors.push('Missing required public page: ' + required);
+}
 for (const page of pages) {
   const html = await readFile(page, 'utf8'), label = relative(root, page);
   if (!/<html\b[^>]*lang=/i.test(html)) warnings.push(label + ': missing language');
