@@ -6,8 +6,8 @@
 - `catalog.json` is a **draft server-owned allowlist**, never an authoritative price until approved. No weight-loss medication SKUs or prices.
 - `lib/ledger.mjs` contains pure, deterministic accounting helpers and guards. Real production credits must be committed transactionally in a protected database.
 - `lib/stripe-events.mjs` classifies signed Stripe events **after** a server verifies signatures. No customer or clinical information is stored.
-- `schema.sql` is a proposed PostgreSQL migration, **not applied**. No database has been created.
-- `tests/*.test.mjs` run with Node.js built-in test runner: `node --test app/tests/*.test.mjs` from repository root.
+- `schema.sql` is a historical proposal. The isolated Neon **development** branch has migrations applied; this does not mean production is migrated or approved. Never use production data in development.
+- `tests/*.test.mjs` run with Node.js built-in test runner: `node --test app/tests/*.test.mjs` from repository root. GitHub Actions also runs the full suite.
 
 ## Integration plan
 1. Provision dedicated HIPAA-reviewed hosting/database, separate staging and production, authentication and MFA.
@@ -43,3 +43,12 @@ Owner wants the authenticated Orange Aesthetics platform to operate the business
 - Created `app/BUSINESS-PLATFORM-STRUCTURE.md`, `app/lib/business-navigation.mjs`, `app/lib/business-operations.mjs`, `app/lib/workflow-rules.mjs`, synthetic tests, and a GitHub Actions test workflow.
 - These are real committed business-domain foundations but **not yet a deployed, authenticated, database-backed owner dashboard**. Existing static Worker excludes `app/`; no real customer or financial data is collected. A dedicated secure backend, auth/RLS, payment integration, and regulatory review remain required.
 - Public site remains Orange Aesthetics' existing visual identity and navigation.
+
+## Verified CI and outstanding Neon integration gate — 2026-11-23
+
+- Pull request #1 was merged after GitHub Actions **Checkout integration tests** passed: 428 total, 427 passed, 0 failed, 1 skipped. Business foundation and paid checkout policy workflows passed.
+- The skipped test is `app/tests/neon-signed-webhook-integration.test.mjs`; ordinary pushes and PRs **do not** execute it against Neon. Passing CI is not evidence that the real database webhook integration passed.
+- To run the rollback-only integration test, a repository administrator must configure the GitHub Actions environment named `neon-development` with a secret named `NEON_DEV_DATABASE_URL` that points **only** to the approved development branch `br-nameless-wave-bfsa2x6n` (database `neondb`, host `ep-young-rain-bfjamlfd.c-5.us-west-2.aws.neon.tech`). Do not commit or paste the URL into chat, logs, or documentation.
+- Then open [Checkout integration tests](https://github.com/lotuseater97-droid/orangeaesthetics.com/actions/workflows/checkout-integration-tests.yml), select **Run workflow**, choose `main`, and set `run_neon_integration` to **true**. Review both jobs and the rollback cleanup assertions. Do not run against production.
+- The integration test explicitly requires `ALLOW_ROLLBACK_DB_TEST=true`, checks the branch identifier and endpoint hostname, creates synthetic records inside a transaction, and rolls them back. A passing result is required before considering further staging deployment work.
+- Checkout, member history, member benefits and owner approval endpoints remain explicitly disabled. The Node development server binds only to loopback. No production payment or clinical workflows are authorized.
