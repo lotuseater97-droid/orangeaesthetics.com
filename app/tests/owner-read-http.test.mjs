@@ -1,0 +1,14 @@
+import test from "node:test";import assert from "node:assert/strict";import {createOwnerReadHttpHandler} from "../lib/owner-read-http.mjs";import {BusinessError} from "../lib/business-api.mjs";
+const url="https://orange.example/api/owner/records?collection=appointments";
+const make=(list=async()=>[],extractVerifiedToken=async()=>"verified_session_123")=>{const calls=[];const handler=createOwnerReadHttpHandler({backend:{list:async args=>{calls.push(args);return list(args)}},extractVerifiedToken});return {handler,calls}};
+test("valid request invokes protected backend",async()=>{const {handler,calls}=make(async()=>[{id:"a1"}]);const r=await handler({method:"GET",url});assert.equal(r.status,200);assert.deepEqual(JSON.parse(r.body),{collection:"appointments",records:[{id:"a1"}]});assert.deepEqual(calls[0],{sessionToken:"verified_session_123",collection:"appointments",limit:50});assert.equal(r.headers["cache-control"],"no-store")});
+test("explicit bounded limit is forwarded",async()=>{const {handler,calls}=make();await handler({method:"GET",url:url+"&limit=12"});assert.equal(calls[0].limit,12)});
+test("POST cannot mutate records",async()=>{const {handler,calls}=make();assert.equal((await handler({method:"POST",url})).status,405);assert.equal(calls.length,0)});
+test("unknown collection rejected before auth",async()=>{let auth=false;const {handler}=make(async()=>[],async()=>{auth=true;return "verified_session_123"});assert.equal((await handler({method:"GET",url:url.replace("appointments","patients")})).status,400);assert.equal(auth,false)});
+test("duplicate collection rejected",async()=>{const {handler}=make();assert.equal((await handler({method:"GET",url:url+"&collection=invoices"})).status,400)});
+test("unknown query parameters rejected",async()=>{const {handler}=make();assert.equal((await handler({method:"GET",url:url+"&organization_id=other"})).status,400)});
+test("oversized limit rejected",async()=>{const {handler}=make();assert.equal((await handler({method:"GET",url:url+"&limit=101"})).status,400)});
+test("missing session denied",async()=>{const {handler}=make(async()=>[],async()=>null);assert.equal((await handler({method:"GET",url})).status,401)});
+test("forbidden backend response is sanitized",async()=>{const {handler}=make(async()=>{throw new BusinessError("FORBIDDEN","secret detail")});const r=await handler({method:"GET",url});assert.deepEqual(JSON.parse(r.body),{error:"FORBIDDEN"});assert.equal(r.status,403)});
+test("unexpected error hides internals",async()=>{const {handler}=make(async()=>{throw new Error("database password")});const r=await handler({method:"GET",url});assert.equal(r.status,500);assert.equal(r.body.includes("password"),false)});
+test("unrelated path returns 404",async()=>{const {handler}=make();assert.equal((await handler({method:"GET",url:"https://orange.example/api/other?collection=appointments"})).status,404)});
