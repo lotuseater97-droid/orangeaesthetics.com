@@ -20,3 +20,10 @@ test('appointment page avoids collecting clinical details',()=>{
   assert.doesNotMatch(html,/<textarea\b/i);
   assert.match(html,/Please do not include medical history/);
 });
+
+test('appointment success requires API JSON confirmation, not just HTTP 200',()=>{
+  assert.match(html,/response\.headers\.get\("content-type"\)/);
+  assert.match(html,/await response\.json\(\)/);
+  assert.match(html,/result\.message!=="Received"/);
+  assert.ok(html.indexOf('result.message!=="Received"')<html.indexOf('form.reset()'),'form must not reset before confirmation');
+});
