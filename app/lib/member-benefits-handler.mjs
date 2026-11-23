@@ -31,6 +31,8 @@ export function createMemberBenefitsHandler({verifySession,query,enabled=false}=
        !Number.isSafeInteger(granted)||granted<1||!Number.isSafeInteger(redeemed)||redeemed<0||redeemed>granted)throw Error("Invalid benefit");
     let expiresAt=null;
     if(row.expires_at!==null&&row.expires_at!==undefined){
+     if(!(row.expires_at instanceof Date)&&
+        (typeof row.expires_at!=='string'||!/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}/.test(row.expires_at)))throw Error('Invalid expiration type');
      const date=row.expires_at instanceof Date?row.expires_at:new Date(row.expires_at);
      if(!Number.isFinite(date.getTime()))throw Error("Invalid expiration");
      expiresAt=date.toISOString();
