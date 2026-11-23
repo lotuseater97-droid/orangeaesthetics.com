@@ -11,8 +11,9 @@ export function createTransactionalBusinessService({verifySession,lookupStaff,wi
   if(typeof token!=="string"||token.length<12)throw new BusinessError("UNAUTHENTICATED","Verified session required");
   const s=await verifySession(token);
   if(!s||s.active!==true||!id(s.user_id))throw new BusinessError("UNAUTHENTICATED","Verified session required");
-  const m=await lookupStaff(s.user_id);
-  if(!m||m.active!==true||!id(m.organization_id)||!["owner","manager","clinician","ma"].includes(m.role))throw new BusinessError("FORBIDDEN","Staff access required");
+  if(!id(s.organization_id))throw new BusinessError("FORBIDDEN","Active organization required");
+  const m=await lookupStaff({user_id:s.user_id,organization_id:s.organization_id});
+  if(!m||m.active!==true||m.organization_id!==s.organization_id||!["owner","manager","clinician","ma"].includes(m.role))throw new BusinessError("FORBIDDEN","Staff access required");
   return {user_id:s.user_id,organization_id:m.organization_id,role:m.role,permissions:[]};
  }
  async function write({token,kind,operation,payload,id:recordId,to,idempotency_key}){
