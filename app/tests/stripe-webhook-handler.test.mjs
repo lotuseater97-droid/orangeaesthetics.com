@@ -57,3 +57,6 @@ test("malformed Stripe session ID is ignored",async()=>{
  const e={...event,data:{object:{...event.data.object,id:"cs_123"}}};
  assert.equal((await h(signed(e))).status,200);assert.equal(calls,0);
 });
+
+test("invalid webhook environment configuration fails at startup",()=>{for(const expectedLivemode of [null,"false",0,undefined]){assert.throws(()=>createStripeWebhookHandler({secret,execute:async()=>({rows:[]}),expectedLivemode}),TypeError)}});
+test("invalid webhook payload limits fail at startup",()=>{for(const maxBytes of [null,0,-1,1.5,NaN,Infinity,"65536",1048577]){assert.throws(()=>createStripeWebhookHandler({secret,execute:async()=>({rows:[]}),maxBytes}),TypeError)}});
