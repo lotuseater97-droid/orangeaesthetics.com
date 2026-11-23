@@ -12,7 +12,7 @@ export function evaluateSameBag({formulation,policy,clinicalClearance=false,clin
  if(!policy||policy.status!=="approved"||policy.administration!=="same_bag_same_line"||!id(policy.formulationVersion))errors.push("POLICY_NOT_APPROVED");
  if(!formulation||!Array.isArray(formulation.ingredients)||!id(formulation.id)||!id(formulation.version))return fail([...errors,"FORMULATION_INCOMPLETE"]);
  if(formulation.version!==policy?.formulationVersion)errors.push("FORMULATION_VERSION_MISMATCH");
- if(!clinicalClearance||clinicalChecks.contraindicationsCleared!==true||clinicalChecks.medicationsReviewed!==true||clinicalChecks.labsReviewed!==true||clinicalChecks.clinicianOrderVerified!==true)errors.push("PATIENT_REVIEW_INCOMPLETE");
+ if(!clinicalClearance||clinicalChecks?.contraindicationsCleared!==true||clinicalChecks?.medicationsReviewed!==true||clinicalChecks?.labsReviewed!==true||clinicalChecks?.clinicianOrderVerified!==true)errors.push("PATIENT_REVIEW_INCOMPLETE");
  if(!id(formulation.diluentId)||!positive(formulation.finalVolumeMl)||!positive(formulation.infusionMinutes)||!positive(formulation.holdMinutes))errors.push("PREPARATION_DETAILS_MISSING");
  if(!Array.isArray(policy?.rules))errors.push("RULES_UNAVAILABLE");
  if(!Array.isArray(policy?.approvedDiluents))errors.push("DILUENTS_UNAVAILABLE");
@@ -27,7 +27,7 @@ export function evaluateSameBag({formulation,policy,clinicalClearance=false,clin
  if(totals.size!==ingredients.length)errors.push("DUPLICATE_INGREDIENT_REQUIRES_TOTAL_DOSE_REVIEW");
  const approved=Array.isArray(policy?.approvedIngredients)?policy.approvedIngredients:[];
  for(const ing of ingredients){
-  const entry=approved.find(x=>x.ingredientId===ing.ingredientId&&x.sourceSku===ing.sourceSku&&x.unit===ing.unit&&x.concentrationUnit===ing.concentrationUnit);
+  const entry=approved.find(x=>x&&x.ingredientId===ing.ingredientId&&x.sourceSku===ing.sourceSku&&x.unit===ing.unit&&x.concentrationUnit===ing.concentrationUnit);
   if(!entry||entry.status!=="approved"||!positive(entry.maxDose)||!positive(entry.minConcentration)||!positive(entry.maxConcentration)||!positive(entry.maxTotalDose)||!entry.sourceReference||!entry.reviewedBy||!evidenceCurrent(entry,now))errors.push("INGREDIENT_NOT_APPROVED:"+ing.ingredientId);
   else if(ing.dose>entry.maxDose||ing.concentration<entry.minConcentration||ing.concentration>entry.maxConcentration||(totals.get(ing.ingredientId+"|"+ing.unit)||0)>entry.maxTotalDose)errors.push("INGREDIENT_LIMIT_EXCEEDED:"+ing.ingredientId);
  }
