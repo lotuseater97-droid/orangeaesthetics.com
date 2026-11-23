@@ -8,6 +8,7 @@ function setup({failAudit=false,existingClaim=false,otherOrg=false}={}){
   if(text.includes("INSERT INTO public.oa_idempotency_keys"))return {rows:existingClaim?[]:[{id}]};
   if(text.includes("SELECT request_hash AS fingerprint"))return {rows:[]};
   if(text.includes("FOR UPDATE"))return {rows:[{id,organization_id:otherOrg?"123e4567-e89b-42d3-a456-426614174999":org,status:"submitted"}]};
+  if(text.includes("INSERT INTO public.oa_expenses"))return {rows:[{id,organization_id:org,status:"draft"}]};
   if(text.includes("UPDATE public.oa_expenses"))return {rows:[{id,organization_id:org,status:"approved"}]};
   if(text.includes("INSERT INTO public.oa_audit_events")){if(failAudit)throw Error("audit failure");return {rows:[{id}]}};
   if(text.includes("UPDATE public.oa_idempotency_keys"))return {rows:[{id}]};
@@ -33,4 +34,20 @@ test("cross-organization record is denied and transaction rolls back",async()=>{
 test("incomplete competing idempotency record rolls back",async()=>{
  const f=setup({existingClaim:true});await assert.rejects(()=>f.service.transition({token:"verified_session_123",kind:"expense",id,to:"approved",idempotency_key:key}),{code:"CONFLICT"});
  assert.equal(f.calls.at(-1).text,"ROLLBACK");
+});
+
+test("expense creation claims, inserts, audits and finalizes atomically",async()=>{
+ const f=setup();
+ const result=await f.service.createExpense({token:"verified_session_123",payload:{vendor_id:id,category:"supplies",amount_cents:2500,incurred_on:"2026-11-22"},idempotency_key:"expense_creation_001"});
+ assert.equal(result.status,"draft");
+ const steps=f.calls.map(x=>x.text);
+ assert.equal(steps[0],"BEGIN");assert.equal(steps.at(-1),"COMMIT");
+ assert.ok(steps.findIndex(x=>x.includes("INSERT INTO public.oa_idempotency_keys"))<steps.findIndex(x=>x.includes("INSERT INTO public.oa_expenses")));
+ assert.ok(steps.findIndex(x=>x.includes("INSERT INTO public.oa_expenses"))<steps.findIndex(x=>x.includes("INSERT INTO public.oa_audit_events")));
+});
+test("expense creation rejects unsupported memo and rolls back",async()=>{
+ const f=setup();
+ await assert.rejects(()=>f.service.createExpense({token:"verified_session_123",payload:{vendor_id:id,category:"supplies",amount_cents:2500,incurred_on:"2026-11-22",memo:"not in schema"},idempotency_key:"expense_creation_002"}),{code:"VALIDATION"});
+ assert.equal(f.calls.at(-1).text,"ROLLBACK");
+ assert.equal(f.calls.some(x=>x.text.includes("INSERT INTO public.oa_expenses")),false);
 });
