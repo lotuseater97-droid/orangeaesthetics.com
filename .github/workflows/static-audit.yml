@@ -13,5 +13,7 @@ jobs:
           node-version: '22'
       - name: Audit website assets and links
         run: node scripts/audit-static-site.mjs
+      - name: Verify private files are excluded from static assets
+        run: node scripts/check-assetsignore.mjs
       - name: Test appointment intake and Worker security
         run: node scripts/test-worker.mjs
