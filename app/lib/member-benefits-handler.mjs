@@ -13,10 +13,10 @@ export function createMemberBenefitsHandler({verifySession,query,enabled=false}=
   try{
    const result=await query(
     `SELECT g.id,g.quantity AS granted_quantity,g.expires_at,c.sku,
-       COALESCE(SUM(CASE WHEN r.status='completed' THEN r.quantity ELSE 0 END),0) AS redeemed_quantity
+       COALESCE(SUM(r.quantity),0) AS redeemed_quantity
        FROM orange_app.benefit_grants g
        JOIN orange_app.catalog_items c ON c.id=g.catalog_item_id
-       LEFT JOIN orange_app.redemptions r ON r.grant_id=g.id AND r.member_id=g.member_id
+       LEFT JOIN orange_app.redemptions r ON r.grant_id=g.id AND r.member_id=g.member_id AND r.status='completed'
        WHERE g.member_id=$1
        GROUP BY g.id,g.quantity,g.expires_at,c.sku,g.created_at
        ORDER BY g.created_at DESC,g.id DESC LIMIT 100`,
