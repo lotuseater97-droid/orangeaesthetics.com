@@ -55,3 +55,10 @@ test("rejects missing or boolean order totals rather than converting them to zer
   assert.equal((await handle({method:"GET"})).status,503);
  }
 });
+
+test("rejects absent order timestamps instead of treating null as 1970",async()=>{
+ for(const invalid of [null,undefined,"",false]){
+  const handle=createMemberOrderHistoryHandler({enabled:true,verifySession:async()=>({id:member,active:true}),query:async()=>({rows:[{...row,created_at:invalid}]})});
+  assert.equal((await handle({method:"GET"})).status,503);
+ }
+});
