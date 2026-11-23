@@ -1,5 +1,6 @@
 // Server-only integration of transactional business service with pinned PostgreSQL connections.
-// Creation is intentionally disabled until schema-aligned create adapters are implemented.
+// Invoice and expense creation require dedicated reviewed schema migrations.
+import {createPostgresInvoiceCreateAdapter} from "./postgres-invoice-creates.mjs";
 import {createPostgresBusinessCreateAdapter} from "./postgres-business-creates.mjs";
 import {createTransactionalBusinessService} from "./transactional-business-service.mjs";
 import {createPostgresTransactionRunner} from "./postgres-transaction-runner.mjs";
@@ -17,14 +18,19 @@ export function createPostgresBusinessWriteStack({pool,verifySession,queryMember
    const transitions=createPostgresTransitionAdapter({query});
    const idempotency=createPostgresIdempotencyAdapter({query});
    const creates=createPostgresBusinessCreateAdapter({query});
+   const invoices=createPostgresInvoiceCreateAdapter({query});
    return callback(Object.freeze({
     ...transitions,
     ...idempotency,
-    ...creates
+    ...creates,
+    async create(prepared){return prepared.kind==="invoice"?invoices.createInvoice(prepared):creates.create(prepared)}
    }));
   })
  });
  return Object.freeze({
+  async createInvoice({token,payload,idempotency_key}){
+   return service.write({token,kind:"invoice",operation:"create",payload,idempotency_key});
+  },
   async createExpense({token,payload,idempotency_key}){
    return service.write({token,kind:"expense",operation:"create",payload,idempotency_key});
   },
