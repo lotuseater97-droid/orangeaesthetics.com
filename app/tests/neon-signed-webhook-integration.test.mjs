@@ -6,6 +6,8 @@ import assert from 'node:assert/strict';
 import {randomUUID,createHmac} from 'node:crypto';
 import {createRequire} from 'node:module';
 import {createStripeWebhookHandler} from '../lib/stripe-webhook-handler.mjs';
+import {createMemberBenefitsHandler} from '../lib/member-benefits-handler.mjs';
+import {createMemberOrderHistoryHandler} from '../lib/member-order-history-handler.mjs';
 
 const devBranch='br-nameless-wave-bfsa2x6n';
 // Neon API-confirmed endpoint for this development branch. An environment
@@ -76,6 +78,53 @@ test('signed webhook reconciles a real Neon development transaction without pers
   assert.equal((await handler({...altered,rawBody:altered.rawBody+' '})).status,400);
   const counts=await client.query("SELECT (SELECT count(*)::int FROM orange_app.payment_events WHERE order_id=$1) AS events,(SELECT count(*)::int FROM orange_app.benefit_grants WHERE order_item_id IN (SELECT id FROM orange_app.order_items WHERE order_id=$1)) AS grants,(SELECT count(*)::int FROM orange_app.audit_events WHERE action='checkout.paid' AND target_id=$1) AS audits",[order]);
   assert.deepEqual(counts.rows[0],{events:1,grants:1,audits:1});
+
+  // Exercise the actual member read-only SQL against synthetic persisted rows,
+  // using the same rollback-only transaction as the signed Stripe webhook.
+  const memberId=m.rows[0].id;
+  const verifyMember=async()=>({id:memberId,active:true});
+  const benefits=createMemberBenefitsHandler({
+   verifySession:verifyMember,query:(sql,values)=>client.query(sql,values),enabled:true
+  });
+  const history=createMemberOrderHistoryHandler({
+   verifySession:verifyMember,query:(sql,values)=>client.query(sql,values),enabled:true
+  });
+  const initialBenefits=await benefits({method:'GET'});
+  assert.equal(initialBenefits.status,200);
+  const initialGrant=JSON.parse(initialBenefits.body).benefits.find(item=>item.sku===sku);
+  assert.ok(initialGrant,'Paid checkout should issue a visible member grant');
+  assert.equal(initialGrant.granted,1);
+  assert.equal(initialGrant.redeemed,0);
+  assert.equal(initialGrant.remaining,1);
+  const orderHistory=await history({method:'GET'});
+  assert.equal(orderHistory.status,200);
+  const paidOrder=JSON.parse(orderHistory.body).orders.find(item=>item.id===order);
+  assert.ok(paidOrder,'Member should see their paid order');
+  assert.equal(paidOrder.status,'paid');
+  assert.equal(paidOrder.totalCents,9900);
+  // Completed redemptions consume credits. Reversed redemptions do not.
+  await client.query(
+   "INSERT INTO orange_app.redemptions(member_id,grant_id,quantity,status,staff_subject) VALUES($1,$2,1,'completed',$3)",
+   [memberId,initialGrant.id,memberSubject]
+  );
+  const consumed=await benefits({method:'GET'});
+  assert.equal(consumed.status,200);
+  const consumedGrant=JSON.parse(consumed.body).benefits.find(item=>item.id===initialGrant.id);
+  assert.equal(consumedGrant.redeemed,1);
+  assert.equal(consumedGrant.remaining,0);
+  await client.query(
+   "INSERT INTO orange_app.redemptions(member_id,grant_id,quantity,status,staff_subject) VALUES($1,$2,1,'reversed',$3)",
+   [memberId,initialGrant.id,memberSubject]
+  );
+  const afterReversal=JSON.parse((await benefits({method:'GET'})).body).benefits.find(item=>item.id===initialGrant.id);
+  assert.equal(afterReversal.redeemed,1);
+  assert.equal(afterReversal.remaining,0);
+  // An invalid verified identity must never access the development data.
+  const denied=createMemberBenefitsHandler({
+   verifySession:async()=>null,query:()=>{throw Error('Should not query')},enabled:true
+  });
+  assert.equal((await denied({method:'GET'})).status,401);
+
  }finally{
   try{
    await client.query('ROLLBACK');
