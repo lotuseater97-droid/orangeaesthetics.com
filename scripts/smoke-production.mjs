@@ -111,4 +111,29 @@ for (const path of ['/', '/appointment-request.html', '/app/schema.sql', '/api/a
     failures++;
   }
 }
+// Safe negative POST probes: invalid requests must not be forwarded to the
+// notification provider. Never send a valid contact or patient record here.
+for (const [label, headers, body, expected] of [
+  ['invalid JSON', {'content-type':'application/json'}, '{invalid-json', 400],
+  ['unsupported content type', {'content-type':'text/plain'}, 'not-json', 415],
+  ['cross-origin request', {'content-type':'application/json',origin:'https://invalid-origin.example'}, '{}', 403],
+]) {
+  try {
+    const response = await fetch(new URL('/api/appointment-request', target), {
+      method: 'POST', redirect: 'manual', headers, body, signal: AbortSignal.timeout(10000)
+    });
+    const headersOk = response.headers.get('cache-control') === 'no-store' &&
+      response.headers.get('x-content-type-options') === 'nosniff' &&
+      response.headers.get('x-frame-options') === 'DENY' &&
+      response.headers.get('referrer-policy') === 'strict-origin-when-cross-origin';
+    const contentTypeOk = (response.headers.get('content-type') || '').toLowerCase().includes('application/json');
+    const ok = response.status === expected && headersOk && contentTypeOk;
+    console.log(`${ok ? 'PASS' : 'FAIL'} POST ${label}: HTTP ${response.status} (expected ${expected}), security-headers=${headersOk}, json=${contentTypeOk}`);
+    if (!ok) failures++;
+    await response.body?.cancel();
+  } catch (error) {
+    console.error(`FAIL POST ${label}: ${error.message}`);
+    failures++;
+  }
+}
 process.exitCode = failures ? 1 : 0;
