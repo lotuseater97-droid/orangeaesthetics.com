@@ -20,3 +20,12 @@ test("inactive, unlisted and invalid prices are rejected",async()=>{
  ]})});
  assert.equal((await load()).items.length,0);
 });
+
+test("catalog excludes prices exceeding the maximum checkout total",async()=>{
+ const load=createNeonCatalogLoader({approvedSkus:["addon_1","addon_2"],query:async()=>({rows:[
+  {sku:"addon_1",kind:"addon",active:true,checkout_approved:true,requires_clinical_review:false,price_cents:"100000000"},
+  {sku:"addon_2",kind:"addon",active:true,checkout_approved:true,requires_clinical_review:false,price_cents:"99999999"}
+ ]})});
+ const catalog=await load();
+ assert.deepEqual(catalog.items.map(x=>x.code),["addon_2"]);
+});
