@@ -1,0 +1,25 @@
+name: Checkout integration tests
+on:
+  push:
+    paths:
+      - 'app/lib/**'
+      - 'app/tests/**'
+      - 'app/server/package.json'
+      - '.github/workflows/checkout-integration-tests.yml'
+  pull_request:
+    paths:
+      - 'app/lib/**'
+      - 'app/tests/**'
+      - 'app/server/package.json'
+jobs:
+  checkout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install server dependencies
+        run: npm install --prefix app/server --no-audit --no-fund
+      - name: Run checkout and authentication-independent unit tests
+        run: node --test app/tests/*.test.mjs
