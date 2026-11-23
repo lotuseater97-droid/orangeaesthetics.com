@@ -16,7 +16,15 @@ const {DATABASE_URL,STRIPE_WEBHOOK_SECRET,STRIPE_TEST_SECRET_KEY,PORT="8788",HOS
 if(!DATABASE_URL||!STRIPE_WEBHOOK_SECRET||process.env.STRIPE_LIVEMODE==="true"){
  throw new Error("Development runtime requires DATABASE_URL, STRIPE_WEBHOOK_SECRET and Stripe test mode");
 }
-// This is a local development runtime, not a publicly deployable webhook server.\n// Reject accidental wildcard or LAN binding before opening a database connection.\nif(!["127.0.0.1","::1","localhost"].includes(HOST)){\n throw new Error("Development runtime must bind to loopback only");\n}\nif(!/^\\d+$/.test(String(PORT))||Number(PORT)<1||Number(PORT)>65535){\n throw new Error("Invalid development runtime port");\n}\n// Prevent the local test webhook runtime from modifying the production branch.
+// This is a local development runtime, not a publicly deployable webhook server.
+// Reject accidental wildcard or LAN binding before opening a database connection.
+if(!["127.0.0.1","::1","localhost"].includes(HOST)){
+ throw new Error("Development runtime must bind to loopback only");
+}
+if(!/^\\d+$/.test(String(PORT))||Number(PORT)<1||Number(PORT)>65535){
+ throw new Error("Invalid development runtime port");
+}
+// Prevent the local test webhook runtime from modifying the production branch.
 // This hostname is the Neon development compute, verified against its branch ID.
 const developmentDatabaseHost="ep-young-rain-bfjamlfd.c-5.us-west-2.aws.neon.tech";
 let databaseAddress;
