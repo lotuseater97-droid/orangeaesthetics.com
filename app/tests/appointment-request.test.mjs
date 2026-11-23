@@ -9,7 +9,7 @@ async function withFetch(mock,fn){const previous=globalThis.fetch;globalThis.fet
 test("accepts a valid contact-only request and forwards only allowed fields",async()=>{let sent;await withFetch(async(_url,options)=>{sent=JSON.parse(options.body);return new Response("",{status:200})},async()=>{const res=await onRequestPost({request:request(base),env});assert.equal(res.status,200)});assert.equal(sent.email,base.email);assert.equal(sent.service,base.service);assert.equal(Object.hasOwn(sent,"website"),false)});
 test("rejects extra fields including medical notes",async()=>{const res=await onRequestPost({request:request({...base,medicalHistory:"private"}),env});assert.equal(res.status,400)});
 test("rejects invalid email",async()=>{const res=await onRequestPost({request:request({...base,email:"not-an-email"}),env});assert.equal(res.status,400)});
-test("rejects newline injection",async()=>{const res=await onRequestPost({request:request({...base,name:"Jane\\nCc: someone"}),env});assert.equal(res.status,400)});
+test("rejects newline injection",async()=>{const res=await onRequestPost({request:request({...base,name:"Jane\nCc: someone"}),env});assert.equal(res.status,400)});
 test("rejects mismatched origin",async()=>{const res=await onRequestPost({request:request(base,{origin:"https://evil.example"}),env});assert.equal(res.status,403)});
 test("fails closed without provider configuration",async()=>{const res=await onRequestPost({request:request(base),env:{}});assert.equal(res.status,503)});
 test("rejects insecure notification destination",async()=>{const res=await onRequestPost({request:request(base),env:{...env,APPOINTMENT_NOTIFICATION_ENDPOINT:"http://notifications.example.test"}});assert.equal(res.status,503)});
