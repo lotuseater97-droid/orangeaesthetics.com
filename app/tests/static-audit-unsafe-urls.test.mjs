@@ -45,3 +45,14 @@ test('ignores unpublished HTML inside private and internal directories',()=>{
     assert.match(result.stdout,/Pages: 2\b/);
   } finally {rmSync(dir,{recursive:true,force:true});}
 });
+
+test('rejects SVG data images that could carry active content',()=>{
+  const result=runWithLink('<img src="data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=" alt="Example">');
+  assert.equal(result.status,1,result.stdout+result.stderr);
+  assert.match(result.stderr,/unsafe URL/);
+});
+test('rejects non-base64 image data URLs',()=>{
+  const result=runWithLink('<img src="data:image/png,not-base64" alt="Example">');
+  assert.equal(result.status,1,result.stdout+result.stderr);
+  assert.match(result.stderr,/unsafe URL/);
+});
