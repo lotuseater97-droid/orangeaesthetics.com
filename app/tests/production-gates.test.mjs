@@ -35,3 +35,11 @@ test('development runtime refuses non-loopback network binding',async()=>{
  assert.match(source,/throw new Error\("Development runtime must bind to loopback only"\)/);
  assert.ok(source.indexOf('Development runtime must bind to loopback only')<source.indexOf('const pool=new Pool('),'network guard must run before database pool initialization');
 });
+
+test('development runtime is pinned to its Neon development compute before connecting',async()=>{
+ const source=await readFile(new URL('../server/index.mjs',import.meta.url),'utf8');
+ assert.match(source,/developmentDatabaseHost="ep-young-rain-bfjamlfd\.c-5\.us-west-2\.aws\.neon\.tech"/);
+ assert.match(source,/databaseAddress\.hostname!==developmentDatabaseHost/);
+ assert.match(source,/databaseAddress\.pathname!=="\/neondb"/);
+ assert.ok(source.indexOf('Development runtime requires the approved Neon development database')<source.indexOf('const pool=new Pool('));
+});
