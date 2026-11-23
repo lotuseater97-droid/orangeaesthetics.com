@@ -33,6 +33,7 @@ test('signed webhook reconciles a real Neon development transaction without pers
  const session='cs_test_'+nonce;
  const memberSubject='synthetic_'+nonce;
  const sign=(id,amount=9900)=>{
+  assert.match(id,/^evt_[a-z0-9]+$/,'Synthetic Stripe event ID must be explicit');
   const rawBody=JSON.stringify({id,type:'checkout.session.completed',livemode:false,data:{object:{object:'checkout.session',id:session,mode:'payment',payment_status:'paid',status:'complete',currency:'usd',amount_total:amount}}});
   const t=Math.floor(Date.now()/1000);
   const sig=createHmac('sha256',secret).update(t+'.'+rawBody).digest('hex');
