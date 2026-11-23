@@ -119,6 +119,28 @@ test('signed webhook reconciles a real Neon development transaction without pers
   const afterReversal=JSON.parse((await benefits({method:'GET'})).body).benefits.find(item=>item.id===initialGrant.id);
   assert.equal(afterReversal.redeemed,1);
   assert.equal(afterReversal.remaining,0);
+  // A second active member must not see the first member's paid orders or grants.
+  const other=await client.query(
+   "INSERT INTO orange_app.members(display_name,auth_subject,status) VALUES($1,$2,'active') RETURNING id",
+   ['Synthetic isolated member',memberSubject+'_other']
+  );
+  const otherIdentity=async()=>({id:other.rows[0].id,active:true});
+  const otherBenefits=createMemberBenefitsHandler({
+   verifySession:otherIdentity,query:(sql,values)=>client.query(sql,values),enabled:true
+  });
+  const otherHistory=createMemberOrderHistoryHandler({
+   verifySession:otherIdentity,query:(sql,values)=>client.query(sql,values),enabled:true
+  });
+  assert.deepEqual(JSON.parse((await otherBenefits({method:'GET'})).body),{benefits:[]});
+  assert.deepEqual(JSON.parse((await otherHistory({method:'GET'})).body),{orders:[]});
+  // An expired grant remains visible for history but has no usable balance.
+  await client.query(
+   "UPDATE orange_app.benefit_grants SET expires_at='2000-01-01T00:00:00Z' WHERE id=$1",
+   [initialGrant.id]
+  );
+  const expiredGrant=JSON.parse((await benefits({method:'GET'})).body).benefits.find(item=>item.id===initialGrant.id);
+  assert.equal(expiredGrant.expired,true);
+  assert.equal(expiredGrant.remaining,0);
   // An invalid verified identity must never access the development data.
   const denied=createMemberBenefitsHandler({
    verifySession:async()=>null,query:()=>{throw Error('Should not query')},enabled:true
