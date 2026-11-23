@@ -4,12 +4,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {randomUUID,createHmac} from 'node:crypto';
+import {createRequire} from 'node:module';
 import {createStripeWebhookHandler} from '../lib/stripe-webhook-handler.mjs';
 
 const devBranch='br-nameless-wave-bfsa2x6n';
 const enabled=Boolean(process.env.NEON_DEV_DATABASE_URL && process.env.NEON_DEV_BRANCH_ID===devBranch && process.env.ALLOW_ROLLBACK_DB_TEST==='true');
 test('signed webhook reconciles a real Neon development transaction without persisting data',{skip:!enabled?'Requires explicitly authorized Neon development connection':false},async()=>{
- const {Client}=await import('pg');
+ const serverRequire=createRequire(new URL('../server/package.json',import.meta.url));
+ const {Client}=serverRequire('pg');
  const url=new URL(process.env.NEON_DEV_DATABASE_URL);
  assert.equal(url.protocol,'postgresql:');
  assert.match(url.hostname,/\.neon\.tech$/);
@@ -42,7 +44,7 @@ test('signed webhook reconciles a real Neon development transaction without pers
   assert.equal((await handler(sign('evt_'+nonce.slice(0,19)+'y',9800))).status,503);
   const altered=sign('evt_'+nonce.slice(0,19)+'z');
   assert.equal((await handler({...altered,rawBody:altered.rawBody+' '})).status,400);
-  const counts=await client.query("SELECT (SELECT count(*)::int FROM orange_app.payment_events WHERE order_id=$1) AS events,(SELECT count(*)::int FROM orange_app.benefit_grants WHERE order_item_id IN (SELECT id FROM orange_app.order_items WHERE order_id=$1)) AS grants,(SELECT count(*)::int FROM orange_app.audit_events WHERE action='checkout.paid' AND target_id=$1) AS audits",( [order]));
+  const counts=await client.query("SELECT (SELECT count(*)::int FROM orange_app.payment_events WHERE order_id=$1) AS events,(SELECT count(*)::int FROM orange_app.benefit_grants WHERE order_item_id IN (SELECT id FROM orange_app.order_items WHERE order_id=$1)) AS grants,(SELECT count(*)::int FROM orange_app.audit_events WHERE action='checkout.paid' AND target_id=$1) AS audits",[order]);
   assert.deepEqual(counts.rows[0],{events:1,grants:1,audits:1});
  }finally{
   try{await client.query('ROLLBACK');}finally{await client.end();}
