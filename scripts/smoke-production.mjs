@@ -23,6 +23,13 @@ const cases = [
   ['/%2561pp/schema.sql', 404],
   ['/app%252Fschema.sql', 404],
 ];
+const pageMarkers = new Map([
+  ['/', '<title>Medical Aesthetics & Wellness in Orange, CA'],
+  ['/aesthetics.html', '<title>Medical Aesthetics in Orange CA'],
+  ['/iv-therapy.html', '<title>IV Therapy & Hydration in Orange CA'],
+  ['/memberships.html', '<title>IV Memberships'],
+  ['/appointment-request.html', '<title>Request an Appointment'],
+]);
 let failures = 0;
 for (const [path, expected] of cases) {
   try {
@@ -32,8 +39,11 @@ for (const [path, expected] of cases) {
     const framing = response.headers.get('x-frame-options') === 'DENY';
     const referrer = response.headers.get('referrer-policy') === 'strict-origin-when-cross-origin';
     const methodAllowed = path === '/api/appointment-request' ? response.headers.get('allow') === 'POST' : true;
-    const ok = statusOk && nosniff && (expected === 200 ? framing && referrer : true) && methodAllowed;
-    console.log(`${ok ? 'PASS' : 'FAIL'} ${path}: HTTP ${response.status} (expected ${expected}), nosniff=${nosniff}${expected === 200 ? `, frame-deny=${framing}, referrer-policy=${referrer}` : ''}${path === '/api/appointment-request' ? `, allow-post=${methodAllowed}` : ''}`);
+    // A generic fallback page may return 200 for a missing route. Check page identity too.
+    const marker = pageMarkers.get(path);
+    const pageContentOk = marker ? (response.headers.get('content-type') || '').toLowerCase().includes('text/html') && (await response.text()).includes(marker) : true;
+    const ok = statusOk && nosniff && (expected === 200 ? framing && referrer : true) && methodAllowed && pageContentOk;
+    console.log(`${ok ? 'PASS' : 'FAIL'} ${path}: HTTP ${response.status} (expected ${expected}), nosniff=${nosniff}${expected === 200 ? `, frame-deny=${framing}, referrer-policy=${referrer}` : ''}${path === '/api/appointment-request' ? `, allow-post=${methodAllowed}` : ''}${marker ? `, page-content=${pageContentOk}` : ''}`);
     if (!ok) failures++;
   } catch (error) {
     console.error(`FAIL ${path}: ${error.message}`);
