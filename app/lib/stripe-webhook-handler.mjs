@@ -8,6 +8,7 @@ import {paidCheckoutCandidate} from "./paid-checkout-policy.mjs";
 const reply=(status,message)=>({status,headers:{"content-type":"application/json","cache-control":"no-store"},body:JSON.stringify({message})});
 export function createStripeWebhookHandler({secret,execute,expectedLivemode=false,maxBytes=65536}={}){
  if(typeof secret!=="string"||secret.length<8||typeof execute!=="function")throw new TypeError("Missing server webhook configuration");
+ if(typeof expectedLivemode!=="boolean"||!Number.isSafeInteger(maxBytes)||maxBytes<1||maxBytes>1048576)throw new TypeError("Invalid webhook environment or payload limit");
  return async function handle({method,headers,rawBody}={}){
   if(method!=="POST")return reply(405,"Method not allowed");
   if(typeof rawBody!=="string"||Buffer.byteLength(rawBody,"utf8")>maxBytes)return reply(413,"Payload too large");
