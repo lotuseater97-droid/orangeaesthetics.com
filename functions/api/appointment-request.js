@@ -35,7 +35,9 @@ export async function onRequestPost({request,env}) {
   if(Object.keys(data).some(key=>!["name","email","phone","service","website"].includes(key)))return json(400,"Unsupported fields");
   const fields=["name","email","phone","service"];if(fields.some(key=>typeof data[key]!=="string"))return json(400,"Missing fields");
   const name=data.name.trim(),email=data.email.trim(),phone=data.phone.trim(),service=data.service;
-  if(name.length<2||name.length>100||email.length>200||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||phone.length<7||phone.length>35||!allowed.has(service)||/[\r\n]/.test(name+email+phone))return json(400,"Invalid fields");
+  const phoneDigits=phone.replace(/\D/g,"");
+  const phoneCharactersValid=/^[+0-9().\s-]+$/.test(phone);
+  if(name.length<2||name.length>100||email.length>200||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||phone.length<7||phone.length>35||!phoneCharactersValid||phoneDigits.length<7||phoneDigits.length>15||!allowed.has(service)||/[\r\n]/.test(name+email+phone))return json(400,"Invalid fields");
   // An approved endpoint must be configured as a server secret. No patient clinical details.
   try{
     const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
