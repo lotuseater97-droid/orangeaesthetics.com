@@ -48,3 +48,10 @@ test("history does not disclose clinical details or member identity",async()=>{
  assert.equal(response.status,200);
  assert.doesNotMatch(response.body,/Private|memberId|patient_name|medical_history/);
 });
+
+test("rejects missing or boolean order totals rather than converting them to zero",async()=>{
+ for(const invalid of [null,"",false]){
+  const handle=createMemberOrderHistoryHandler({enabled:true,verifySession:async()=>({id:member,active:true}),query:async()=>({rows:[{...row,total_cents:invalid}]})});
+  assert.equal((await handle({method:"GET"})).status,503);
+ }
+});
