@@ -3,7 +3,7 @@
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { dirname, extname, join, resolve, relative, isAbsolute } from 'node:path';
 const root = process.cwd();
-const excluded = new Set(['.git', 'node_modules', '.wrangler', '.github', 'app', 'functions', 'scripts']);
+const excluded = new Set(['.git', 'node_modules', '.wrangler', '.github', 'app', 'functions', 'scripts', 'tests', 'private', 'internal', 'src']);
 async function walk(dir) {
   const out = [];
   for (const entry of await readdir(dir, { withFileTypes: true })) {
