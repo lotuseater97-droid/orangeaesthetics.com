@@ -7,3 +7,10 @@ test("posts form-encoded Stripe test session with stable idempotency",async()=>{
 test("rejects live keys",()=>assert.throws(()=>createStripeTestSessionAdapter({secretKey:"sk_live_example"})));
 test("rejects client supplied extra line items",async()=>{const fn=createStripeTestSessionAdapter({secretKey:"sk_test_example",fetchImpl:async()=>{throw Error("unexpected network")}});await assert.rejects(fn({...params,line_items:[...params.line_items,...params.line_items]},{idempotencyKey:"checkout-"+id}))});
 test("Stripe error does not leak response body",async()=>{const fn=createStripeTestSessionAdapter({secretKey:"sk_test_example",fetchImpl:async()=>({ok:false})});await assert.rejects(fn(params,{idempotencyKey:"checkout-"+id}),/unavailable/)});
+
+test("rejects forged Stripe checkout response URLs",async()=>{
+ for(const url of ["https://checkout.stripe.com.evil.test/c/pay/fake","https://checkout.stripe.com@evil.test/c/pay/fake","http://checkout.stripe.com/c/pay/fake","https://checkout.stripe.com/other","https://checkout.stripe.com/c/pay/fake#fragment"]){
+  const fn=createStripeTestSessionAdapter({secretKey:"sk_test_example",fetchImpl:async()=>({ok:true,json:async()=>({id:"cs_test_abc",url})})});
+  await assert.rejects(fn(params,{idempotencyKey:"checkout-"+id}),/Invalid Stripe response/,url);
+ }
+});
