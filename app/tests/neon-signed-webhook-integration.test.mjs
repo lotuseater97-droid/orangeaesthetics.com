@@ -8,6 +8,9 @@ import {createRequire} from 'node:module';
 import {createStripeWebhookHandler} from '../lib/stripe-webhook-handler.mjs';
 
 const devBranch='br-nameless-wave-bfsa2x6n';
+// Neon API-confirmed endpoint for this development branch. An environment
+// variable alone cannot prove that a supplied connection targets development.
+const devHost='ep-young-rain-bfjamlfd.c-5.us-west-2.aws.neon.tech';
 const optedIn=process.env.ALLOW_ROLLBACK_DB_TEST==='true';
 test('signed webhook reconciles a real Neon development transaction without persisting data',{skip:!optedIn?'Requires explicit rollback-test opt-in':false},async()=>{
  assert.ok(process.env.NEON_DEV_DATABASE_URL,'Missing Neon development connection');
@@ -16,7 +19,9 @@ test('signed webhook reconciles a real Neon development transaction without pers
  const {Client}=serverRequire('pg');
  const url=new URL(process.env.NEON_DEV_DATABASE_URL);
  assert.equal(url.protocol,'postgresql:');
- assert.match(url.hostname,/\.neon\.tech$/);
+ assert.equal(url.hostname,devHost,'Refusing a database connection outside the approved development endpoint');
+ assert.equal(url.port,'','Unexpected PostgreSQL port');
+ assert.equal(url.pathname,'/neondb','Unexpected database name');
  assert.equal(process.env.NEON_DEV_BRANCH_ID,devBranch);
  assert.equal(url.searchParams.get('sslmode') === 'disable',false,'TLS cannot be disabled');
  const client=new Client({connectionString:url.toString(),ssl:{rejectUnauthorized:true},connectionTimeoutMillis:5000,statement_timeout:10000});
