@@ -14,7 +14,8 @@ test("benefits are scoped to verified member and completed redemptions",async()=
  const s=build();const result=await s.handle({method:"GET"});
  assert.equal(result.status,200);
  assert.deepEqual(s.inspect().params,[member]);
- assert.match(s.inspect().sql,/r.status='completed'/);
+ assert.match(s.inspect().sql,/AND r.status='completed'/);
+ assert.match(s.inspect().sql,/COALESCE\(SUM\(r.quantity\),0\)/);
  assert.match(s.inspect().sql,/g.member_id=\$1/);
  assert.deepEqual(JSON.parse(result.body),{benefits:[{id:grant,sku:"test_addon",granted:3,redeemed:1,remaining:2,expired:false,expiresAt:null}]});
 });
