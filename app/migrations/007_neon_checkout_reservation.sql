@@ -1,0 +1,27 @@
+-- Development only. Caller must derive member ID from verified server authentication.
+CREATE OR REPLACE FUNCTION orange_app.reserve_checkout_order(p_member uuid,p_sku text,p_quantity integer,p_expected_price bigint)
+RETURNS TABLE(id uuid,status text,member_id uuid,total_cents bigint,currency text)
+LANGUAGE plpgsql SET search_path=pg_catalog,orange_app AS $$
+DECLARE v_item orange_app.catalog_items%ROWTYPE;v_id uuid;
+BEGIN
+ IF p_member IS NULL OR p_sku IS NULL OR p_quantity NOT BETWEEN 1 AND 10 OR p_expected_price IS NULL OR p_expected_price<=0 THEN RAISE EXCEPTION 'Invalid checkout request'; END IF;
+ PERFORM 1 FROM orange_app.members m WHERE m.id=p_member AND m.status='active';
+ IF NOT FOUND THEN RAISE EXCEPTION 'Inactive or unknown member'; END IF;
+ SELECT * INTO v_item FROM orange_app.catalog_items c WHERE c.sku=p_sku AND c.active=true AND c.kind IN ('service','addon') FOR SHARE;
+ IF NOT FOUND OR v_item.price_cents<>p_expected_price THEN RAISE EXCEPTION 'Catalog mismatch'; END IF;
+ INSERT INTO orange_app.orders(member_id,status,currency,total_cents) VALUES(p_member,'pending','USD',v_item.price_cents*p_quantity) RETURNING orange_app.orders.id INTO v_id;
+ INSERT INTO orange_app.order_items(order_id,catalog_item_id,quantity,unit_price_cents) VALUES(v_id,v_item.id,p_quantity,v_item.price_cents);
+ RETURN QUERY SELECT o.id,o.status,o.member_id,o.total_cents,o.currency::text FROM orange_app.orders o WHERE o.id=v_id;
+END $$;
+CREATE OR REPLACE FUNCTION orange_app.attach_checkout_session(p_order uuid,p_member uuid,p_session text)
+RETURNS boolean LANGUAGE plpgsql SET search_path=pg_catalog,orange_app AS $$
+DECLARE v_count integer;
+BEGIN
+ IF p_order IS NULL OR p_member IS NULL OR p_session IS NULL OR p_session !~ '^cs_test_[A-Za-z0-9_]+$' THEN RAISE EXCEPTION 'Invalid session'; END IF;
+ UPDATE orange_app.orders SET processor_checkout_id=p_session WHERE id=p_order AND member_id=p_member AND status='pending' AND (processor_checkout_id IS NULL OR processor_checkout_id=p_session);
+ GET DIAGNOSTICS v_count=ROW_COUNT;
+ IF v_count<>1 THEN RAISE EXCEPTION 'Checkout attach conflict'; END IF;
+ RETURN true;
+END $$;
+REVOKE ALL ON FUNCTION orange_app.reserve_checkout_order(uuid,text,integer,bigint) FROM PUBLIC;
+REVOKE ALL ON FUNCTION orange_app.attach_checkout_session(uuid,uuid,text) FROM PUBLIC;
