@@ -28,7 +28,8 @@ export function createCheckoutService({reserveOrder,attachCheckout,createStripeS
   },{idempotencyKey:"checkout-"+order.id});
   if(!session||typeof session.id!=="string"||!/^cs_test_[A-Za-z0-9_]+$/.test(session.id)||
      typeof session.url!=="string"||!session.url.startsWith("https://checkout.stripe.com/"))throw new Error("Invalid Stripe test session");
-  await attachCheckout({orderId:order.id,checkoutId:session.id,memberId:verifiedMemberId});
+  const attached=await attachCheckout({orderId:order.id,checkoutId:session.id,memberId:verifiedMemberId});
+  if(attached!==true)throw new Error("Checkout session attachment not confirmed");
   return Object.freeze({url:session.url});
  };
 }
