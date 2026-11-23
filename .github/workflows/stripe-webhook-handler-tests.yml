@@ -1,0 +1,29 @@
+name: Stripe webhook handler tests
+on:
+  push:
+    paths:
+      - "app/lib/stripe-webhook-handler.mjs"
+      - "app/lib/webhook-signature.mjs"
+      - "app/lib/paid-checkout-policy.mjs"
+      - "app/tests/stripe-webhook-handler.test.mjs"
+      - ".github/workflows/stripe-webhook-handler-tests.yml"
+  pull_request:
+    paths:
+      - "app/lib/stripe-webhook-handler.mjs"
+      - "app/lib/webhook-signature.mjs"
+      - "app/lib/paid-checkout-policy.mjs"
+      - "app/tests/stripe-webhook-handler.test.mjs"
+      - ".github/workflows/stripe-webhook-handler-tests.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  webhook-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --test app/tests/stripe-webhook-handler.test.mjs
