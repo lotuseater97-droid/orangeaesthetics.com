@@ -3,7 +3,7 @@ import { onRequestPost } from './functions/api/appointment-request.js';
 // Only serve explicitly public file formats; never expose application source or config.
 const publicTypes = new Set(['html','css','js','png','jpg','jpeg','webp','gif','svg','ico','woff','woff2','ttf','otf','avif','webmanifest','xml','txt']);
 const hiddenDirs = new Set(['app','functions','scripts','node_modules','tests','private','internal','src']);
-const reply = (status, message, headers={}) => new Response(message,{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff',...headers}});
+const reply = (status, message, headers={}) => new Response(message,{status,headers:{'cache-control':'no-store','x-content-type-options':'nosniff','referrer-policy':'strict-origin-when-cross-origin','x-frame-options':'DENY',...headers}});
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
