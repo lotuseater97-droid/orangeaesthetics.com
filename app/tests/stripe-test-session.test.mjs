@@ -14,3 +14,16 @@ test("rejects forged Stripe checkout response URLs",async()=>{
   await assert.rejects(fn(params,{idempotencyKey:"checkout-"+id}),/Invalid Stripe response/,url);
  }
 });
+
+test("rejects idempotency key for a different order before contacting Stripe",async()=>{
+ let contacted=false;
+ const fn=createStripeTestSessionAdapter({secretKey:"sk_test_example",fetchImpl:async()=>{contacted=true;throw Error("unexpected network")}});
+ await assert.rejects(fn(params,{idempotencyKey:"checkout-00000000-0000-4000-8000-000000000003"}),/Invalid checkout fields/);
+ assert.equal(contacted,false);
+});
+test("rejects malformed order UUID in idempotency key",async()=>{
+ let contacted=false;
+ const fn=createStripeTestSessionAdapter({secretKey:"sk_test_example",fetchImpl:async()=>{contacted=true;throw Error("unexpected network")}});
+ await assert.rejects(fn(params,{idempotencyKey:"checkout-zzzzzzzz-zzzz-zzzz-zzzz-zzzzzzzzzzzz"}),/Invalid checkout request/);
+ assert.equal(contacted,false);
+});
