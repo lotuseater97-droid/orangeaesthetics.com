@@ -5,7 +5,8 @@ import {readFile} from 'node:fs/promises';
 const gatedFactories = [
  ['startCheckout','createCheckoutService'],
  ['checkout','createCheckoutHttpHandler'],
- ['ownerApproval','createOwnerCatalogHttpHandler']
+ ['ownerApproval','createOwnerCatalogHttpHandler'],
+ ['memberHistory','createMemberOrderHistoryHandler']
 ];
 function assertGatesDisabled(source) {
  for (const [variable,factory] of gatedFactories) {
@@ -53,4 +54,10 @@ test('development server port guard accepts numeric ports and rejects nonnumeric
  assert.equal(digits.test('443'),true);
  assert.equal(digits.test('abc'),false);
  assert.equal(digits.test('8x'),false);
+});
+
+test('member order history is wired only to its private route',async()=>{
+ const source=await readFile(new URL('../server/index.mjs',import.meta.url),'utf8');
+ assert.match(source,/req\.url==="\/api\/member\/orders"\?memberHistory:null/);
+ assert.match(source,/import \{createMemberOrderHistoryHandler\} from "\.\.\/lib\/member-order-history-handler\.mjs"/);
 });
