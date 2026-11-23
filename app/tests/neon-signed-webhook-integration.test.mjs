@@ -8,8 +8,10 @@ import {createRequire} from 'node:module';
 import {createStripeWebhookHandler} from '../lib/stripe-webhook-handler.mjs';
 
 const devBranch='br-nameless-wave-bfsa2x6n';
-const enabled=Boolean(process.env.NEON_DEV_DATABASE_URL && process.env.NEON_DEV_BRANCH_ID===devBranch && process.env.ALLOW_ROLLBACK_DB_TEST==='true');
-test('signed webhook reconciles a real Neon development transaction without persisting data',{skip:!enabled?'Requires explicitly authorized Neon development connection':false},async()=>{
+const optedIn=process.env.ALLOW_ROLLBACK_DB_TEST==='true';
+test('signed webhook reconciles a real Neon development transaction without persisting data',{skip:!optedIn?'Requires explicit rollback-test opt-in':false},async()=>{
+ assert.ok(process.env.NEON_DEV_DATABASE_URL,'Missing Neon development connection');
+ assert.equal(process.env.NEON_DEV_BRANCH_ID,devBranch,'Incorrect Neon development branch');
  const serverRequire=createRequire(new URL('../server/package.json',import.meta.url));
  const {Client}=serverRequire('pg');
  const url=new URL(process.env.NEON_DEV_DATABASE_URL);
