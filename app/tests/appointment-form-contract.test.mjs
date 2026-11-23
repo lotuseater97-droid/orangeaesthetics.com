@@ -21,10 +21,10 @@ test('appointment form submits only contact fields',()=>{
 });
 
 test('appointment phone field enforces telephone-friendly input',()=>{
-  const input=page.match(/<input\\b[^>]*id="phone"[^>]*>/i);
+  const input=page.match(/<input\b[^>]*id="phone"[^>]*>/i);
   assert.ok(input,'phone input must exist');
   assert.match(input[0],/type="tel"/);
   assert.match(input[0],/inputmode="tel"/);
   assert.match(input[0],/minlength="7"/);
-  assert.match(input[0],/pattern="\\[\\+0-9\\(\\)\\. -\\]\\+"/);
+  assert.ok(input[0].includes('pattern="[+0-9(). -]+"'));
 });
