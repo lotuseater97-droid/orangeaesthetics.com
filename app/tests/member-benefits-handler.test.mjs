@@ -49,3 +49,10 @@ test("rejects missing quantities rather than converting null to zero",async()=>{
   }
  }
 });
+
+test("rejects scientific notation, fractional and padded credit quantities",async()=>{
+ for(const invalid of ["1e2","1.5"," 1","01","-1"]){
+  const s=build({rows:[{...row,granted_quantity:invalid}]});
+  assert.equal((await s.handle({method:"GET"})).status,503);
+ }
+});
