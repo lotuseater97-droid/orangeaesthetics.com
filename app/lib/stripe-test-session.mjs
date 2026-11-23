@@ -4,14 +4,15 @@ export function createStripeTestSessionAdapter({secretKey,fetchImpl=fetch}={}){
  if(typeof fetchImpl!=="function")throw new TypeError("Fetch implementation required");
  return async function createStripeSession(params,{idempotencyKey}={}){
   if(params?.mode!=="payment"||!Array.isArray(params.line_items)||params.line_items.length!==1||
-     !/^checkout-[0-9a-f-]{36}$/i.test(idempotencyKey??""))throw new Error("Invalid checkout request");
+     !/^checkout-[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(idempotencyKey??""))throw new Error("Invalid checkout request");
   const line=params.line_items[0],price=line.price_data;
   if(!Number.isSafeInteger(price?.unit_amount)||price.unit_amount<=0||
      price.currency!=="usd"||!Number.isSafeInteger(line.quantity)||line.quantity<1||line.quantity>10||
      !/^[a-z0-9_]{3,80}$/.test(price.product_data?.name??"")||
      !/^https:\/\//.test(params.success_url??"")||!/^https:\/\//.test(params.cancel_url??"")||
      !/^[0-9a-f-]{36}$/i.test(params.client_reference_id??"")||
-     params.metadata?.order_id!==params.client_reference_id)throw new Error("Invalid checkout fields");
+     params.metadata?.order_id!==params.client_reference_id||
+     idempotencyKey!=="checkout-"+params.client_reference_id)throw new Error("Invalid checkout fields");
   const body=new URLSearchParams();
   body.set("mode","payment");
   body.set("line_items[0][price_data][currency]","usd");
