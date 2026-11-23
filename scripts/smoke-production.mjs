@@ -8,6 +8,10 @@ if (target.protocol !== 'https:' || target.username || target.password || target
 }
 const cases = [
   ['/', 200],
+  ['/aesthetics.html', 200],
+  ['/iv-therapy.html', 200],
+  ['/memberships.html', 200],
+  ['/appointment-request.html', 200],
   ['/app/schema.sql', 404],
   ['/functions/api/appointment-request.js', 404],
   ['/scripts/test-worker.mjs', 404],
