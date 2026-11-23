@@ -58,7 +58,8 @@ jobs:
           if-no-files-found: warn
 
   neon-development-integration:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_neon_integration == true }}
+    needs: checkout
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.run_neon_integration == true }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment: neon-development
