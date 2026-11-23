@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import {OwnerApprovalDenied} from "../lib/owner-catalog-approval.mjs";
 import {createOwnerCatalogHttpHandler} from "../lib/owner-catalog-http-handler.mjs";
 const origin="https://orangeaesthetics.com";
 const payload={itemId:"00000000-0000-4000-8000-000000000001",approved:true,requiresClinicalReview:false};
@@ -37,7 +38,7 @@ test("rejects method, origin, type, malformed JSON and extraneous fields",async(
 test("owner verification failure denies request without leaking errors",async()=>{
  const handle=createOwnerCatalogHttpHandler({origin,enabled:true,approveCatalog:async()=>{throw Error("private database detail")}});
  const response=await handle(request());
- assert.equal(response.status,403);
+ assert.equal(response.status,503);
  assert.doesNotMatch(response.body,/private database detail/);
 });
 
@@ -48,4 +49,9 @@ test("unconfirmed approval never reports success",async()=>{
 test("client-supplied audit request ID is rejected",async()=>{
  const handle=createOwnerCatalogHttpHandler({origin,enabled:true,approveCatalog:async()=>({applied:true})});
  assert.equal((await handle(request({...payload,requestId:"forged-id"}))).status,400);
+});
+
+test("denied owner receives 403 without exposing auth internals",async()=>{
+ const handle=createOwnerCatalogHttpHandler({origin,enabled:true,approveCatalog:async()=>{throw new OwnerApprovalDenied()}});
+ assert.equal((await handle(request())).status,403);
 });
