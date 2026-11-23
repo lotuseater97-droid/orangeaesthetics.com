@@ -15,4 +15,15 @@ jobs:
         with:
           node-version: '22'
       - name: Verify production public and private routes
-        run: node scripts/smoke-production.mjs
+        shell: bash
+        run: |
+          set -o pipefail
+          echo "## Production route and security smoke test" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo 'Run time (UTC): '$(date -u '+%Y-%m-%d %H:%M:%S') >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo '~~~text' >> "$GITHUB_STEP_SUMMARY"
+          node scripts/smoke-production.mjs 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          result=${PIPESTATUS[0]}
+          echo '~~~' >> "$GITHUB_STEP_SUMMARY"
+          exit "$result"
