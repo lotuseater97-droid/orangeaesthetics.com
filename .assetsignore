@@ -4,6 +4,11 @@
 node_modules/
 functions/
 app/
+scripts/
+tests/
+private/
+internal/
+src/
 *.md
 *.sql
 *.toml
@@ -20,3 +25,9 @@ app/
 .gitignore
 .assetsignore
 .DS_Store
+
+# Worker entrypoint and generated development artifacts
+worker.mjs
+*.mjs
+*.zip
+.dev.vars*
