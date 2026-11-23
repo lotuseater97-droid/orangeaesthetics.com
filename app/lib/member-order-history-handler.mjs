@@ -23,7 +23,8 @@ export function createMemberOrderHistoryHandler({verifySession,query,enabled=fal
     if(!uuid.test(row.id??"")||!Number.isSafeInteger(amount)||amount<0||amount>99999999||
        typeof row.status!=="string"||!/^[a-z_]{1,32}$/.test(row.status)||
        typeof row.currency!=="string"||row.currency.trim()!=="USD")throw new Error("Invalid order row");
-    if(row.created_at===null||row.created_at===undefined||row.created_at===''||typeof row.created_at==='boolean')throw new Error('Missing order date');
+    if(!(row.created_at instanceof Date)&&
+       (typeof row.created_at!=='string'||!/^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}/.test(row.created_at)))throw new Error('Invalid order date type');
     const date=row.created_at instanceof Date?row.created_at:new Date(row.created_at);
     if(!Number.isFinite(date.getTime()))throw new Error("Invalid order date");
     return {id:row.id,status:row.status,totalCents:amount,currency:"USD",createdAt:date.toISOString()};
