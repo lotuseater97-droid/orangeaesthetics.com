@@ -10,6 +10,8 @@ export default {
     let path;
     try { path = decodeURIComponent(url.pathname).replaceAll('\\','/').toLowerCase(); }
     catch { return reply(400,'Invalid path'); }
+    // Block residual percent escapes that could be decoded again by asset storage.
+    if (path.includes('%')) return reply(404,'Not found');
     if (path === '/api/appointment-request') {
       if (request.method !== 'POST') return new Response(null,{status:405,headers:{allow:'POST'}});
       return onRequestPost({request,env});
