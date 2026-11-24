@@ -12,7 +12,11 @@ export async function createStaffReservation({actor,organization_id,appointment_
  // Deny before beginning a transaction; callbacks must not rely on user-supplied roles.
  const permitted=await authorize({actor,organization_id,action:"reservation:create"});
  if(permitted!==true)throw Object.assign(new Error("Reservation access denied"),{status:403});
- const valid=await validateBooking({organization_id,appointment_id,provider_id,room_id,starts_at,ends_at,status});
- if(valid!==true)throw Object.assign(new Error("Reservation violates booking policy"),{status:422});
- return transaction(async query=>{if(typeof query!=="function")throw new TypeError("Transactional query function required");return insertReservation({query,organization_id,appointment_id,provider_id,room_id,starts_at,ends_at,status});});
+ return transaction(async query=>{
+  if(typeof query!=="function")throw new TypeError("Transactional query function required");
+  // Booking policy must be checked against the same transaction snapshot as insertion.
+  const valid=await validateBooking({query,organization_id,appointment_id,provider_id,room_id,starts_at,ends_at,status});
+  if(valid!==true)throw Object.assign(new Error("Reservation violates booking policy"),{status:422});
+  return insertReservation({query,organization_id,appointment_id,provider_id,room_id,starts_at,ends_at,status});
+ });
 }
