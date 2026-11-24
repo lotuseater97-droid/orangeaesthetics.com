@@ -19,3 +19,16 @@ test("invalid closure intervals fail closed",()=>{
 test("overlap comparison rejects zero-length intervals",()=>{
  assert.throws(()=>overlaps(base,{start_at:base.start_at,end_at:base.start_at}),RangeError);
 });
+
+test("available slots exclude occupied provider and room times",async()=>{
+ const {availableSlots}=await import("../lib/booking-capacity.mjs");
+ const slots=availableSlots({window_start:"2026-12-01T10:00:00Z",window_end:"2026-12-01T12:00:00Z",duration_minutes:30,step_minutes:30,provider_id:"provider-a",room_id:"room-a",appointments:[{...base,id:"taken",status:"confirmed"}]});
+ assert.deepEqual(slots.map(s=>s.start_at),["2026-12-01T11:00:00.000Z","2026-12-01T11:30:00.000Z"]);
+});
+test("available slots respect closures and invalid durations",async()=>{
+ const {availableSlots}=await import("../lib/booking-capacity.mjs");
+ const options={window_start:"2026-12-01T10:00:00Z",window_end:"2026-12-01T11:00:00Z",duration_minutes:30,provider_id:"provider-a",room_id:"room-a"};
+ assert.deepEqual(availableSlots({...options,closures:[{id:"closed",all_resources:true,start_at:options.window_start,end_at:options.window_end}]}),[]);
+ assert.throws(()=>availableSlots({...options,duration_minutes:0}),RangeError);
+ assert.throws(()=>availableSlots({...options,step_minutes:0}),RangeError);
+});
