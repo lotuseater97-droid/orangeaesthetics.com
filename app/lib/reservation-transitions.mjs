@@ -15,6 +15,6 @@ export async function transitionReservation({query,organization_id,reservation_i
  [organization_id,reservation_id,to_status,from_status]);
  if(!result||!Array.isArray(result.rows)||result.rows.length>1)throw new Error("Invalid reservation transition response");
  if(result.rows.length===0)throw new ReservationTransitionConflict();
- if(!result.rows[0]||typeof result.rows[0]!=="object"||result.rows[0].id!==reservation_id||result.rows[0].organization_id!==organization_id||result.rows[0].status!==to_status)throw new Error("Invalid reservation transition result");
+ if(!result.rows[0]||typeof result.rows[0]!=="object"||Array.isArray(result.rows[0])||result.rows[0].id!==reservation_id||result.rows[0].organization_id!==organization_id||result.rows[0].status!==to_status)throw new Error("Invalid reservation transition result");
  return result.rows[0];
 }
