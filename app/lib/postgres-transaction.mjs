@@ -9,17 +9,20 @@ export function postgresTransaction(pool){
    if(typeof client?.release==="function")client.release(true);
    throw new TypeError("Invalid PostgreSQL client");
   }
-  let begun=false,discard=false,committing=false;
+  let begun=false,discard=false,committing=false,active=true;
+  const scopedQuery=(sql,params)=>{if(!active)throw new Error("Transaction query handle has expired");return client.query(sql,params)};
   try{
    await client.query("BEGIN");begun=true;
-   const result=await work((sql,params)=>client.query(sql,params));
+   const result=await work(scopedQuery);
+   active=false;
    committing=true;
    await client.query("COMMIT");
    committing=false;
    return result;
   }catch(error){
+   active=false;
    if(committing){discard=true;}else if(begun){try{await client.query("ROLLBACK")}catch(rollbackError){discard=true;error.rollbackError=rollbackError}}
    throw error;
-  }finally{client.release(discard)}
+  }finally{active=false;client.release(discard)}
  };
 }
