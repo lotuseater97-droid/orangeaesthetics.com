@@ -26,7 +26,7 @@ export function requestWindow({requested_at,now,min_notice_minutes=60,max_days_a
  * Generate candidate appointment times inside a preapproved operating window.
  * Pure planning only: caller must recheck availability transactionally before booking.
  */
-export function availableSlots({window_start,window_end,duration_minutes,step_minutes=15,provider_id,room_id,appointments=[],closures=[],buffers_minutes=0}){
+export function availableSlots({window_start,window_end,duration_minutes,step_minutes=15,provider_id,room_id,appointments=[],closures=[],buffers_minutes=0,now,min_notice_minutes=60,max_days_ahead=180}){
  const start=time(window_start),end=time(window_end);
  if(end<=start||end-start>24*3600000)throw new RangeError("Invalid operating window");
  if(!Number.isSafeInteger(duration_minutes)||duration_minutes<5||duration_minutes>480)throw new RangeError("Invalid appointment duration");
@@ -34,6 +34,7 @@ export function availableSlots({window_start,window_end,duration_minutes,step_mi
  const duration=duration_minutes*60000,step=step_minutes*60000,slots=[];
  for(let at=start;at+duration<=end;at+=step){
   const candidate={start_at:new Date(at).toISOString(),end_at:new Date(at+duration).toISOString()};
+  if(now!==undefined&&!requestWindow({requested_at:candidate.start_at,now,min_notice_minutes,max_days_ahead}).allowed)continue;
   if(evaluateSlot({...candidate,provider_id,room_id,appointments,closures,buffers_minutes}).available)slots.push(candidate);
  }
  return slots;
