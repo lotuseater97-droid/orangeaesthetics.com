@@ -31,3 +31,13 @@ test("transaction query handles expire before commit and after rollback",async()
  assert.throws(()=>expired("SELECT forbidden"),/expired/);
  assert.deepEqual(failed.calls.map(x=>x[0]),["BEGIN","ROLLBACK"]);
 });
+
+test("failed BEGIN discards connection without running work or rollback",async()=>{
+ const statements=[],releases=[];
+ const client={query:async sql=>{statements.push(sql);throw new Error("begin failed")},release:discard=>releases.push(discard)};
+ let executed=false;
+ await assert.rejects(postgresTransaction({connect:async()=>client})(async()=>{executed=true}),/begin failed/);
+ assert.equal(executed,false);
+ assert.deepEqual(statements,["BEGIN"]);
+ assert.deepEqual(releases,[true]);
+});
