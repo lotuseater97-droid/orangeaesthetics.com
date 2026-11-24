@@ -48,3 +48,11 @@ test("missing organization or appointment scope never invokes security callbacks
   assert.equal(calls,0);
  }
 });
+
+test("malformed reservation resource IDs fail before authorization callbacks",async()=>{
+ for(const override of [{organization_id:"invalid"},{appointment_id:"invalid"},{provider_id:""},{provider_id:"not-a-uuid"},{room_id:null},{room_id:"  "}, {room_id:"not-a-uuid"}]){
+  let calls=0;
+  await assert.rejects(createStaffReservation({...request,...override,authorize:async()=>{calls++;return true},validateBooking:async()=>{calls++;return true},transaction:async()=>{calls++}}),TypeError);
+  assert.equal(calls,0);
+ }
+});
