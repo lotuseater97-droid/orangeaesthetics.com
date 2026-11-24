@@ -7,13 +7,15 @@ test("authorized validated reservation uses transactional query",async()=>{
  let calls=[];
  const row={id,status:"under_review"};
  const result=await createStaffReservation({...request,authorize:async a=>{calls.push(a.action);return true},validateBooking:async()=>{calls.push("validate");return true},transaction:async work=>{calls.push("transaction");return work(async(sql,params)=>{calls.push("insert");assert.equal(params.length,7);return {rows:[row]}})}});
- assert.equal(result,row);assert.deepEqual(calls,["reservation:create","validate","transaction","insert"]);
+ assert.equal(result,row);assert.deepEqual(calls,["reservation:create","transaction","validate","insert"]);
 });
-test("unauthorized and invalid bookings cannot begin transactions",async()=>{
+test("unauthorized bookings cannot begin transactions and invalid bookings cannot insert",async()=>{
  for(const [allowed,valid,expected] of [[false,true,403],[true,false,422]]){
   let transactions=0;
-  await assert.rejects(createStaffReservation({...request,authorize:async()=>allowed,validateBooking:async()=>valid,transaction:async()=>{transactions++}}),e=>e.status===expected);
-  assert.equal(transactions,0);
+  let inserts=0;
+  await assert.rejects(createStaffReservation({...request,authorize:async()=>allowed,validateBooking:async()=>valid,transaction:async work=>{transactions++;return work(async()=>{inserts++;return {rows:[{}]}})}}),e=>e.status===expected);
+  assert.equal(transactions,allowed?1:0);
+  assert.equal(inserts,0);
  }
 });
 test("missing security callbacks fail closed",async()=>{
@@ -63,4 +65,11 @@ test("nonreservable lifecycle states never invoke trusted booking callbacks",asy
   await assert.rejects(createStaffReservation({...request,status,authorize:async()=>{calls++;return true},validateBooking:async()=>{calls++;return true},transaction:async()=>{calls++}}),RangeError);
   assert.equal(calls,0);
  }
+});
+
+test("booking policy receives transactional query and is checked before insert",async()=>{
+ const events=[];
+ const query=async()=>{events.push("insert");return {rows:[{id}]}};
+ await createStaffReservation({...request,authorize:async()=>true,validateBooking:async args=>{assert.equal(args.query,query);events.push("policy");return true},transaction:async work=>{events.push("begin");return work(query)}});
+ assert.deepEqual(events,["begin","policy","insert"]);
 });
