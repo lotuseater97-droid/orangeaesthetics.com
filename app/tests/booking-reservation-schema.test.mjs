@@ -25,3 +25,12 @@ test("staged reservations prepare the appointment composite foreign key target f
  assert.ok(index>=0&&index<table,"Composite appointment index must precede reservation table");
  assert.match(sql,/ON\s+public\.oa_appointments\s*\(\s*organization_id\s*,\s*id\s*\)/i);
 });
+
+test("staged exclusion constraints can be safely reapplied",()=>{
+ for(const name of ["oa_provider_no_overlap","oa_room_no_overlap"]){
+  const check=sql.indexOf("conname = '"+name+"'");
+  const creation=sql.indexOf("ADD CONSTRAINT "+name+" EXCLUDE USING gist");
+  assert.ok(check>=0&&creation>check,"Must check existing "+name+" before adding it");
+ }
+ assert.equal((sql.match(/DO \\$migration\\$/g)||[]).length,2);
+});
