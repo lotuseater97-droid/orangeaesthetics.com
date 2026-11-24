@@ -44,3 +44,12 @@ test("malformed database insert responses are not treated as successful bookings
   await assert.rejects(insertReservation({...options,query:async()=>response}),/Reservation insert returned no record/);
  }
 });
+
+test("mismatched returned reservation scope and lifecycle state fail closed",async()=>{
+ for(const field of ["organization_id","appointment_id","provider_id","room_id","status"]){
+  const value=field==="status"?"confirmed":"123e4567-e89b-42d3-a456-426614174001";
+  await assert.rejects(insertReservation({...options,query:async()=>({rows:[{id,[field]:value}]})}),new RegExp("mismatched "+field));
+ }
+ const matching={id,...options,status:"under_review"};
+ assert.deepEqual(await insertReservation({...options,query:async()=>({rows:[matching]})}),matching);
+});
