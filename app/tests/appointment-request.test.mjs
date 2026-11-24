@@ -17,6 +17,16 @@ test("rejects unsafe control and bidirectional characters",async()=>{
   }
 });
 test("rejects mismatched origin",async()=>{const res=await onRequestPost({request:request(base,{origin:"https://evil.example"}),env});assert.equal(res.status,403)});
+test("rejects cross-site browser fetch metadata even without an Origin header",async()=>{
+  for(const site of ["cross-site","same-site","unexpected"]){
+    const res=await onRequestPost({request:request(base,{"sec-fetch-site":site,origin:""}),env});
+    assert.equal(res.status,403,site);
+  }
+  await withFetch(async()=>new Response("",{status:202}),async()=>{
+    const res=await onRequestPost({request:request(base,{"sec-fetch-site":"same-origin"}),env});
+    assert.equal(res.status,200);
+  });
+});
 test("fails closed without provider configuration",async()=>{const res=await onRequestPost({request:request(base),env:{}});assert.equal(res.status,503)});
 test("fails closed for missing, blank, or malformed notification credentials",async()=>{
   for(const override of [
