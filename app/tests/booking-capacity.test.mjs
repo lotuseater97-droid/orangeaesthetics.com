@@ -106,3 +106,10 @@ test("scheduling timestamps require an explicit timezone",()=>{
  }
  assert.equal(overlaps(base,{start_at:"2026-12-01T11:00:00+00:00",end_at:"2026-12-01T12:00:00+00:00"}),false);
 });
+
+test("rejects impossible calendar dates rather than normalizing them",()=>{
+ for(const requested_at of ["2026-02-30T10:00:00Z","2026-04-31T10:00:00Z","2025-02-29T10:00:00Z"]){
+  assert.throws(()=>requestWindow({requested_at,now:"2026-01-01T10:00:00Z"}),TypeError);
+ }
+ assert.equal(requestWindow({requested_at:"2028-02-29T10:00:00Z",now:"2028-02-28T10:00:00Z"}).allowed,true);
+});
