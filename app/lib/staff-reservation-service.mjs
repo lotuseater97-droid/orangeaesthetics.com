@@ -6,6 +6,8 @@ export async function createStaffReservation({actor,organization_id,appointment_
  if(typeof authorize!=="function"||typeof validateBooking!=="function"||typeof transaction!=="function")throw new TypeError("Trusted authorization, booking validation and transaction are required");
  if(!actor||typeof actor!=="object"||Array.isArray(actor)||typeof actor.id!=="string"||!actor.id.trim())throw new TypeError("Authenticated actor required");
  if(typeof organization_id!=="string"||!organization_id.trim()||typeof appointment_id!=="string"||!appointment_id.trim())throw new TypeError("Organization and appointment identifiers required");
+ const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+ for(const value of [organization_id,appointment_id,provider_id,room_id])if(typeof value!=="string"||!uuid.test(value))throw new TypeError("Valid reservation resource identifiers required");
  // Deny before beginning a transaction; callbacks must not rely on user-supplied roles.
  const permitted=await authorize({actor,organization_id,action:"reservation:create"});
  if(permitted!==true)throw Object.assign(new Error("Reservation access denied"),{status:403});
