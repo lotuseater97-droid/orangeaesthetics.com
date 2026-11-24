@@ -37,7 +37,10 @@ export async function insertReservation({query,organization_id,appointment_id,pr
   const row=result.rows[0];
   if(typeof row.id!=="string"||!uuid.test(row.id))throw new Error("Reservation insert returned invalid id");
   for(const [key,expected] of Object.entries({organization_id,appointment_id,provider_id,room_id,status})){
-   if(Object.hasOwn(row,key)&&row[key]!==expected)throw new Error("Reservation insert returned mismatched "+key);
+   if(Object.hasOwn(row,key)){
+   const matches=key==="status"?row[key]===expected:typeof row[key]==="string"&&row[key].toLowerCase()===expected.toLowerCase();
+   if(!matches)throw new Error("Reservation insert returned mismatched "+key);
+  }
   }
   // PostgreSQL drivers commonly return timestamptz as Date objects. When
   // timestamps are present, compare instants rather than string formatting.
