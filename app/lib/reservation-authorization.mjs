@@ -8,7 +8,7 @@ export function createReservationAuthorizer({preflightQuery}){
   if(action!=="reservation:create"||!actor||typeof actor.id!=="string")return false;
   const executor=query===undefined?preflightQuery:query;
   if(typeof executor!=="function")return false;
-  const membership=await createStaffMembershipSqlLookup({query:executor})({user_id:actor.id,organization_id});
+  const membership=await createStaffMembershipSqlLookup({query:executor,lockMembership:query!==undefined})({user_id:actor.id,organization_id});
   return membership?.active===true&&membership.organization_id===organization_id&&allowed(membership.role,"appointments.manage");
  };
 }
