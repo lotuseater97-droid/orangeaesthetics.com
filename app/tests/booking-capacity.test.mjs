@@ -9,3 +9,13 @@ test("closures block all resources",()=>assert.equal(evaluateSlot({...base,closu
 test("rejects inverted appointment window",()=>assert.throws(()=>evaluateSlot({...base,end_at:"2026-12-01T09:00:00Z"}),RangeError));
 test("request window enforces notice",()=>assert.equal(requestWindow({requested_at:"2026-12-01T10:30:00Z",now:"2026-12-01T10:00:00Z"}).allowed,false));
 test("request window permits valid future slot",()=>assert.equal(requestWindow({requested_at:"2026-12-02T10:00:00Z",now:"2026-12-01T10:00:00Z"}).allowed,true));
+
+test("invalid existing appointment intervals fail closed",()=>{
+ assert.throws(()=>evaluateSlot({...base,appointments:[{...base,id:"broken",status:"confirmed",end_at:base.start_at}]}),RangeError);
+});
+test("invalid closure intervals fail closed",()=>{
+ assert.throws(()=>evaluateSlot({...base,closures:[{id:"broken",all_resources:true,start_at:base.end_at,end_at:base.start_at}]}),RangeError);
+});
+test("overlap comparison rejects zero-length intervals",()=>{
+ assert.throws(()=>overlaps(base,{start_at:base.start_at,end_at:base.start_at}),RangeError);
+});
