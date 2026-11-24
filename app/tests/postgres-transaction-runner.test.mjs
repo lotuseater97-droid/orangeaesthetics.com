@@ -14,3 +14,13 @@ test("transaction runner releases clients with no query method",async()=>{
  await assert.rejects(runner(async()=>{}),TypeError);
  assert.equal(releases,1);
 });
+
+test("rollback failure discards potentially aborted PostgreSQL connection",async()=>{
+ let releaseError,queries=[];
+ const pool={connect:async()=>({query:async sql=>{queries.push(sql);if(sql==="ROLLBACK")throw Error("rollback failed");},release:error=>{releaseError=error;}})};
+ const run=createPostgresTransactionRunner({pool});
+ await assert.rejects(()=>run(async()=>{throw Error("write failed")}),AggregateError);
+ assert.deepEqual(queries,["BEGIN","ROLLBACK"]);
+ assert.ok(releaseError instanceof Error);
+ assert.match(releaseError.message,/discard connection/);
+});
