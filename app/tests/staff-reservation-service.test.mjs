@@ -116,3 +116,11 @@ test("fractional-second timestamps are accepted by staff reservation validation"
  const result=await createStaffReservation({...request,starts_at:"2026-12-01T10:00:00.125Z",ends_at:"2026-12-01T11:00:00.500Z",authorize:async()=>true,validateBooking:async()=>true,transaction:async work=>work(async()=>({rows:[row]}))});
  assert.equal(result,row);
 });
+
+test("invalid calendar dates, clock values and timezone offsets fail before authorization",async()=>{
+ for(const starts_at of ["2026-02-30T10:00:00Z","2026-13-01T10:00:00Z","2026-12-01T25:00:00Z","2026-12-01T10:61:00Z","2026-12-01T10:00:61Z","2026-12-01T10:00:00+24:00","2026-12-01T10:00:00+01:60"]){
+  let calls=0;
+  await assert.rejects(createStaffReservation({...request,starts_at,authorize:async()=>{calls++;return true},validateBooking:async()=>{calls++;return true},transaction:async()=>{calls++}}),RangeError);
+  assert.equal(calls,0,starts_at);
+ }
+});
