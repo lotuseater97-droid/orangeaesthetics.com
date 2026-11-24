@@ -17,3 +17,9 @@ test("rejects bidirectional controls and hidden characters in notification field
 test("rejects hidden characters in notification recipient address",()=>{
  assert.throws(()=>prepareNotification({...base,recipient:{...base.recipient,email:"example\u202e@example.com"}}),TypeError);
 });
+
+test("rejects malformed notification recipient email addresses",()=>{
+ for(const email of ["a<b@example.com","a>b@example.com","a(b)@example.com","a@example.com/path","a@example.com?x=1"]){
+  assert.throws(()=>prepareNotification({...base,recipient:{...base.recipient,email}}),TypeError,email);
+ }
+});
