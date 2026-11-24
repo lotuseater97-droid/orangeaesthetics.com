@@ -16,6 +16,11 @@ export async function createStaffReservation({actor,organization_id,appointment_
  const iso=/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,3})?(?:Z|[+-][0-9]{2}:[0-9]{2})$/;
  for(const value of [starts_at,ends_at]){
   if(typeof value!=="string"||!iso.test(value)||!Number.isFinite(Date.parse(value)))throw new RangeError("Invalid reservation timestamp");
+  const [year,month,day]=value.slice(0,10).split("-").map(Number);
+  const calendar=new Date(Date.UTC(year,month-1,day));
+  if(calendar.getUTCFullYear()!==year||calendar.getUTCMonth()+1!==month||calendar.getUTCDate()!==day)throw new RangeError("Invalid reservation date");
+  if(Number(value.slice(11,13))>23||Number(value.slice(14,16))>59||Number(value.slice(17,19))>59)throw new RangeError("Invalid reservation time");
+  if(!value.endsWith("Z")){const offset=value.slice(-6);if(Number(offset.slice(1,3))>23||Number(offset.slice(4))>59)throw new RangeError("Invalid reservation offset");}
  }
  if(Date.parse(ends_at)<=Date.parse(starts_at)||Date.parse(ends_at)-Date.parse(starts_at)>8*3600000)throw new RangeError("Invalid reservation interval");
  const permitted=await authorize({actor,organization_id,action:"reservation:create"});
