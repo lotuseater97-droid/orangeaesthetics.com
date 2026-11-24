@@ -12,18 +12,20 @@ export function createPostgresTransactionRunner({pool,statementTimeoutMs=15000})
   let discardClient=false;
   let active=true;
   const pending=new Set();
+  const queryFailures=[];
   try{
    try{await client.query("BEGIN")}catch(error){discardClient=true;throw error;}
    begun=true;
    // Bound transaction-local timeout prevents stalled booking writes from holding locks indefinitely.
    await client.query("SELECT set_config($1,$2,true)",["statement_timeout",String(statementTimeoutMs)]);
    // The callback must only use this transaction-scoped client. Never use pool.query.
-   const result=await callback(Object.freeze({query:(text,values=[])=>{if(!active)throw new Error("Transaction query used after completion");const operation=Promise.resolve().then(()=>client.query(text,values));pending.add(operation);operation.finally(()=>pending.delete(operation)).catch(()=>{});return operation;}}));
+   const result=await callback(Object.freeze({query:(text,values=[])=>{if(!active)throw new Error("Transaction query used after completion");const operation=Promise.resolve().then(()=>client.query(text,values));pending.add(operation);operation.then(()=>pending.delete(operation),error=>{queryFailures.push(error);pending.delete(operation);});return operation;}}));
    active=false;
    // Never commit while an unawaited statement may still be executing.
    const outstanding=await Promise.allSettled([...pending]);
    const failed=outstanding.find(item=>item.status==="rejected");
    if(failed)throw failed.reason;
+   if(queryFailures.length)throw queryFailures[0];
    try{await client.query("COMMIT")}catch(error){
     // Commit may have succeeded remotely even if acknowledgement was lost.
     // Never return a connection with an uncertain transaction state to the pool.
