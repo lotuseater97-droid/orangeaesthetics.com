@@ -109,3 +109,10 @@ test("invalid booking intervals are rejected before authorization or database ac
   assert.equal(calls,0);
  }
 });
+
+
+test("fractional-second timestamps are accepted by staff reservation validation",async()=>{
+ const row={id,status:"under_review"};
+ const result=await createStaffReservation({...request,starts_at:"2026-12-01T10:00:00.125Z",ends_at:"2026-12-01T11:00:00.500Z",authorize:async()=>true,validateBooking:async()=>true,transaction:async work=>work(async()=>({rows:[row]}))});
+ assert.equal(result,row);
+});
