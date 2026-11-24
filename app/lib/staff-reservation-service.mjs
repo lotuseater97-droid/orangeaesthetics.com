@@ -10,11 +10,12 @@ export async function createStaffReservation({actor,organization_id,appointment_
  for(const value of [organization_id,appointment_id,provider_id,room_id])if(typeof value!=="string"||!uuid.test(value))throw new TypeError("Valid reservation resource identifiers required");
  if(!["under_review","confirmed"].includes(status))throw new RangeError("Invalid reservable status");
  // Deny before beginning a transaction; callbacks must not rely on user-supplied roles.
- const permitted=await authorize({actor,organization_id,action:"reservation:create"});
- if(permitted!==true)throw Object.assign(new Error("Reservation access denied"),{status:403});
  return transaction(async client=>{
   const query=typeof client==="function"?client:(typeof client?.query==="function"?client.query.bind(client):undefined);
   if(typeof query!=="function")throw new TypeError("Transactional query function required");
+  // Recheck authorization inside the transaction to avoid using a stale pre-transaction grant.
+  const permitted=await authorize({actor,organization_id,action:"reservation:create",query});
+  if(permitted!==true)throw Object.assign(new Error("Reservation access denied"),{status:403});
   // Booking policy must be checked against the same transaction snapshot as insertion.
   const valid=await validateBooking({query,actor,organization_id,appointment_id,provider_id,room_id,starts_at,ends_at,status});
   if(valid!==true)throw Object.assign(new Error("Reservation violates booking policy"),{status:422});
