@@ -49,3 +49,12 @@ test("invalid booking policy is rejected even if operating window has no fitting
  assert.throws(()=>availableSlots({...options,max_days_ahead:0}),RangeError);
  assert.throws(()=>availableSlots({...options,now:"invalid"}),TypeError);
 });
+
+test("slot generation validates resources and buffers even with no candidates",async()=>{
+ const {availableSlots}=await import("../lib/booking-capacity.mjs");
+ const options={window_start:"2026-12-01T10:00:00Z",window_end:"2026-12-01T10:10:00Z",duration_minutes:30,provider_id:"provider-a",room_id:"room-a"};
+ assert.throws(()=>availableSlots({...options,provider_id:""}),TypeError);
+ assert.throws(()=>availableSlots({...options,room_id:null}),TypeError);
+ assert.throws(()=>availableSlots({...options,buffers_minutes:-1}),RangeError);
+ assert.throws(()=>availableSlots({...options,buffers_minutes:121}),RangeError);
+});
