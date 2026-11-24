@@ -10,13 +10,15 @@ export function createPostgresTransactionRunner({pool,statementTimeoutMs=15000})
   if(typeof client.query!=="function"){client.release();throw new TypeError("Invalid PostgreSQL client");}
   let begun=false;
   let discardClient=false;
+  let active=true;
   try{
    try{await client.query("BEGIN")}catch(error){discardClient=true;throw error;}
    begun=true;
    // Bound transaction-local timeout prevents stalled booking writes from holding locks indefinitely.
    await client.query("SELECT set_config($1,$2,true)",["statement_timeout",String(statementTimeoutMs)]);
    // The callback must only use this transaction-scoped client. Never use pool.query.
-   const result=await callback(Object.freeze({query:(text,values=[])=>client.query(text,values)}));
+   const result=await callback(Object.freeze({query:(text,values=[])=>{if(!active)throw new Error("Transaction query used after completion");return client.query(text,values);}}));
+   active=false;
    try{await client.query("COMMIT")}catch(error){
     // Commit may have succeeded remotely even if acknowledgement was lost.
     // Never return a connection with an uncertain transaction state to the pool.
@@ -34,6 +36,6 @@ export function createPostgresTransactionRunner({pool,statementTimeoutMs=15000})
     }
    }
    throw error;
-  }finally{client.release(discardClient?new Error("Transaction state uncertain; discard connection"):undefined)}
+  }finally{active=false;client.release(discardClient?new Error("Transaction state uncertain; discard connection"):undefined)}
  };
 }
