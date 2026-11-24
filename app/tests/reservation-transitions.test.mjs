@@ -27,7 +27,7 @@ test("terminal states can be reached from confirmed bookings",async()=>{
  }
 });
 test("invalid returned tenant and status fail closed",async()=>{
- for(const row of [{id,organization_id:"wrong",status:"confirmed"},{id,organization_id:id,status:"under_review"},null]){
+ for(const row of [{id,organization_id:"wrong",status:"confirmed"},{id,organization_id:id,status:"under_review"},null,"invalid",42]){
   await assert.rejects(transitionReservation({...base,query:async()=>({rows:[row]})}));
  }
 });
