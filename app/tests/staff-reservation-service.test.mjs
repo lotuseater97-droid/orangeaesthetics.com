@@ -101,3 +101,11 @@ test("transactional reauthorization denies revoked access before booking policy 
  assert.equal(policyCalls,0);
  assert.equal(inserts,0);
 });
+
+test("invalid booking intervals are rejected before authorization or database access",async()=>{
+ for(const override of [{starts_at:"invalid"},{ends_at:"invalid"},{ends_at:request.starts_at},{ends_at:"2026-12-01T19:00:01Z"},{starts_at:"2026-12-01T10:00:00"}]){
+  let calls=0;
+  await assert.rejects(createStaffReservation({...request,...override,authorize:async()=>{calls++;return true},validateBooking:async()=>{calls++;return true},transaction:async()=>{calls++}}),RangeError);
+  assert.equal(calls,0);
+ }
+});
