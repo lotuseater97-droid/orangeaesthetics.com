@@ -9,14 +9,16 @@ export function postgresTransaction(pool){
    if(typeof client?.release==="function")client.release(true);
    throw new TypeError("Invalid PostgreSQL client");
   }
-  let begun=false,discard=false;
+  let begun=false,discard=false,committing=false;
   try{
    await client.query("BEGIN");begun=true;
    const result=await work((sql,params)=>client.query(sql,params));
+   committing=true;
    await client.query("COMMIT");
+   committing=false;
    return result;
   }catch(error){
-   if(begun){try{await client.query("ROLLBACK")}catch(rollbackError){discard=true;error.rollbackError=rollbackError}}
+   if(committing){discard=true;}else if(begun){try{await client.query("ROLLBACK")}catch(rollbackError){discard=true;error.rollbackError=rollbackError}}
    throw error;
   }finally{client.release(discard)}
  };
