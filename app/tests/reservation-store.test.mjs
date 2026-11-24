@@ -59,3 +59,12 @@ test("reservation insert requires a valid persisted UUID",async()=>{
   await assert.rejects(insertReservation({...options,query:async()=>({rows:[row]})}),/Reservation insert returned invalid id/);
  }
 });
+
+
+test("returned reservation interval must match the requested instants",async()=>{
+ for(const [field,value] of [["starts_at","2026-12-01T10:15:00Z"],["ends_at",new Date("2026-12-01T11:15:00Z")],["starts_at",null],["ends_at","not-a-date"]]){
+  await assert.rejects(insertReservation({...options,query:async()=>({rows:[{id,[field]:value}]})}),new RegExp("mismatched "+field));
+ }
+ const row={id,starts_at:new Date(options.starts_at),ends_at:"2026-12-01T03:00:00-08:00"};
+ assert.equal(await insertReservation({...options,query:async()=>({rows:[row]})}),row);
+});
