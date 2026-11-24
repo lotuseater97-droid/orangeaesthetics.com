@@ -129,3 +129,9 @@ test("appointment lifecycle statuses match the staged business schema",()=>{
   assert.equal(evaluateSlot({...base,appointments:[{...base,id:"held",status}]}).available,false);
  }
 });
+
+test("direct capacity checks reject malformed closures",()=>{
+ for(const item of [null,undefined,1,"invalid",[]]){
+  assert.throws(()=>evaluateSlot({...base,closures:[item]}),TypeError);
+ }
+});
