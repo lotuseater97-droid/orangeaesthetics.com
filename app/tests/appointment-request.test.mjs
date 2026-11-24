@@ -19,6 +19,18 @@ test("rejects unsafe control and bidirectional characters",async()=>{
 test("rejects mismatched origin",async()=>{const res=await onRequestPost({request:request(base,{origin:"https://evil.example"}),env});assert.equal(res.status,403)});
 test("fails closed without provider configuration",async()=>{const res=await onRequestPost({request:request(base),env:{}});assert.equal(res.status,503)});
 test("rejects insecure notification destination",async()=>{const res=await onRequestPost({request:request(base),env:{...env,APPOINTMENT_NOTIFICATION_ENDPOINT:"http://notifications.example.test"}});assert.equal(res.status,503)});
+test("rejects notification destinations with query tokens, fragments, or IP hosts",async()=>{
+  for(const destination of [
+    "https://notifications.example.test/submit?token=secret",
+    "https://notifications.example.test/submit#fragment",
+    "https://127.0.0.1/submit",
+    "https://[::1]/submit",
+    "https://localhost/submit"
+  ]){
+    const res=await onRequestPost({request:request(base),env:{...env,APPOINTMENT_NOTIFICATION_ENDPOINT:destination}});
+    assert.equal(res.status,503,destination);
+  }
+});
 test("returns delivery error without claiming receipt",async()=>{await withFetch(async()=>new Response("",{status:500}),async()=>{const res=await onRequestPost({request:request(base),env});assert.equal(res.status,502)})});
 
 test("notification forwarding uses bearer authorization and blocks redirects",async()=>{
