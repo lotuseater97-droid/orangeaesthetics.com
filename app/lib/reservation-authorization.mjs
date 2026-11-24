@@ -5,7 +5,7 @@ import {allowed} from "./business-navigation.mjs";
 export function createReservationAuthorizer({preflightQuery}){
  if(typeof preflightQuery!=="function")throw new TypeError("Trusted preflight database query required");
  return async ({actor,organization_id,action,query})=>{
-  if(action!=="reservation:create"||!actor||typeof actor.id!=="string")return false;
+  if(!["reservation:create","reservation:transition"].includes(action)||!actor||typeof actor.id!=="string")return false;
   const executor=query===undefined?preflightQuery:query;
   if(typeof executor!=="function")return false;
   const membership=await createStaffMembershipSqlLookup({query:executor,lockMembership:query!==undefined})({user_id:actor.id,organization_id});
