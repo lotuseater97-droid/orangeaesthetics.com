@@ -1,6 +1,10 @@
 // Pure capacity planning for future authenticated scheduling. Not a live calendar.
 const time=v=>{const n=Date.parse(v);if(!Number.isFinite(n))throw new TypeError("Invalid timestamp");return n};
-export function overlaps(a,b){return time(a.start_at)<time(b.end_at)&&time(b.start_at)<time(a.end_at)}
+export function overlaps(a,b){
+ const aStart=time(a.start_at),aEnd=time(a.end_at),bStart=time(b.start_at),bEnd=time(b.end_at);
+ if(aEnd<=aStart||bEnd<=bStart)throw new RangeError("Invalid interval");
+ return aStart<bEnd&&bStart<aEnd;
+}
 export function evaluateSlot({start_at,end_at,provider_id,room_id,appointments=[],closures=[],buffers_minutes=0}){
  const start=time(start_at),end=time(end_at);
  if(end<=start||end-start>8*3600000)throw new RangeError("Invalid slot duration");
