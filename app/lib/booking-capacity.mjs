@@ -13,7 +13,7 @@ export function evaluateSlot({start_at,end_at,provider_id,room_id,appointments=[
  const expanded={start_at:new Date(start-buffers_minutes*60000).toISOString(),end_at:new Date(end+buffers_minutes*60000).toISOString()};
  const conflicts=[];
  for(const a of appointments){if(!a||typeof a!=="object"||Array.isArray(a))throw new TypeError("Invalid appointment record");if(["requested","completed","cancelled","declined","no_show"].includes(a.status))continue;if(!["confirmed","under_review"].includes(a.status))throw new RangeError("Unknown appointment status");if((a.provider_id===provider_id||a.room_id===room_id)&&overlaps(expanded,a))conflicts.push({kind:"appointment",id:a.id})}
- for(const c of closures){if((c.provider_id===provider_id||c.room_id===room_id||c.all_resources===true)&&overlaps(expanded,c))conflicts.push({kind:"closure",id:c.id})}
+ for(const c of closures){if(!c||typeof c!=="object"||Array.isArray(c))throw new TypeError("Invalid closure record");if((c.provider_id===provider_id||c.room_id===room_id||c.all_resources===true)&&overlaps(expanded,c))conflicts.push({kind:"closure",id:c.id})}
  return {available:conflicts.length===0,conflicts}
 }
 export function requestWindow({requested_at,now,min_notice_minutes=60,max_days_ahead=180}){
