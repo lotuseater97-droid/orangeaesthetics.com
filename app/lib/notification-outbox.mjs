@@ -8,7 +8,7 @@ const templates=Object.freeze({
  inventory_reorder_needed:{channels:["email"],audience:"staff",fields:["sku"]},
  task_assigned:{channels:["email"],audience:"staff",fields:["task_id"]}
 });
-const safeText=(v)=>typeof v==="string"&&v.length>0&&v.length<=120&&!/[\u0000-\u001f\u007f]/.test(v);
+const safeText=(v)=>typeof v==="string"&&v.length>0&&v.length<=120&&!/[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/u.test(v);
 export function notificationTypes(){return Object.keys(templates)}
 export function prepareNotification({type,recipient,fields={},consent={},idempotency_key}){
  if(!Object.hasOwn(templates,type))throw new RangeError("Unknown notification type");
