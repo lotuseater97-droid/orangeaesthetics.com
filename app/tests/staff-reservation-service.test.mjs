@@ -70,6 +70,6 @@ test("nonreservable lifecycle states never invoke trusted booking callbacks",asy
 test("booking policy receives transactional query and is checked before insert",async()=>{
  const events=[];
  const query=async()=>{events.push("insert");return {rows:[{id}]}};
- await createStaffReservation({...request,authorize:async()=>true,validateBooking:async args=>{assert.equal(args.query,query);events.push("policy");return true},transaction:async work=>{events.push("begin");return work(query)}});
+ await createStaffReservation({...request,authorize:async()=>true,validateBooking:async args=>{assert.equal(args.query,query);assert.equal(args.actor,request.actor);events.push("policy");return true},transaction:async work=>{events.push("begin");return work(query)}});
  assert.deepEqual(events,["begin","policy","insert"]);
 });
