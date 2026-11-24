@@ -11,7 +11,7 @@ test("rejects extra fields including medical notes",async()=>{const res=await on
 test("rejects invalid email",async()=>{const res=await onRequestPost({request:request({...base,email:"not-an-email"}),env});assert.equal(res.status,400)});
 test("rejects newline injection",async()=>{const res=await onRequestPost({request:request({...base,name:"Jane\nCc: someone"}),env});assert.equal(res.status,400)});
 test("rejects unsafe control and bidirectional characters",async()=>{
-  for(const [field,value] of [["name","Jane\\tExample"],["name","Jane\\u0000Example"],["email","jane\\u202E@example.com"],["phone","714\\u20665550101"]]){
+  for(const [field,value] of [["name","Jane\tExample"],["name","Jane\u0000Example"],["email","jane\u202E@example.com"],["phone","714\u20665550101"]]){
     const res=await onRequestPost({request:request({...base,[field]:value}),env});
     assert.equal(res.status,400,field+" should reject unsafe characters");
   }
