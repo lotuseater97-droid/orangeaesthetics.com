@@ -7,7 +7,7 @@ test("authorized validated reservation uses transactional query",async()=>{
  let calls=[];
  const row={id,status:"under_review"};
  const result=await createStaffReservation({...request,authorize:async a=>{calls.push(a.action);return true},validateBooking:async()=>{calls.push("validate");return true},transaction:async work=>{calls.push("transaction");return work(async(sql,params)=>{calls.push("insert");assert.equal(params.length,7);return {rows:[row]}})}});
- assert.equal(result,row);assert.deepEqual(calls,["reservation:create","transaction","validate","insert"]);
+ assert.equal(result,row);assert.deepEqual(calls,["reservation:create","transaction","reservation:create","validate","insert"]);
 });
 test("unauthorized bookings cannot begin transactions and invalid bookings cannot insert",async()=>{
  for(const [allowed,valid,expected] of [[false,true,403],[true,false,422]]){
@@ -88,4 +88,16 @@ test("pg-compatible transaction clients retain their query receiver",async()=>{
  const result=await createStaffReservation({...request,authorize:async()=>true,validateBooking:async({query})=>{await query("SELECT 1");return true},transaction:async work=>work(client)});
  assert.equal(result,row);
  assert.equal(client.calls,2);
+});
+
+test("transactional reauthorization denies revoked access before booking policy or insert",async()=>{
+ let checks=0,policyCalls=0,inserts=0;
+ await assert.rejects(createStaffReservation({...request,
+  authorize:async({query})=>{checks++;return !query},
+  validateBooking:async()=>{policyCalls++;return true},
+  transaction:async work=>work(async()=>{inserts++;return {rows:[{}]}})
+ }),error=>error.status===403);
+ assert.equal(checks,2);
+ assert.equal(policyCalls,0);
+ assert.equal(inserts,0);
 });
