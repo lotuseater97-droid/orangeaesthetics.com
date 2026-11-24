@@ -10,10 +10,10 @@ test("retry backoff and dead-letter",()=>{assert.deepEqual(retryDecision({attemp
 test("types include invoice and inventory",()=>{assert.ok(notificationTypes().includes("invoice_issued"));assert.ok(notificationTypes().includes("inventory_reorder_needed"))});
 
 test("rejects bidirectional controls and hidden characters in notification fields",()=>{
- for(const value of ["Alex\\u202e", "Alex\\u2066", "Alex\\u0085"]){
+ for(const value of ["Alex\u202e", "Alex\u2066", "Alex\u0085"]){
   assert.throws(()=>prepareNotification({...base,fields:{...base.fields,first_name:value}}),TypeError);
  }
 });
 test("rejects hidden characters in notification recipient address",()=>{
- assert.throws(()=>prepareNotification({...base,recipient:{...base.recipient,email:"example\\u202e@example.com"}}),TypeError);
+ assert.throws(()=>prepareNotification({...base,recipient:{...base.recipient,email:"example\u202e@example.com"}}),TypeError);
 });
