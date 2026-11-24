@@ -72,3 +72,15 @@ test("rejected unawaited statements prevent commit and cause rollback",async()=>
  assert.equal(calls.includes("COMMIT"),false);
  assert.equal(calls.at(-1),"ROLLBACK");
 });
+
+test("callback rejection drains outstanding statements before rollback",async()=>{
+ const calls=[];let complete;
+ const gate=new Promise(resolve=>{complete=resolve});
+ const run=createPostgresTransactionRunner({pool:{connect:async()=>({query:async sql=>{calls.push(sql);if(sql==="UPDATE pending")await gate;return {rows:[]}},release:()=>{calls.push("release")}})}});
+ const running=run(async tx=>{tx.query("UPDATE pending");throw Error("callback rejected")});
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(calls.includes("ROLLBACK"),false);
+ complete();
+ await assert.rejects(running,/callback rejected/);
+ assert.deepEqual(calls.slice(-3),["UPDATE pending","ROLLBACK","release"]);
+});
