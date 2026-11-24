@@ -4,7 +4,7 @@ import {insertReservation} from "./reservation-store.mjs";
  * must provide a query bound to the SAME transaction and roll back on any error. */
 export async function createStaffReservation({actor,organization_id,appointment_id,provider_id,room_id,starts_at,ends_at,status="under_review",authorize,validateBooking,transaction}){
  if(typeof authorize!=="function"||typeof validateBooking!=="function"||typeof transaction!=="function")throw new TypeError("Trusted authorization, booking validation and transaction are required");
- if(!actor||typeof actor!=="object"||Array.isArray(actor))throw new TypeError("Authenticated actor required");
+ if(!actor||typeof actor!=="object"||Array.isArray(actor)||typeof actor.id!=="string"||!actor.id.trim())throw new TypeError("Authenticated actor required");
  // Deny before beginning a transaction; callbacks must not rely on user-supplied roles.
  const permitted=await authorize({actor,organization_id,action:"reservation:create"});
  if(permitted!==true)throw Object.assign(new Error("Reservation access denied"),{status:403});
