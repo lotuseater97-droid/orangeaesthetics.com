@@ -11,7 +11,7 @@ export function createStaffMembershipSqlLookup({query,lockMembership=false}){
   if(result.rows.length===0)return null;
   const member=result.rows[0];
   if(member&&typeof member==="object"&&!Array.isArray(member)&&uuid.test(member.organization_id||"")&&member.organization_id!==organization_id)return null;
-  if(!member||typeof member!=="object"||Array.isArray(member)||typeof member.role!=="string"||typeof member.active!=="boolean")throw new BusinessError("INTERNAL","Invalid membership row");
+  if(!member||typeof member!=="object"||Array.isArray(member)||!uuid.test(member.organization_id||"")||typeof member.role!=="string"||typeof member.active!=="boolean")throw new BusinessError("INTERNAL","Invalid membership row");
   return member;
  };
 }
