@@ -48,8 +48,9 @@ export function availableSlots({window_start,window_end,duration_minutes,step_mi
  * Suggest available slots across an explicitly approved set of provider/room pairs.
  * Each result retains its resource identity; this does not reserve capacity.
  */
-export function availableResourceSlots({resources,...options}){
+export function availableResourceSlots({resources,max_results=100,...options}){
  if(!Array.isArray(resources)||resources.length===0||resources.length>100)throw new RangeError("Invalid resource list");
+ if(!Number.isSafeInteger(max_results)||max_results<1||max_results>1000)throw new RangeError("Invalid result limit");
  const seen=new Set(),results=[];
  for(const resource of resources){
   if(!resource||typeof resource!=="object"||Array.isArray(resource))throw new TypeError("Invalid resource");
@@ -60,5 +61,5 @@ export function availableResourceSlots({resources,...options}){
   seen.add(key);
   for(const slot of availableSlots({...options,provider_id,room_id}))results.push({...slot,provider_id,room_id});
  }
- return results.sort((a,b)=>a.start_at.localeCompare(b.start_at)||a.provider_id.localeCompare(b.provider_id)||a.room_id.localeCompare(b.room_id));
+ return results.sort((a,b)=>a.start_at.localeCompare(b.start_at)||a.provider_id.localeCompare(b.provider_id)||a.room_id.localeCompare(b.room_id)).slice(0,max_results);
 }
