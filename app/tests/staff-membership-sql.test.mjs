@@ -16,3 +16,10 @@ test("cross-tenant membership is denied as absent",async()=>{
  const lookup=createStaffMembershipSqlLookup({query:async()=>({rows:[{organization_id:"123e4567-e89b-42d3-a456-426614174099",role:"owner",active:true}]})});
  assert.equal(await lookup({user_id:user,organization_id:org}),null);
 });
+
+test("membership lookup does not hide duplicate active rows with LIMIT 1",async()=>{
+ let sql="";
+ const lookup=createStaffMembershipSqlLookup({query:async text=>{sql=text;return {rows:[{organization_id:org,role:"owner",active:true},{organization_id:org,role:"staff",active:true}]}}});
+ await assert.rejects(()=>lookup({user_id:user,organization_id:org}),{code:"INTERNAL"});
+ assert.doesNotMatch(sql,/LIMIT\s+1\b/i);
+});
