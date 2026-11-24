@@ -45,12 +45,12 @@ test("failed BEGIN discards connection because transaction state is uncertain",a
 test("transaction query handle cannot be reused after commit",async()=>{
  const f=fixture();let escaped;
  await f.run(async tx=>{escaped=tx.query;await tx.query("SELECT 1")});
- await assert.rejects(()=>escaped("SELECT 2"),/Transaction query used after completion/);
+ assert.throws(()=>escaped("SELECT 2"),/Transaction query used after completion/);
  assert.deepEqual(f.calls.map(x=>x.text),["BEGIN","SELECT set_config($1,$2,true)","SELECT 1","COMMIT"]);
 });
 test("transaction query handle cannot be reused after rollback",async()=>{
  const f=fixture();let escaped;
  await assert.rejects(()=>f.run(async tx=>{escaped=tx.query;throw Error("cancel")}),/cancel/);
- await assert.rejects(()=>escaped("SELECT 2"),/Transaction query used after completion/);
+ assert.throws(()=>escaped("SELECT 2"),/Transaction query used after completion/);
  assert.deepEqual(f.calls.map(x=>x.text),["BEGIN","SELECT set_config($1,$2,true)","ROLLBACK"]);
 });
