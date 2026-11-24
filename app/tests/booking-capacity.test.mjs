@@ -120,3 +120,12 @@ test("rejects impossible clock times and timezone offsets",()=>{
  }
  assert.equal(requestWindow({requested_at:"2026-12-01T10:00:00-08:00",now:"2026-12-01T09:00:00-08:00"}).allowed,true);
 });
+
+test("appointment lifecycle statuses match the staged business schema",()=>{
+ for(const status of ["requested","completed","cancelled","declined","no_show"]){
+  assert.deepEqual(evaluateSlot({...base,appointments:[{...base,id:"prior",status}]}),{available:true,conflicts:[]});
+ }
+ for(const status of ["under_review","confirmed"]){
+  assert.equal(evaluateSlot({...base,appointments:[{...base,id:"held",status}]}).available,false);
+ }
+});
