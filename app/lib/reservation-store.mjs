@@ -34,7 +34,7 @@ export async function insertReservation({query,organization_id,appointment_id,pr
   if(!result||!Array.isArray(result.rows)||result.rows.length!==1)throw new Error("Reservation insert returned no record");
   return result.rows[0];
  }catch(error){
-  if(error?.code==="23P01"||error?.code==="23505")throw new ReservationConflictError();
+  if((error?.code==="23P01"&&["oa_provider_no_overlap","oa_room_no_overlap"].includes(error?.constraint))||(error?.code==="23505"&&error?.constraint==="oa_one_reservation_per_appointment"))throw new ReservationConflictError();
   throw error;
  }
 }
