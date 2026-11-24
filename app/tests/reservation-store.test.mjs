@@ -53,3 +53,9 @@ test("mismatched returned reservation scope and lifecycle state fail closed",asy
  const matching={id,...options,status:"under_review"};
  assert.deepEqual(await insertReservation({...options,query:async()=>({rows:[matching]})}),matching);
 });
+
+test("reservation insert requires a valid persisted UUID",async()=>{
+ for(const row of [{},{id:null},{id:123},{id:"not-a-uuid"},{id:"00000000-0000-0000-0000-000000000000"}]){
+  await assert.rejects(insertReservation({...options,query:async()=>({rows:[row]})}),/Reservation insert returned invalid id/);
+ }
+});
