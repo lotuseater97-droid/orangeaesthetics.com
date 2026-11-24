@@ -41,3 +41,11 @@ test("available slots honor notice and booking horizon when a clock is supplied"
  assert.deepEqual(availableSlots({...options,now:"2026-11-01T10:00:00Z",max_days_ahead:1}),[]);
  assert.throws(()=>availableSlots({...options,now:"2026-12-01T10:00:00Z",min_notice_minutes:-1}),RangeError);
 });
+
+test("invalid booking policy is rejected even if operating window has no fitting slots",async()=>{
+ const {availableSlots}=await import("../lib/booking-capacity.mjs");
+ const options={window_start:"2026-12-01T10:00:00Z",window_end:"2026-12-01T10:10:00Z",duration_minutes:30,provider_id:"provider-a",room_id:"room-a",now:"2026-12-01T09:00:00Z"};
+ assert.throws(()=>availableSlots({...options,min_notice_minutes:-1}),RangeError);
+ assert.throws(()=>availableSlots({...options,max_days_ahead:0}),RangeError);
+ assert.throws(()=>availableSlots({...options,now:"invalid"}),TypeError);
+});
