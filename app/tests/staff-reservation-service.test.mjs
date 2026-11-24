@@ -20,3 +20,15 @@ test("missing security callbacks fail closed",async()=>{
  await assert.rejects(createStaffReservation({...request,authorize:async()=>true,validateBooking:async()=>true}),TypeError);
  await assert.rejects(createStaffReservation({...request,authorize:async()=>true,transaction:async()=>{}}),TypeError);
 });
+
+test("transaction wrapper must supply a database query function",async()=>{
+ await assert.rejects(createStaffReservation({...request,authorize:async()=>true,validateBooking:async()=>true,transaction:async work=>work(undefined)}),TypeError);
+});
+test("reservation insert failures propagate to transaction wrapper for rollback",async()=>{
+ const failure=Object.assign(new Error("database unavailable"),{code:"08006"});
+ let rolledBack=false;
+ await assert.rejects(createStaffReservation({...request,authorize:async()=>true,validateBooking:async()=>true,transaction:async work=>{
+  try{return await work(async()=>{throw failure})}catch(error){rolledBack=true;throw error}
+ }}),error=>error===failure);
+ assert.equal(rolledBack,true);
+});
