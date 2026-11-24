@@ -21,7 +21,7 @@ export function postgresTransaction(pool){
    return result;
   }catch(error){
    active=false;
-   if(committing){discard=true;}else if(begun){try{await client.query("ROLLBACK")}catch(rollbackError){discard=true;error.rollbackError=rollbackError}}
+   if(committing||!begun){discard=true;}else if(begun){try{await client.query("ROLLBACK")}catch(rollbackError){discard=true;error.rollbackError=rollbackError}}
    throw error;
   }finally{active=false;client.release(discard)}
  };
