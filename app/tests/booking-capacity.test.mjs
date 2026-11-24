@@ -99,3 +99,10 @@ test("unknown appointment status cannot silently free provider capacity",()=>{
   assert.throws(()=>evaluateSlot({...base,appointments:[{...base,id:"unknown",status}]}),RangeError);
  }
 });
+
+test("scheduling timestamps require an explicit timezone",()=>{
+ for(const invalid of ["2026-12-01T10:00:00","2026-12-01","12/01/2026 10:00",1733047200000]){
+  assert.throws(()=>evaluateSlot({...base,start_at:invalid}),TypeError);
+ }
+ assert.equal(overlaps(base,{start_at:"2026-12-01T11:00:00+00:00",end_at:"2026-12-01T12:00:00+00:00"}),false);
+});
