@@ -25,3 +25,14 @@ test("ignores forged actor role and denies unknown actions",async()=>{
  assert.equal(await authorize({...request,query:null}),false);
  assert.throws(()=>createReservationAuthorizer({}),TypeError);
 });
+
+test("reservation lifecycle authorization accepts permitted staff and rejects forged or revoked access",async()=>{
+ const action="reservation:transition";
+ const authorize=createReservationAuthorizer({preflightQuery:async()=>({rows:[{organization_id:id,role:"manager",active:true}]})});
+ assert.equal(await authorize({...request,action}),true);
+ assert.equal(await authorize({...request,action,query:async()=>({rows:[{organization_id:id,role:"manager",active:true}]})}),true);
+ const revoked=createReservationAuthorizer({preflightQuery:async()=>({rows:[]})});
+ assert.equal(await revoked({...request,action,actor:{id,role:"owner"}}),false);
+ const member=createReservationAuthorizer({preflightQuery:async()=>({rows:[{organization_id:id,role:"member",active:true}]})});
+ assert.equal(await member({...request,action}),false);
+});
