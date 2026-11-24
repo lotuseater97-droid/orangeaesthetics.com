@@ -113,3 +113,10 @@ test("rejects impossible calendar dates rather than normalizing them",()=>{
  }
  assert.equal(requestWindow({requested_at:"2028-02-29T10:00:00Z",now:"2028-02-28T10:00:00Z"}).allowed,true);
 });
+
+test("rejects impossible clock times and timezone offsets",()=>{
+ for(const requested_at of ["2026-12-01T24:00:00Z","2026-12-01T10:60:00Z","2026-12-01T10:00:60Z","2026-12-01T10:00:00+24:00","2026-12-01T10:00:00+01:60"]){
+  assert.throws(()=>requestWindow({requested_at,now:"2026-12-01T09:00:00Z"}),TypeError);
+ }
+ assert.equal(requestWindow({requested_at:"2026-12-01T10:00:00-08:00",now:"2026-12-01T09:00:00-08:00"}).allowed,true);
+});
