@@ -36,3 +36,15 @@ test("reservation lifecycle authorization accepts permitted staff and rejects fo
  const member=createReservationAuthorizer({preflightQuery:async()=>({rows:[{organization_id:id,role:"member",active:true}]})});
  assert.equal(await member({...request,action}),false);
 });
+
+test("malformed actor and tenant IDs fail closed before database access",async()=>{
+ let queries=0;
+ const authorize=createReservationAuthorizer({preflightQuery:async()=>{queries++;return {rows:[]}}});
+ for(const actorId of ["", "not-a-uuid", "123e4567-e89b-42d3-a456-426614174000' OR true"]){
+  assert.equal(await authorize({...request,actor:{id:actorId}}),false);
+ }
+ for(const organization_id of ["", "not-a-uuid", null]){
+  assert.equal(await authorize({...request,organization_id}),false);
+ }
+ assert.equal(queries,0);
+});
