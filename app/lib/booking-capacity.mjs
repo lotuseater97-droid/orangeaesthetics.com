@@ -1,5 +1,5 @@
 // Pure capacity planning for future authenticated scheduling. Not a live calendar.
-const time=v=>{if(typeof v!=="string"||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/.test(v))throw new TypeError("Timestamp must include an explicit timezone");const n=Date.parse(v);if(!Number.isFinite(n))throw new TypeError("Invalid timestamp");return n};
+const time=v=>{if(typeof v!=="string"||!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/.test(v))throw new TypeError("Timestamp must include an explicit timezone");const datePart=v.slice(0,10);const [year,month,day]=datePart.split("-").map(Number);const calendar=new Date(Date.UTC(year,month-1,day));if(calendar.getUTCFullYear()!==year||calendar.getUTCMonth()+1!==month||calendar.getUTCDate()!==day)throw new TypeError("Invalid calendar date");const n=Date.parse(v);if(!Number.isFinite(n))throw new TypeError("Invalid timestamp");return n};
 export function overlaps(a,b){
  const aStart=time(a.start_at),aEnd=time(a.end_at),bStart=time(b.start_at),bEnd=time(b.end_at);
  if(aEnd<=aStart||bEnd<=bStart)throw new RangeError("Invalid interval");
