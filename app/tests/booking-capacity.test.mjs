@@ -93,3 +93,9 @@ test("slot planning rejects malformed records before checking candidates",async(
   assert.throws(()=>availableSlots({...options,closures:[item]}),TypeError);
  }
 });
+
+test("unknown appointment status cannot silently free provider capacity",()=>{
+ for(const status of ["pending","rescheduled",null,undefined]){
+  assert.throws(()=>evaluateSlot({...base,appointments:[{...base,id:"unknown",status}]}),RangeError);
+ }
+});
