@@ -15,7 +15,7 @@ export async function createStaffReservation({actor,organization_id,appointment_
  return transaction(async query=>{
   if(typeof query!=="function")throw new TypeError("Transactional query function required");
   // Booking policy must be checked against the same transaction snapshot as insertion.
-  const valid=await validateBooking({query,organization_id,appointment_id,provider_id,room_id,starts_at,ends_at,status});
+  const valid=await validateBooking({query,actor,organization_id,appointment_id,provider_id,room_id,starts_at,ends_at,status});
   if(valid!==true)throw Object.assign(new Error("Reservation violates booking policy"),{status:422});
   return insertReservation({query,organization_id,appointment_id,provider_id,room_id,starts_at,ends_at,status});
  });
