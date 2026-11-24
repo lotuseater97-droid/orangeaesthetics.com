@@ -135,3 +135,11 @@ test("direct capacity checks reject malformed closures",()=>{
   assert.throws(()=>evaluateSlot({...base,closures:[item]}),TypeError);
  }
 });
+
+test("whitespace-only provider and room identifiers are rejected",async()=>{
+ const {availableSlots}=await import("../lib/booking-capacity.mjs");
+ for(const resource of [{provider_id:"   "},{room_id:"  "}]){
+  assert.throws(()=>evaluateSlot({...base,...resource}),TypeError);
+  assert.throws(()=>availableSlots({window_start:base.start_at,window_end:base.end_at,duration_minutes:30,provider_id:base.provider_id,room_id:base.room_id,...resource}),TypeError);
+ }
+});
