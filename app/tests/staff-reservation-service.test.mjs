@@ -81,3 +81,11 @@ test("staff reservations integrate with the PostgreSQL runner transaction client
  assert.equal(row.id,id);
  assert.deepEqual(events,["policy","query"]);
 });
+
+test("pg-compatible transaction clients retain their query receiver",async()=>{
+ const row={id,status:"under_review"};
+ const client={calls:0,async query(sql,params){assert.equal(this,client);this.calls++;return {rows:[row]}}};
+ const result=await createStaffReservation({...request,authorize:async()=>true,validateBooking:async({query})=>{await query("SELECT 1");return true},transaction:async work=>work(client)});
+ assert.equal(result,row);
+ assert.equal(client.calls,2);
+});
