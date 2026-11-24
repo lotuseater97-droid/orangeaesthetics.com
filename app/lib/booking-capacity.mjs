@@ -10,6 +10,7 @@ export function evaluateSlot({start_at,end_at,provider_id,room_id,appointments=[
  if(end<=start||end-start>8*3600000)throw new RangeError("Invalid slot duration");
  if(!Number.isSafeInteger(buffers_minutes)||buffers_minutes<0||buffers_minutes>120)throw new RangeError("Invalid buffer");
  if(typeof provider_id!=="string"||!provider_id.trim()||typeof room_id!=="string"||!room_id.trim())throw new TypeError("Missing resources");
+ if(!Array.isArray(appointments)||!Array.isArray(closures))throw new TypeError("Invalid scheduling collections");
  const expanded={start_at:new Date(start-buffers_minutes*60000).toISOString(),end_at:new Date(end+buffers_minutes*60000).toISOString()};
  const conflicts=[];
  for(const a of appointments){if(!a||typeof a!=="object"||Array.isArray(a))throw new TypeError("Invalid appointment record");if(["requested","completed","cancelled","declined","no_show"].includes(a.status))continue;if(!["confirmed","under_review"].includes(a.status))throw new RangeError("Unknown appointment status");if((a.provider_id===provider_id||a.room_id===room_id)&&overlaps(expanded,a))conflicts.push({kind:"appointment",id:a.id})}
