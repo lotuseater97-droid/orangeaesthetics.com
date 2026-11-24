@@ -27,3 +27,9 @@ test('appointment success requires API JSON confirmation, not just HTTP 200',()=
   assert.match(html,/result\.message!=="Received"/);
   assert.ok(html.indexOf('result.message!=="Received"')<html.indexOf('form.reset()'),'form must not reset before confirmation');
 });
+
+test('appointment form prevents overlapping submissions and exposes pending state',()=>{
+  assert.match(html,/if\(button\.disabled\)return;button\.disabled=true/);
+  assert.match(html,/button\.setAttribute\("aria-busy","true"\)/);
+  assert.match(html,/button\.removeAttribute\("aria-busy"\)/);
+});
