@@ -36,6 +36,10 @@ export function createPostgresTransactionRunner({pool,statementTimeoutMs=15000})
    begun=false;
    return result;
   }catch(error){
+   active=false;
+   // A rejected callback may leave fire-and-forget statements running on this client.
+   // Drain them before ROLLBACK so no write can race the rollback boundary.
+   await Promise.allSettled([...pending]);
    if(begun){
     try{await client.query("ROLLBACK")}catch(rollbackError){
      discardClient=true;
