@@ -33,6 +33,7 @@ export function availableSlots({window_start,window_end,duration_minutes,step_mi
  if(!Number.isSafeInteger(step_minutes)||step_minutes<5||step_minutes>120)throw new RangeError("Invalid slot increment");
  if(typeof provider_id!=="string"||!provider_id||typeof room_id!=="string"||!room_id)throw new TypeError("Missing resources");
  if(!Number.isSafeInteger(buffers_minutes)||buffers_minutes<0||buffers_minutes>120)throw new RangeError("Invalid buffer");
+ if(!Array.isArray(appointments)||!Array.isArray(closures))throw new TypeError("Invalid scheduling collections");
  if(now!==undefined){time(now);if(!Number.isSafeInteger(min_notice_minutes)||min_notice_minutes<0||!Number.isSafeInteger(max_days_ahead)||max_days_ahead<1)throw new RangeError("Invalid booking policy");}
  const duration=duration_minutes*60000,step=step_minutes*60000,slots=[];
  for(let at=start;at+duration<=end;at+=step){
