@@ -56,3 +56,11 @@ test("malformed reservation resource IDs fail before authorization callbacks",as
   assert.equal(calls,0);
  }
 });
+
+test("nonreservable lifecycle states never invoke trusted booking callbacks",async()=>{
+ for(const status of ["requested","cancelled","completed","no_show","declined",null,"pending"]){
+  let calls=0;
+  await assert.rejects(createStaffReservation({...request,status,authorize:async()=>{calls++;return true},validateBooking:async()=>{calls++;return true},transaction:async()=>{calls++}}),RangeError);
+  assert.equal(calls,0);
+ }
+});
