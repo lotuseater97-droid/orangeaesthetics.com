@@ -31,7 +31,7 @@ export async function insertReservation({query,organization_id,appointment_id,pr
    VALUES ($1,$2,$3,$4,$5,$6,$7)
    RETURNING id,organization_id,appointment_id,provider_id,room_id,starts_at,ends_at,status`,
    [...ids,starts_at,ends_at,status]);
-  if(!result||!Array.isArray(result.rows)||result.rows.length!==1||!result.rows[0]||typeof result.rows[0]!=="object")throw new Error("Reservation insert returned no record");
+  if(!result||!Array.isArray(result.rows)||result.rows.length!==1||!result.rows[0]||typeof result.rows[0]!=="object"||Array.isArray(result.rows[0]))throw new Error("Reservation insert returned no record");
   return result.rows[0];
  }catch(error){
   if((error?.code==="23P01"&&["oa_provider_no_overlap","oa_room_no_overlap"].includes(error?.constraint))||(error?.code==="23505"&&error?.constraint==="oa_one_reservation_per_appointment"))throw new ReservationConflictError();
