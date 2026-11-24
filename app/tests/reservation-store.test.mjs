@@ -68,3 +68,11 @@ test("returned reservation interval must match the requested instants",async()=>
  const row={id,starts_at:new Date(options.starts_at),ends_at:"2026-12-01T03:00:00-08:00"};
  assert.equal(await insertReservation({...options,query:async()=>({rows:[row]})}),row);
 });
+
+test("database UUID normalization does not cause false reservation mismatch",async()=>{
+ const uppercase=id.toUpperCase();
+ const row={id,organization_id:id,appointment_id:id,provider_id:id,room_id:id,status:"under_review"};
+ const result=await insertReservation({...options,organization_id:uppercase,appointment_id:uppercase,provider_id:uppercase,room_id:uppercase,query:async()=>({rows:[row]})});
+ assert.equal(result,row);
+ await assert.rejects(insertReservation({...options,query:async()=>({rows:[{id,provider_id:123}]})}),/mismatched provider_id/);
+});
