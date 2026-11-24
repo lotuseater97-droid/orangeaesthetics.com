@@ -374,3 +374,7 @@ Created aesthetics.html and iv-therapy.html, updated all 20 audited public page 
 - Created `app/BUSINESS-PLATFORM-STRUCTURE.md`, `app/lib/business-navigation.mjs`, `app/lib/business-operations.mjs`, `app/lib/workflow-rules.mjs`, synthetic tests, and a GitHub Actions test workflow.
 - These are real committed business-domain foundations but **not yet a deployed, authenticated, database-backed owner dashboard**. Existing static Worker excludes `app/`; no real customer or financial data is collected. A dedicated secure backend, auth/RLS, payment integration, and regulatory review remain required.
 - Public site remains Orange Aesthetics' existing visual identity and navigation.
+
+## Staff reservation transaction safety — 2026-11-23
+- Server-only `createStaffReservation` now runs `validateBooking` inside the supplied transaction, passing the same query function used for insertion. Rejected policy checks prevent inserts; tests cover execution order.
+- This is **not** a deployed staff endpoint. The transaction provider, trusted role/tenant authorization, service-hours validator, and reviewed staging migration remain integration gates. PostgreSQL exclusion constraints, not preflight availability, must be the final concurrent-booking safeguard.
