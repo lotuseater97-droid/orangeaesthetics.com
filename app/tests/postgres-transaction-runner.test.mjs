@@ -54,3 +54,21 @@ test("transaction query handle cannot be reused after rollback",async()=>{
  assert.throws(()=>escaped("SELECT 2"),/Transaction query used after completion/);
  assert.deepEqual(f.calls.map(x=>x.text),["BEGIN","SELECT set_config($1,$2,true)","ROLLBACK"]);
 });
+
+test("unawaited transaction statements finish before commit",async()=>{
+ const calls=[];let complete;
+ const gate=new Promise(resolve=>{complete=resolve});
+ const run=createPostgresTransactionRunner({pool:{connect:async()=>({query:async sql=>{calls.push(sql);if(sql==="UPDATE pending")await gate;return {rows:[]}},release:()=>{}})}});
+ const running=run(async tx=>{tx.query("UPDATE pending");return true});
+ await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(calls.includes("COMMIT"),false);
+ complete();await running;
+ assert.deepEqual(calls.slice(-2),["UPDATE pending","COMMIT"]);
+});
+test("rejected unawaited statements prevent commit and cause rollback",async()=>{
+ const calls=[];
+ const run=createPostgresTransactionRunner({pool:{connect:async()=>({query:async sql=>{calls.push(sql);if(sql==="UPDATE pending")throw Error("statement failed");return {rows:[]}},release:()=>{}})}});
+ await assert.rejects(()=>run(async tx=>{tx.query("UPDATE pending");return true}),/statement failed/);
+ assert.equal(calls.includes("COMMIT"),false);
+ assert.equal(calls.at(-1),"ROLLBACK");
+});
