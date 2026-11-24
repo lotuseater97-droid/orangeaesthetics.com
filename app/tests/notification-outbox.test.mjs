@@ -8,3 +8,12 @@ test("rejects missing idempotency key",()=>assert.throws(()=>prepareNotification
 test("staff notification does not require customer consent",()=>assert.equal(prepareNotification({type:"task_assigned",recipient:{id:"staff1",email:"staff@example.com"},fields:{task_id:"task_123"},idempotency_key:"notify_20261122_0002"}).type,"task_assigned"));
 test("retry backoff and dead-letter",()=>{assert.deepEqual(retryDecision({attempts:0}),{action:"retry",delay_seconds:30});assert.deepEqual(retryDecision({attempts:5}),{action:"dead_letter",delay_seconds:null});assert.deepEqual(retryDecision({attempts:1,permanent_failure:true}),{action:"dead_letter",delay_seconds:null})});
 test("types include invoice and inventory",()=>{assert.ok(notificationTypes().includes("invoice_issued"));assert.ok(notificationTypes().includes("inventory_reorder_needed"))});
+
+test("rejects bidirectional controls and hidden characters in notification fields",()=>{
+ for(const value of ["Alex\\u202e", "Alex\\u2066", "Alex\\u0085"]){
+  assert.throws(()=>prepareNotification({...base,fields:{...base.fields,first_name:value}}),TypeError);
+ }
+});
+test("rejects hidden characters in notification recipient address",()=>{
+ assert.throws(()=>prepareNotification({...base,recipient:{...base.recipient,email:"example\\u202e@example.com"}}),TypeError);
+});
