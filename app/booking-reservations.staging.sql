@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS public.oa_resource_reservations (
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  organization_id uuid NOT NULL REFERENCES public.oa_organizations(id),
  appointment_id uuid NOT NULL,
+ -- A single appointment cannot reserve multiple disjoint provider/room pairs.
+ CONSTRAINT oa_one_reservation_per_appointment UNIQUE (organization_id,appointment_id),
  provider_id uuid NOT NULL,
  room_id uuid NOT NULL,
  starts_at timestamptz NOT NULL,
