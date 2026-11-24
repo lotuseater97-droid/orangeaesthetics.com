@@ -20,3 +20,14 @@ test("rollback failure discards connection and preserves original error",async()
  assert.deepEqual(events,["BEGIN","INSERT","ROLLBACK"]);
  assert.deepEqual(released,[true]);
 });
+
+test("transaction query handles expire before commit and after rollback",async()=>{
+ const db=fakePool();let retained;
+ await postgresTransaction(db.pool)(async query=>{retained=query;await query("SELECT 1")});
+ assert.throws(()=>retained("SELECT forbidden"),/expired/);
+ assert.deepEqual(db.calls.map(x=>x[0]),["BEGIN","SELECT 1","COMMIT"]);
+ const failed=fakePool();let expired;
+ await assert.rejects(postgresTransaction(failed.pool)(query=>{expired=query;throw new Error("stop")}),/stop/);
+ assert.throws(()=>expired("SELECT forbidden"),/expired/);
+ assert.deepEqual(failed.calls.map(x=>x[0]),["BEGIN","ROLLBACK"]);
+});
