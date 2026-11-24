@@ -9,7 +9,7 @@ test('appointment page has accessible form feedback',()=>{
 });
 test('appointment form times out stalled requests and re-enables submit',()=>{
   assert.match(html,/AbortSignal\.timeout\(12000\)/);
-  assert.match(html,/finally\{button\.disabled=false\}/);
+  assert.match(html,/finally\{button\.disabled=false;button\.removeAttribute\("aria-busy"\)\}/);
 });
 test('failed requests preserve a click-to-call fallback',()=>{
   assert.match(html,/msg\.replaceChildren\(/);
