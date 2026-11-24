@@ -40,7 +40,7 @@ test("unrelated database constraint violations retain their original errors",asy
 });
 
 test("malformed database insert responses are not treated as successful bookings",async()=>{
- for(const response of [null,{}, {rows:[]},{rows:[null]},{rows:["invalid"]},{rows:[{},{}]}]){
+ for(const response of [null,{}, {rows:[]},{rows:[null]},{rows:["invalid"]},{rows:[[]]},{rows:[{},{}]}]){
   await assert.rejects(insertReservation({...options,query:async()=>response}),/Reservation insert returned no record/);
  }
 });
