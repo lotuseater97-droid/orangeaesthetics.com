@@ -382,3 +382,6 @@ Created aesthetics.html and iv-therapy.html, updated all 20 audited public page 
 
 ### Booking transaction safety (2026-11-23)
 The server-only PostgreSQL transaction runner now applies a transaction-local, parameterized 15-second statement timeout (configurable 1,000–120,000 ms) before executing reservation callbacks. This limits lock-holding from stalled statements. CI verification is required; this does not make booking endpoints production-ready. Staged reservation schema still requires reviewed deployment, tenant authorization, and live PostgreSQL concurrency tests.
+
+### Transaction query failure tracking (2026-11-23)
+The server-only PostgreSQL runner now retains rejected query outcomes even after a pending promise settles, preventing a fire-and-forget failed statement from being missed before COMMIT. The transaction must roll back on any observed query failure. This remains an internal adapter; authenticated staff endpoints, migration review, and live concurrency verification are outstanding.
