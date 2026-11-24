@@ -378,3 +378,7 @@ Created aesthetics.html and iv-therapy.html, updated all 20 audited public page 
 ## Staff reservation transaction safety — 2026-11-23
 - Server-only `createStaffReservation` now runs `validateBooking` inside the supplied transaction, passing the same query function used for insertion. Rejected policy checks prevent inserts; tests cover execution order.
 - This is **not** a deployed staff endpoint. The transaction provider, trusted role/tenant authorization, service-hours validator, and reviewed staging migration remain integration gates. PostgreSQL exclusion constraints, not preflight availability, must be the final concurrent-booking safeguard.
+
+
+### Booking transaction safety (2026-11-23)
+The server-only PostgreSQL transaction runner now applies a transaction-local, parameterized 15-second statement timeout (configurable 1,000–120,000 ms) before executing reservation callbacks. This limits lock-holding from stalled statements. CI verification is required; this does not make booking endpoints production-ready. Staged reservation schema still requires reviewed deployment, tenant authorization, and live PostgreSQL concurrency tests.
