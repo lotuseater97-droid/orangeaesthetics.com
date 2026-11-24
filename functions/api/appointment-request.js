@@ -2,7 +2,7 @@
 const allowed = new Set(["Injectables","Skin rejuvenation","Laser","IV wellness","Membership","Other consultation"]);
 const json=(status,message)=>new Response(JSON.stringify({message}),{status,headers:{"content-type":"application/json; charset=utf-8","cache-control":"no-store","x-content-type-options":"nosniff","referrer-policy":"strict-origin-when-cross-origin","x-frame-options":"DENY"}});
 export async function onRequestPost({request,env}) {
-  const origin=request.headers.get("origin");
+  // Browser fetch metadata adds a second cross-site submission guard.\n  const fetchSite=request.headers.get("sec-fetch-site");\n  if(fetchSite && !["same-origin","none"].includes(fetchSite))return json(403,"Cross-site request blocked");\n  const origin=request.headers.get("origin");
   if(origin){let parsed;try{parsed=new URL(origin)}catch{return json(403,"Invalid origin")};if(parsed.origin!==new URL(request.url).origin)return json(403,"Invalid origin")}
   if(!/^application\/json(?:\s*;\s*charset\s*=\s*(?:utf-8|"utf-8"))?\s*$/i.test(request.headers.get("content-type")||""))return json(415,"JSON required");
   const lengthHeader=request.headers.get("content-length");
