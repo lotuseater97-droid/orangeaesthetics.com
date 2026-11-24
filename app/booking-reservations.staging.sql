@@ -23,19 +23,39 @@ CREATE TABLE IF NOT EXISTS public.oa_resource_reservations (
 );
 -- The composite appointment foreign key requires a matching unique key on appointments.
 -- This index is safe to create before the reservation table in a reviewed migration.
--- IMPORTANT: apply this statement BEFORE CREATE TABLE on a fresh installation.
+-- The index above precedes CREATE TABLE so the composite foreign key can resolve.
 -- Reject concurrent overlapping reservations for either provider or room.
 -- Exclusion checks are enforced atomically by PostgreSQL, not by a stale UI lookup.
-ALTER TABLE public.oa_resource_reservations
+DO $migration$
+BEGIN
+ IF NOT EXISTS (
+  SELECT 1 FROM pg_constraint
+  WHERE conrelid = 'public.oa_resource_reservations'::regclass
+    AND conname = 'oa_provider_no_overlap'
+ ) THEN
+  ALTER TABLE public.oa_resource_reservations
  ADD CONSTRAINT oa_provider_no_overlap EXCLUDE USING gist (
  organization_id WITH =, provider_id WITH =,
  tstzrange(starts_at,ends_at,'[)') WITH &&
  ) WHERE (status IN ('under_review','confirmed'));
-ALTER TABLE public.oa_resource_reservations
+ END IF;
+END
+$migration$;
+DO $migration$
+BEGIN
+ IF NOT EXISTS (
+  SELECT 1 FROM pg_constraint
+  WHERE conrelid = 'public.oa_resource_reservations'::regclass
+    AND conname = 'oa_room_no_overlap'
+ ) THEN
+  ALTER TABLE public.oa_resource_reservations
  ADD CONSTRAINT oa_room_no_overlap EXCLUDE USING gist (
  organization_id WITH =, room_id WITH =,
  tstzrange(starts_at,ends_at,'[)') WITH &&
  ) WHERE (status IN ('under_review','confirmed'));
+ END IF;
+END
+$migration$;
 CREATE INDEX IF NOT EXISTS oa_reservations_by_appointment
  ON public.oa_resource_reservations(organization_id,appointment_id);
 ALTER TABLE public.oa_resource_reservations ENABLE ROW LEVEL SECURITY;
