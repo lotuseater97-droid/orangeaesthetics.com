@@ -22,7 +22,7 @@ test("fails closed for missing, blank, or malformed notification credentials",as
   for(const override of [
     {APPOINTMENT_NOTIFICATION_TOKEN:""},
     {APPOINTMENT_NOTIFICATION_TOKEN:"   "},
-    {APPOINTMENT_NOTIFICATION_TOKEN:"bad\\nheader"},
+    {APPOINTMENT_NOTIFICATION_TOKEN:"bad\nheader"},
     {APPOINTMENT_NOTIFICATION_TOKEN:123},
     {APPOINTMENT_NOTIFICATION_ENDPOINT:"   "}
   ]){
