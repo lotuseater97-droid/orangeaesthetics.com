@@ -8,8 +8,9 @@ export function createStaffMembershipSqlLookup({query,lockMembership=false}){
   if(!uuid.test(user_id||"")||!uuid.test(organization_id||""))throw new BusinessError("FORBIDDEN","Invalid membership scope");
   const result=await query("SELECT organization_id, role, active FROM public.oa_team_members WHERE user_id = $1 AND organization_id = $2 AND active = TRUE LIMIT 1"+(lockMembership?" FOR SHARE":""),[user_id,organization_id]);
   if(!result||!Array.isArray(result.rows)||result.rows.length>1)throw new BusinessError("INTERNAL","Invalid membership response");
-  const member=result.rows[0]??null;
-  if(member!==null&&(typeof member!=="object"||Array.isArray(member)||member.organization_id!==organization_id||typeof member.role!=="string"||typeof member.active!=="boolean"))throw new BusinessError("INTERNAL","Invalid membership row");
+  if(result.rows.length===0)return null;
+  const member=result.rows[0];
+  if(!member||typeof member!=="object"||Array.isArray(member)||member.organization_id!==organization_id||typeof member.role!=="string"||typeof member.active!=="boolean")throw new BusinessError("INTERNAL","Invalid membership row");
   return member;
  };
 }
