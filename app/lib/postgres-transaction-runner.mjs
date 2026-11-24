@@ -5,7 +5,8 @@ export function createPostgresTransactionRunner({pool}){
  return async callback=>{
   if(typeof callback!=="function")throw new TypeError("Transaction callback required");
   const client=await pool.connect();
-  if(!client||typeof client.query!=="function"||typeof client.release!=="function")throw new TypeError("Invalid PostgreSQL client");
+  if(!client||typeof client.release!=="function")throw new TypeError("Invalid PostgreSQL client");
+  if(typeof client.query!=="function"){client.release();throw new TypeError("Invalid PostgreSQL client");}
   let begun=false;
   try{
    await client.query("BEGIN");
