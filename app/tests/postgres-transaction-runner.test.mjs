@@ -33,3 +33,11 @@ test("transaction statement timeout is bounded and transaction-local",async()=>{
   assert.throws(()=>createPostgresTransactionRunner({pool:{connect:async()=>{}},statementTimeoutMs}),RangeError);
  }
 });
+
+test("failed BEGIN discards connection because transaction state is uncertain",async()=>{
+ let releaseReason;
+ const run=createPostgresTransactionRunner({pool:{connect:async()=>({query:async sql=>{if(sql==="BEGIN")throw Error("connection lost during BEGIN")},release:reason=>{releaseReason=reason}})}});
+ await assert.rejects(()=>run(async()=>true),/connection lost during BEGIN/);
+ assert.ok(releaseReason instanceof Error);
+ assert.match(releaseReason.message,/discard connection/);
+});
