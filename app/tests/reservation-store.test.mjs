@@ -1,0 +1,25 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {insertReservation,ReservationConflictError} from "../lib/reservation-store.mjs";
+const id="123e4567-e89b-42d3-a456-426614174000";
+const options={organization_id:id,appointment_id:id,provider_id:id,room_id:id,starts_at:"2026-12-01T10:00:00Z",ends_at:"2026-12-01T11:00:00Z"};
+test("reservation adapter uses bound parameters and returns database row",async()=>{
+ let call;
+ const row={id,status:"under_review"};
+ const result=await insertReservation({...options,query:async(sql,params)=>{call={sql,params};return {rows:[row]}}});
+ assert.equal(result,row);
+ assert.match(call.sql,/VALUES \(\$1,\$2,\$3,\$4,\$5,\$6,\$7\)/);
+ assert.deepEqual(call.params,[id,id,id,id,options.starts_at,options.ends_at,"under_review"]);
+});
+test("database uniqueness and overlap violations map to conflicts",async()=>{
+ for(const code of ["23P01","23505"]){
+  await assert.rejects(insertReservation({...options,query:async()=>{throw {code}}}),ReservationConflictError);
+ }
+});
+test("invalid reservation requests never query database",async()=>{
+ let calls=0;const query=async()=>{calls++;return {rows:[{}]}};
+ for(const invalid of [{organization_id:"bad"},{status:"cancelled"},{ends_at:options.starts_at},{ends_at:"2026-12-01T19:00:00Z"},{starts_at:"not-a-date"}]){
+  await assert.rejects(insertReservation({...options,...invalid,query}));
+ }
+ assert.equal(calls,0);
+});
