@@ -74,3 +74,13 @@ test("multi-resource suggestions preserve resource identities and exclude occupi
  assert.throws(()=>availableResourceSlots({resources:[resources[0],resources[0]],window_start:"2026-12-01T10:00:00Z",window_end:"2026-12-01T10:30:00Z",duration_minutes:30}),RangeError);
  assert.throws(()=>availableResourceSlots({resources:[],window_start:"2026-12-01T10:00:00Z",window_end:"2026-12-01T10:30:00Z",duration_minutes:30}),RangeError);
 });
+
+test("multi-resource suggestions can be capped after chronological ordering",async()=>{
+ const {availableResourceSlots}=await import("../lib/booking-capacity.mjs");
+ const options={resources:[{provider_id:"provider-b",room_id:"room-b"},{provider_id:"provider-a",room_id:"room-a"}],window_start:"2026-12-01T10:00:00Z",window_end:"2026-12-01T11:00:00Z",duration_minutes:30,step_minutes:30};
+ const slots=availableResourceSlots({...options,max_results:2});
+ assert.deepEqual(slots.map(s=>s.provider_id),["provider-a","provider-b"]);
+ assert.ok(slots.every(s=>s.start_at==="2026-12-01T10:00:00.000Z"));
+ assert.throws(()=>availableResourceSlots({...options,max_results:0}),RangeError);
+ assert.throws(()=>availableResourceSlots({...options,max_results:1001}),RangeError);
+});
