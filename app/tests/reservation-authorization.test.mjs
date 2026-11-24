@@ -5,8 +5,8 @@ const id="123e4567-e89b-42d3-a456-426614174000";
 const request={actor:{id},organization_id:id,action:"reservation:create"};
 test("checks live membership again with transactional query",async()=>{
  const seen=[];
- const preflightQuery=async(sql,params)=>{seen.push("preflight");assert.deepEqual(params,[id,id]);return {rows:[{organization_id:id,role:"manager",active:true}]}};
- const txQuery=async(sql,params)=>{seen.push("transaction");assert.deepEqual(params,[id,id]);return {rows:[{organization_id:id,role:"manager",active:true}]}};
+ const preflightQuery=async(sql,params)=>{seen.push("preflight");assert.doesNotMatch(sql,/FOR SHARE/);assert.deepEqual(params,[id,id]);return {rows:[{organization_id:id,role:"manager",active:true}]}};
+ const txQuery=async(sql,params)=>{seen.push("transaction");assert.match(sql,/FOR SHARE$/);assert.deepEqual(params,[id,id]);return {rows:[{organization_id:id,role:"manager",active:true}]}};
  const authorize=createReservationAuthorizer({preflightQuery});
  assert.equal(await authorize(request),true);
  assert.equal(await authorize({...request,query:txQuery}),true);
