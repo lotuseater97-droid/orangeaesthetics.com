@@ -1,6 +1,7 @@
 // Server-side PostgreSQL transaction boundary. No pool is created or exposed here.
 // Pass a dedicated Orange-only pg-compatible pool with connect() and client.query().
-export function createPostgresTransactionRunner({pool}){
+export function createPostgresTransactionRunner({pool,statementTimeoutMs=15000}){
+ if(!Number.isSafeInteger(statementTimeoutMs)||statementTimeoutMs<1000||statementTimeoutMs>120000)throw new RangeError("Invalid transaction statement timeout");
  if(!pool||typeof pool.connect!=="function")throw new TypeError("PostgreSQL connection pool required");
  return async callback=>{
   if(typeof callback!=="function")throw new TypeError("Transaction callback required");
@@ -12,6 +13,8 @@ export function createPostgresTransactionRunner({pool}){
   try{
    await client.query("BEGIN");
    begun=true;
+   // Bound transaction-local timeout prevents stalled booking writes from holding locks indefinitely.
+   await client.query("SELECT set_config($1,$2,true)",["statement_timeout",String(statementTimeoutMs)]);
    // The callback must only use this transaction-scoped client. Never use pool.query.
    const result=await callback(Object.freeze({query:(text,values=[])=>client.query(text,values)}));
    await client.query("COMMIT");
