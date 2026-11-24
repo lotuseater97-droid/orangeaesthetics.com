@@ -12,8 +12,8 @@ test("reservation adapter uses bound parameters and returns database row",async(
  assert.deepEqual(call.params,[id,id,id,id,options.starts_at,options.ends_at,"under_review"]);
 });
 test("database uniqueness and overlap violations map to conflicts",async()=>{
- for(const code of ["23P01","23505"]){
-  await assert.rejects(insertReservation({...options,query:async()=>{throw {code}}}),ReservationConflictError);
+ for(const [code,constraint] of [["23P01","oa_provider_no_overlap"],["23P01","oa_room_no_overlap"],["23505","oa_one_reservation_per_appointment"]]){
+  await assert.rejects(insertReservation({...options,query:async()=>{throw {code,constraint}}}),ReservationConflictError);
  }
 });
 test("invalid reservation requests never query database",async()=>{
@@ -31,4 +31,10 @@ test("malformed calendar, clock and offset values never reach persistence",async
   await assert.rejects(insertReservation({...options,starts_at,query}),RangeError);
  }
  assert.equal(calls,0);
+});
+
+test("unrelated database constraint violations retain their original errors",async()=>{
+ for(const error of [{code:"23505",constraint:"unrelated_unique_key"},{code:"23P01",constraint:"other_exclusion"},{code:"23503",constraint:"oa_appointment_fk"}]){
+  await assert.rejects(insertReservation({...options,query:async()=>{throw error}}),caught=>caught===error);
+ }
 });
