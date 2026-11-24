@@ -23,3 +23,12 @@ test("invalid reservation requests never query database",async()=>{
  }
  assert.equal(calls,0);
 });
+
+test("malformed calendar, clock and offset values never reach persistence",async()=>{
+ let calls=0;
+ const query=async()=>{calls++;return {rows:[{}]}};
+ for(const starts_at of ["2026-02-30T10:00:00Z","2026-12-01T24:00:00Z","2026-12-01T10:60:00Z","2026-12-01T10:00:60Z","2026-12-01T10:00:00+24:00","2026-12-01T10:00:00+01:60","2026-12-01T10:00:00","2026-12-01T10:00:00x000Z"]){
+  await assert.rejects(insertReservation({...options,starts_at,query}),RangeError);
+ }
+ assert.equal(calls,0);
+});
