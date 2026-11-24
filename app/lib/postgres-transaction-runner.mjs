@@ -17,7 +17,13 @@ export function createPostgresTransactionRunner({pool,statementTimeoutMs=15000})
    await client.query("SELECT set_config($1,$2,true)",["statement_timeout",String(statementTimeoutMs)]);
    // The callback must only use this transaction-scoped client. Never use pool.query.
    const result=await callback(Object.freeze({query:(text,values=[])=>client.query(text,values)}));
-   await client.query("COMMIT");
+   try{await client.query("COMMIT")}catch(error){
+    // Commit may have succeeded remotely even if acknowledgement was lost.
+    // Never return a connection with an uncertain transaction state to the pool.
+    discardClient=true;
+    begun=false;
+    throw error;
+   }
    begun=false;
    return result;
   }catch(error){
