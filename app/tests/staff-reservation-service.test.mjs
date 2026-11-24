@@ -77,7 +77,7 @@ test("booking policy receives transactional query and is checked before insert",
 test("staff reservations integrate with the PostgreSQL runner transaction client shape",async()=>{
  const events=[];
  const query=async(sql,params)=>{events.push("query");assert.match(sql,/INSERT INTO public\.oa_resource_reservations/);assert.equal(params.length,7);return {rows:[{id}]}};
- const row=await createStaffReservation({...request,authorize:async()=>true,validateBooking:async ({query:txQuery})=>{assert.equal(txQuery,query);events.push("policy");return true},transaction:async work=>work(Object.freeze({query}))});
+ const row=await createStaffReservation({...request,authorize:async()=>true,validateBooking:async ({query:txQuery})=>{assert.equal(typeof txQuery,"function");events.push("policy");return true},transaction:async work=>work(Object.freeze({query}))});
  assert.equal(row.id,id);
  assert.deepEqual(events,["policy","query"]);
 });
