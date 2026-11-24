@@ -39,6 +39,14 @@ export async function insertReservation({query,organization_id,appointment_id,pr
   for(const [key,expected] of Object.entries({organization_id,appointment_id,provider_id,room_id,status})){
    if(Object.hasOwn(row,key)&&row[key]!==expected)throw new Error("Reservation insert returned mismatched "+key);
   }
+  // PostgreSQL drivers commonly return timestamptz as Date objects. When
+  // timestamps are present, compare instants rather than string formatting.
+  for(const [key,expected] of Object.entries({starts_at,ends_at})){
+   if(Object.hasOwn(row,key)){
+    const actual=row[key] instanceof Date?row[key].getTime():typeof row[key]==="string"?Date.parse(row[key]):NaN;
+    if(!Number.isFinite(actual)||actual!==Date.parse(expected))throw new Error("Reservation insert returned mismatched "+key);
+   }
+  }
   return row;
  }catch(error){
   if((error?.code==="23P01"&&["oa_provider_no_overlap","oa_room_no_overlap"].includes(error?.constraint))||(error?.code==="23505"&&error?.constraint==="oa_one_reservation_per_appointment"))throw new ReservationConflictError();
