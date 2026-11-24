@@ -11,7 +11,7 @@ export function createPostgresTransactionRunner({pool,statementTimeoutMs=15000})
   let begun=false;
   let discardClient=false;
   try{
-   await client.query("BEGIN");
+   try{await client.query("BEGIN")}catch(error){discardClient=true;throw error;}
    begun=true;
    // Bound transaction-local timeout prevents stalled booking writes from holding locks indefinitely.
    await client.query("SELECT set_config($1,$2,true)",["statement_timeout",String(statementTimeoutMs)]);
@@ -34,6 +34,6 @@ export function createPostgresTransactionRunner({pool,statementTimeoutMs=15000})
     }
    }
    throw error;
-  }finally{client.release(discardClient?new Error("Transaction rollback failed; discard connection"):undefined)}
+  }finally{client.release(discardClient?new Error("Transaction state uncertain; discard connection"):undefined)}
  };
 }
