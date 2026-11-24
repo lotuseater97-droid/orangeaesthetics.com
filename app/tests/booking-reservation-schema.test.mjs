@@ -32,5 +32,5 @@ test("staged exclusion constraints can be safely reapplied",()=>{
   const creation=sql.indexOf("ADD CONSTRAINT "+name+" EXCLUDE USING gist");
   assert.ok(check>=0&&creation>check,"Must check existing "+name+" before adding it");
  }
- assert.equal((sql.match(/DO \\$migration\\$/g)||[]).length,2);
+ assert.equal((sql.match(/DO \$migration\$/g)||[]).length,2);
 });
