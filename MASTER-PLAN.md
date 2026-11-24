@@ -34,6 +34,9 @@ One coherent Orange Aesthetics platform: public marketing website, guest service
 | Protected backend/database | Schema draft only | Proposed SQL, pure ledger, checkout guardrails, owner metrics and test source in app/; no database, authentication, deployed API or applied migration |
 | Domain/deployment | Unverified | Do not claim site is live until checked |
 
+### Scheduling persistence checkpoint (2026-11-23)
+`app/booking-reservations.staging.sql` drafts atomic provider/room overlap exclusion constraints with tenant-scoped references and no direct client grants. **Review only: not applied, tested against a live database, or exposed through an authenticated API.** Next: review PostgreSQL extension permissions, existing appointment schema and RLS, implement a staff-authorized transactional booking endpoint, test concurrent inserts and cancellation/rebooking, then stage migration in a dedicated development database. Do not treat slot suggestions as reservations.
+
 ## 4. Product surfaces
 **Public:** Home, aesthetics, IV pricing, memberships, skincare catalog, weight-management information, contact, guest checkout when enabled.
 
