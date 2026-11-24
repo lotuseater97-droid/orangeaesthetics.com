@@ -84,3 +84,12 @@ test("multi-resource suggestions can be capped after chronological ordering",asy
  assert.throws(()=>availableResourceSlots({...options,max_results:0}),RangeError);
  assert.throws(()=>availableResourceSlots({...options,max_results:1001}),RangeError);
 });
+
+test("slot planning rejects malformed records before checking candidates",async()=>{
+ const {availableSlots}=await import("../lib/booking-capacity.mjs");
+ const options={window_start:"2026-12-01T10:00:00Z",window_end:"2026-12-01T10:10:00Z",duration_minutes:30,provider_id:"provider-a",room_id:"room-a"};
+ for(const item of [null,undefined,1,"bad",[]]){
+  assert.throws(()=>availableSlots({...options,appointments:[item]}),TypeError);
+  assert.throws(()=>availableSlots({...options,closures:[item]}),TypeError);
+ }
+});
