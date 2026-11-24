@@ -18,6 +18,18 @@ test("rejects unsafe control and bidirectional characters",async()=>{
 });
 test("rejects mismatched origin",async()=>{const res=await onRequestPost({request:request(base,{origin:"https://evil.example"}),env});assert.equal(res.status,403)});
 test("fails closed without provider configuration",async()=>{const res=await onRequestPost({request:request(base),env:{}});assert.equal(res.status,503)});
+test("fails closed for missing, blank, or malformed notification credentials",async()=>{
+  for(const override of [
+    {APPOINTMENT_NOTIFICATION_TOKEN:""},
+    {APPOINTMENT_NOTIFICATION_TOKEN:"   "},
+    {APPOINTMENT_NOTIFICATION_TOKEN:"bad\\nheader"},
+    {APPOINTMENT_NOTIFICATION_TOKEN:123},
+    {APPOINTMENT_NOTIFICATION_ENDPOINT:"   "}
+  ]){
+    const res=await onRequestPost({request:request(base),env:{...env,...override}});
+    assert.equal(res.status,503);
+  }
+});
 test("rejects insecure notification destination",async()=>{const res=await onRequestPost({request:request(base),env:{...env,APPOINTMENT_NOTIFICATION_ENDPOINT:"http://notifications.example.test"}});assert.equal(res.status,503)});
 test("rejects notification destinations with query tokens, fragments, or IP hosts",async()=>{
   for(const destination of [
