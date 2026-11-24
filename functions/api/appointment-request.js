@@ -35,7 +35,7 @@ export async function onRequestPost({request,env}) {
   const phoneDigits=phone.replace(/\D/g,"");
   const phoneCharactersValid=/^[+0-9().\s-]+$/.test(phone);
   if(name.length<2||name.length>100||email.length>200||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||phone.length<7||phone.length>35||!phoneCharactersValid||phoneDigits.length<7||phoneDigits.length>15||!allowed.has(service)||/[\x00-\x1f\x7f-\x9f\u202a-\u202e\u2066-\u2069]/u.test(name+email+phone))return json(400,"Invalid fields");
-  if (!env.APPOINTMENT_NOTIFICATION_ENDPOINT || !env.APPOINTMENT_NOTIFICATION_TOKEN) return json(503,"Appointment requests are not configured");
+  if (typeof env.APPOINTMENT_NOTIFICATION_ENDPOINT!=="string" || typeof env.APPOINTMENT_NOTIFICATION_TOKEN!=="string" || !env.APPOINTMENT_NOTIFICATION_ENDPOINT.trim() || !env.APPOINTMENT_NOTIFICATION_TOKEN.trim() || /[\r\n]/.test(env.APPOINTMENT_NOTIFICATION_TOKEN)) return json(503,"Appointment requests are not configured");
   let endpoint;try{endpoint=new URL(env.APPOINTMENT_NOTIFICATION_ENDPOINT)}catch{return json(503,"Notification endpoint is invalid")}
   if(endpoint.protocol!=="https:" || endpoint.username || endpoint.password || endpoint.port || endpoint.search || endpoint.hash || !endpoint.hostname.includes(".") || endpoint.hostname==="localhost" || /^\d+\.\d+\.\d+\.\d+$/.test(endpoint.hostname) || endpoint.hostname.startsWith("[") ) return json(503,"Secure notification endpoint required");
   // An approved endpoint must be configured as a server secret. No patient clinical details.
