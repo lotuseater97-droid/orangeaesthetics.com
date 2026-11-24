@@ -36,7 +36,7 @@ test("reservation insert failures propagate to transaction wrapper for rollback"
 });
 
 test("missing actor identifiers never reach authorization or persistence",async()=>{
- for(const actor of [{},{id:""},{id:"   "},{id:42},null]){
+ for(const actor of [{},{id:""},{id:"   "},{id:42},{id:"not-a-uuid"},{id:"00000000-0000-0000-0000-000000000000"},null]){
   let calls=0;
   await assert.rejects(createStaffReservation({...request,actor,authorize:async()=>{calls++;return true},validateBooking:async()=>{calls++;return true},transaction:async()=>{calls++}}),TypeError);
   assert.equal(calls,0);
