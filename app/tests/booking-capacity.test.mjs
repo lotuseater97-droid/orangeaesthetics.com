@@ -32,3 +32,12 @@ test("available slots respect closures and invalid durations",async()=>{
  assert.throws(()=>availableSlots({...options,duration_minutes:0}),RangeError);
  assert.throws(()=>availableSlots({...options,step_minutes:0}),RangeError);
 });
+
+test("available slots honor notice and booking horizon when a clock is supplied",async()=>{
+ const {availableSlots}=await import("../lib/booking-capacity.mjs");
+ const options={window_start:"2026-12-01T10:00:00Z",window_end:"2026-12-01T12:00:00Z",duration_minutes:30,step_minutes:30,provider_id:"provider-a",room_id:"room-a"};
+ const slots=availableSlots({...options,now:"2026-12-01T10:00:00Z",min_notice_minutes:60});
+ assert.deepEqual(slots.map(slot=>slot.start_at),["2026-12-01T11:00:00.000Z","2026-12-01T11:30:00.000Z"]);
+ assert.deepEqual(availableSlots({...options,now:"2026-11-01T10:00:00Z",max_days_ahead:1}),[]);
+ assert.throws(()=>availableSlots({...options,now:"2026-12-01T10:00:00Z",min_notice_minutes:-1}),RangeError);
+});
