@@ -13,7 +13,7 @@ export async function createStaffReservation({actor,organization_id,appointment_
  // Deny before beginning a transaction; callbacks must not rely on user-supplied roles.
  // Validate time boundaries before any database or authorization work. Persistence
  // revalidates inside the transaction, so callers cannot bypass either check.
- const iso=/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,3})?(?:Z|[+-][0-9]{2}:[0-9]{2})$/;
+ const iso=/^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\.[0-9]{1,3})?(?:Z|[+-][0-9]{2}:[0-9]{2})$/;
  for(const value of [starts_at,ends_at]){
   if(typeof value!=="string"||!iso.test(value)||!Number.isFinite(Date.parse(value)))throw new RangeError("Invalid reservation timestamp");
  }
