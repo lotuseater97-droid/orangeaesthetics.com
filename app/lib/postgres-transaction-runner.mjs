@@ -8,6 +8,7 @@ export function createPostgresTransactionRunner({pool}){
   if(!client||typeof client.release!=="function")throw new TypeError("Invalid PostgreSQL client");
   if(typeof client.query!=="function"){client.release();throw new TypeError("Invalid PostgreSQL client");}
   let begun=false;
+  let discardClient=false;
   try{
    await client.query("BEGIN");
    begun=true;
@@ -19,10 +20,11 @@ export function createPostgresTransactionRunner({pool}){
   }catch(error){
    if(begun){
     try{await client.query("ROLLBACK")}catch(rollbackError){
+     discardClient=true;
      throw new AggregateError([error,rollbackError],"Transaction failed and rollback could not be confirmed");
     }
    }
    throw error;
-  }finally{client.release()}
+  }finally{client.release(discardClient?new Error("Transaction rollback failed; discard connection"):undefined)}
  };
 }
