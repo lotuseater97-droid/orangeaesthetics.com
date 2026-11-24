@@ -2,6 +2,8 @@
 -- Nonclinical resource reservations; never store PHI, symptoms, notes or payment data.
 -- PostgreSQL exclusion constraints protect against concurrent double-booking.
 CREATE EXTENSION IF NOT EXISTS btree_gist;
+CREATE UNIQUE INDEX IF NOT EXISTS oa_appointments_organization_id_id_unique
+ ON public.oa_appointments(organization_id,id);
 CREATE TABLE IF NOT EXISTS public.oa_resource_reservations (
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
  organization_id uuid NOT NULL REFERENCES public.oa_organizations(id),
@@ -19,6 +21,9 @@ CREATE TABLE IF NOT EXISTS public.oa_resource_reservations (
  CONSTRAINT oa_reservation_max_duration CHECK (ends_at <= starts_at + interval '8 hours'),
  FOREIGN KEY (organization_id, appointment_id) REFERENCES public.oa_appointments(organization_id,id)
 );
+-- The composite appointment foreign key requires a matching unique key on appointments.
+-- This index is safe to create before the reservation table in a reviewed migration.
+-- IMPORTANT: apply this statement BEFORE CREATE TABLE on a fresh installation.
 -- Reject concurrent overlapping reservations for either provider or room.
 -- Exclusion checks are enforced atomically by PostgreSQL, not by a stale UI lookup.
 ALTER TABLE public.oa_resource_reservations
