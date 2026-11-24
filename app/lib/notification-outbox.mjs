@@ -13,7 +13,7 @@ export function notificationTypes(){return Object.keys(templates)}
 export function prepareNotification({type,recipient,fields={},consent={},idempotency_key}){
  if(!Object.hasOwn(templates,type))throw new RangeError("Unknown notification type");
  const template=templates[type];
- if(!recipient||!safeText(recipient.id)||!safeText(recipient.email)||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient.email))throw new TypeError("Invalid recipient");
+ if(!recipient||!safeText(recipient.id)||!safeText(recipient.email)||!/^[A-Za-z0-9.!#$%&\x27*+\/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/.test(recipient.email))throw new TypeError("Invalid recipient");
  if(typeof idempotency_key!=="string"||!/^[-_a-zA-Z0-9]{12,128}$/.test(idempotency_key))throw new TypeError("Invalid idempotency key");
  if(!fields||typeof fields!=="object"||Array.isArray(fields)||Object.keys(fields).some(k=>!template.fields.includes(k)))throw new TypeError("Unexpected template fields");
  for(const key of template.fields)if(!safeText(fields[key]))throw new TypeError("Missing or invalid field: "+key);
