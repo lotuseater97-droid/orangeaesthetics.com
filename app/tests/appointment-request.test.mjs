@@ -10,6 +10,12 @@ test("accepts a valid contact-only request and forwards only allowed fields",asy
 test("rejects extra fields including medical notes",async()=>{const res=await onRequestPost({request:request({...base,medicalHistory:"private"}),env});assert.equal(res.status,400)});
 test("rejects invalid email",async()=>{const res=await onRequestPost({request:request({...base,email:"not-an-email"}),env});assert.equal(res.status,400)});
 test("rejects newline injection",async()=>{const res=await onRequestPost({request:request({...base,name:"Jane\nCc: someone"}),env});assert.equal(res.status,400)});
+test("rejects unsafe control and bidirectional characters",async()=>{
+  for(const [field,value] of [["name","Jane\\tExample"],["name","Jane\\u0000Example"],["email","jane\\u202E@example.com"],["phone","714\\u20665550101"]]){
+    const res=await onRequestPost({request:request({...base,[field]:value}),env});
+    assert.equal(res.status,400,field+" should reject unsafe characters");
+  }
+});
 test("rejects mismatched origin",async()=>{const res=await onRequestPost({request:request(base,{origin:"https://evil.example"}),env});assert.equal(res.status,403)});
 test("fails closed without provider configuration",async()=>{const res=await onRequestPost({request:request(base),env:{}});assert.equal(res.status,503)});
 test("rejects insecure notification destination",async()=>{const res=await onRequestPost({request:request(base),env:{...env,APPOINTMENT_NOTIFICATION_ENDPOINT:"http://notifications.example.test"}});assert.equal(res.status,503)});
