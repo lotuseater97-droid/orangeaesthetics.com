@@ -38,3 +38,9 @@ test("unrelated database constraint violations retain their original errors",asy
   await assert.rejects(insertReservation({...options,query:async()=>{throw error}}),caught=>caught===error);
  }
 });
+
+test("malformed database insert responses are not treated as successful bookings",async()=>{
+ for(const response of [null,{}, {rows:[]},{rows:[null]},{rows:["invalid"]},{rows:[{},{}]}]){
+  await assert.rejects(insertReservation({...options,query:async()=>response}),/Reservation insert returned no record/);
+ }
+});
