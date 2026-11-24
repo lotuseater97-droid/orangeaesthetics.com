@@ -32,7 +32,13 @@ export async function insertReservation({query,organization_id,appointment_id,pr
    RETURNING id,organization_id,appointment_id,provider_id,room_id,starts_at,ends_at,status`,
    [...ids,starts_at,ends_at,status]);
   if(!result||!Array.isArray(result.rows)||result.rows.length!==1||!result.rows[0]||typeof result.rows[0]!=="object"||Array.isArray(result.rows[0]))throw new Error("Reservation insert returned no record");
-  return result.rows[0];
+  // Reject a mismatched RETURNING row rather than reporting another tenant's
+  // or appointment's reservation as a successful insert.
+  const row=result.rows[0];
+  for(const [key,expected] of Object.entries({organization_id,appointment_id,provider_id,room_id,status})){
+   if(Object.hasOwn(row,key)&&row[key]!==expected)throw new Error("Reservation insert returned mismatched "+key);
+  }
+  return row;
  }catch(error){
   if((error?.code==="23P01"&&["oa_provider_no_overlap","oa_room_no_overlap"].includes(error?.constraint))||(error?.code==="23505"&&error?.constraint==="oa_one_reservation_per_appointment"))throw new ReservationConflictError();
   throw error;
