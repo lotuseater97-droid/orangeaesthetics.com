@@ -7,3 +7,10 @@ test("callback errors trigger rollback and release",async()=>{const f=fixture();
 test("failed BEGIN does not attempt rollback",async()=>{const f=fixture("BEGIN");await assert.rejects(()=>f.run(async()=>true),/query failure/);assert.deepEqual(f.calls.map(x=>x.text),["BEGIN"]);assert.equal(f.releases,1)});
 test("rollback failure reports both errors",async()=>{const calls=[];let released=false;const run=createPostgresTransactionRunner({pool:{connect:async()=>({query:async sql=>{calls.push(sql);if(sql==="ROLLBACK")throw Error("rollback failed")},release:()=>{released=true}})}});await assert.rejects(()=>run(async()=>{throw Error("write failed")}),AggregateError);assert.deepEqual(calls,["BEGIN","ROLLBACK"]);assert.equal(released,true)});
 test("invalid pool fails before starting",()=>assert.throws(()=>createPostgresTransactionRunner({pool:{}}),TypeError));
+
+test("transaction runner releases clients with no query method",async()=>{
+ let releases=0;
+ const runner=createPostgresTransactionRunner({pool:{connect:async()=>({release(){releases++}})}});
+ await assert.rejects(runner(async()=>{}),TypeError);
+ assert.equal(releases,1);
+});
