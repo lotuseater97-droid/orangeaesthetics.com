@@ -12,7 +12,7 @@ export async function insertReservation({query,organization_id,appointment_id,pr
  ["organization_id","appointment_id","provider_id","room_id"].forEach((name,i)=>requiredUuid(ids[i],name));
  if(!["under_review","confirmed"].includes(status))throw new RangeError("Invalid reservable status");
  const start=Date.parse(starts_at),end=Date.parse(ends_at);
- if(typeof starts_at!=="string"||typeof ends_at!=="string"||!/^\\d{4}-\\d{2}-\\d{2}T/.test(starts_at)||!/(Z|[+-]\\d{2}:\\d{2})$/.test(starts_at)||!/(Z|[+-]\\d{2}:\\d{2})$/.test(ends_at)||!Number.isFinite(start)||!Number.isFinite(end)||end<=start||end-start>8*3600000)throw new RangeError("Invalid reservation interval");
+ if(typeof starts_at!=="string"||typeof ends_at!=="string"||!/^\d{4}-\d{2}-\d{2}T/.test(starts_at)||!/(Z|[+-]\d{2}:\d{2})$/.test(starts_at)||!/(Z|[+-]\d{2}:\d{2})$/.test(ends_at)||!Number.isFinite(start)||!Number.isFinite(end)||end<=start||end-start>8*3600000)throw new RangeError("Invalid reservation interval");
  try{
   const result=await query(`INSERT INTO public.oa_resource_reservations
    (organization_id,appointment_id,provider_id,room_id,starts_at,ends_at,status)
