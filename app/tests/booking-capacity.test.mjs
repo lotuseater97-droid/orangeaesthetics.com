@@ -65,3 +65,12 @@ test("slot planning rejects malformed scheduling collections before iteration",a
  assert.throws(()=>availableSlots({...options,appointments:null}),TypeError);
  assert.throws(()=>availableSlots({...options,closures:{}}),TypeError);
 });
+
+test("multi-resource suggestions preserve resource identities and exclude occupied pairs",async()=>{
+ const {availableResourceSlots}=await import("../lib/booking-capacity.mjs");
+ const resources=[{provider_id:"provider-a",room_id:"room-a"},{provider_id:"provider-b",room_id:"room-b"}];
+ const slots=availableResourceSlots({resources,window_start:"2026-12-01T10:00:00Z",window_end:"2026-12-01T10:30:00Z",duration_minutes:30,appointments:[{...base,id:"occupied",status:"confirmed"}]});
+ assert.deepEqual(slots.map(s=>[s.provider_id,s.room_id]),[["provider-b","room-b"]]);
+ assert.throws(()=>availableResourceSlots({resources:[resources[0],resources[0]],window_start:"2026-12-01T10:00:00Z",window_end:"2026-12-01T10:30:00Z",duration_minutes:30}),RangeError);
+ assert.throws(()=>availableResourceSlots({resources:[],window_start:"2026-12-01T10:00:00Z",window_end:"2026-12-01T10:30:00Z",duration_minutes:30}),RangeError);
+});
