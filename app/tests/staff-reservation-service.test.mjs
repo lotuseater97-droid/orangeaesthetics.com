@@ -40,3 +40,11 @@ test("missing actor identifiers never reach authorization or persistence",async(
   assert.equal(calls,0);
  }
 });
+
+test("missing organization or appointment scope never invokes security callbacks",async()=>{
+ for(const override of [{organization_id:undefined},{organization_id:"  "},{appointment_id:undefined},{appointment_id:"  "}]){
+  let calls=0;
+  await assert.rejects(createStaffReservation({...request,...override,authorize:async()=>{calls++;return true},validateBooking:async()=>{calls++;return true},transaction:async()=>{calls++}}),TypeError);
+  assert.equal(calls,0);
+ }
+});
