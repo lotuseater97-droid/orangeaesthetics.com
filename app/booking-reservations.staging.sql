@@ -15,6 +15,8 @@ CREATE TABLE IF NOT EXISTS public.oa_resource_reservations (
  status text NOT NULL CHECK (status IN ('under_review','confirmed','cancelled','declined','no_show','completed')),
  created_at timestamptz NOT NULL DEFAULT now(),
  CHECK (ends_at > starts_at),
+ -- Match the maximum eight-hour duration enforced by the scheduling planner.
+ CONSTRAINT oa_reservation_max_duration CHECK (ends_at <= starts_at + interval '8 hours'),
  FOREIGN KEY (organization_id, appointment_id) REFERENCES public.oa_appointments(organization_id,id)
 );
 -- Reject concurrent overlapping reservations for either provider or room.
