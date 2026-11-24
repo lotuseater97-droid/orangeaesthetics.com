@@ -4,7 +4,7 @@ function setup({failAudit=false,existingClaim=false,otherOrg=false}={}){
  const calls=[];let released=0;
  const pool={connect:async()=>({query:async(text,values)=>{
   calls.push({text,values});
-  if(text==="BEGIN"||text==="COMMIT"||text==="ROLLBACK")return {rows:[]};
+  if(text==="BEGIN"||text==="COMMIT"||text==="ROLLBACK"||text==="SELECT set_config($1,$2,true)")return {rows:[]};
   if(text.includes("INSERT INTO public.oa_idempotency_keys"))return {rows:existingClaim?[]:[{id}]};
   if(text.includes("SELECT request_hash AS fingerprint"))return {rows:[]};
   if(text.includes("FOR UPDATE"))return {rows:[{id,organization_id:otherOrg?"123e4567-e89b-42d3-a456-426614174999":org,status:"submitted"}]};
@@ -23,7 +23,7 @@ function setup({failAudit=false,existingClaim=false,otherOrg=false}={}){
 test("financial transition atomically claims, locks, updates, audits and finalizes",async()=>{
  const f=setup();const result=await f.service.transition({token:"verified_session_123",kind:"expense",id,to:"approved",idempotency_key:key});
  assert.equal(result.status,"approved");
- assert.deepEqual(f.calls.map(x=>x.text==="BEGIN"?"BEGIN":x.text==="COMMIT"?"COMMIT":x.text.includes("INSERT INTO public.oa_idempotency_keys")?"claim":x.text.includes("FOR UPDATE")?"lock":x.text.includes("UPDATE public.oa_expenses")?"update":x.text.includes("INSERT INTO public.oa_audit_events")?"audit":x.text.includes("UPDATE public.oa_idempotency_keys")?"finish":"other"),["BEGIN","claim","lock","update","audit","finish","COMMIT"]);
+ assert.deepEqual(f.calls.map(x=>x.text==="BEGIN"?"BEGIN":x.text==="COMMIT"?"COMMIT":x.text.startsWith("SELECT set_config(")?"timeout":x.text.includes("INSERT INTO public.oa_idempotency_keys")?"claim":x.text.includes("FOR UPDATE")?"lock":x.text.includes("UPDATE public.oa_expenses")?"update":x.text.includes("INSERT INTO public.oa_audit_events")?"audit":x.text.includes("UPDATE public.oa_idempotency_keys")?"finish":"other"),["BEGIN","timeout","claim","lock","update","audit","finish","COMMIT"]);
  assert.equal(f.released,1);
 });
 test("audit failure rolls back financial mutation and idempotency",async()=>{
