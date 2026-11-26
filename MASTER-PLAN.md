@@ -434,3 +434,6 @@ Improved existing low-stock and reorder engine: grouped movements for efficient 
 
 ### Owner expense reporting — 2026-11-26
 Added paid expense category summaries by inclusive payment date, with category totals, counts, duplicate rejection and existing safe-cent calculations (593be59); five synthetic tests (e5014b5). Cash-basis reporting deliberately excludes approved but unpaid expenses; trusted adapter must map paid_on and status from authoritative records. CI pending; no live data or activation. Next independent task: integrate reporting modules into synthetic owner dashboard.
+
+### Integrated owner reporting — 2026-11-26
+Composed financial, paid expense category and current inventory reports in `app/lib/owner-dashboard-report.mjs` (9760513), with three integration tests (5c6bb20). Pure view model only; trusted adapter and UI integration remain pending. Previous Business foundation run 45899723738 passed at e5014b5; static audit and checkout integration failed at that revision and require diagnosis. New tests pending CI. Next independent work: diagnose failing workflows and build synthetic dashboard interface. No production activation.
