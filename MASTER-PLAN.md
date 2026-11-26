@@ -405,3 +405,7 @@ W11/W13: Explicit POST fallback, disabled submit until script initializes, noscr
 
 ### Appointment backend resource handling — 2026-11-26
 W11: Avoid awaiting oversized body cancellation and cancel unused notification response bodies (9ae7831). Source committed; runtime tests and notification delivery not verified. No live configuration changes.
+
+
+### Private API transport safeguards — 2026-11-26
+Development runtime now sets request/header/keep-alive timeouts and maximum header size, with no-store and connection-close on oversized bodies (be6bb72). Source committed; runtime testing pending. Staff scheduling integration remains unfinished. No production activation.
