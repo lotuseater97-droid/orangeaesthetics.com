@@ -409,3 +409,11 @@ W11: Avoid awaiting oversized body cancellation and cancel unused notification r
 
 ### Private API transport safeguards — 2026-11-26
 Development runtime now sets request/header/keep-alive timeouts and maximum header size, with no-store and connection-close on oversized bodies (be6bb72). Source committed; runtime testing pending. Staff scheduling integration remains unfinished. No production activation.
+
+
+## Engineering checkpoint — 2026-11-26: gated staff appointment HTTP transport
+- Added `app/lib/staff-reservation-http.mjs`: private, disabled-by-default POST adapter supporting reservation creation and lifecycle transitions by composing existing transactional services. Strict origin, JSON body size/shape, UUID, staff active status and MFA gates; verifies current staff permissions through trusted server callbacks; returns nonidentifying success/error messages and no-store headers.
+- Added `app/tests/staff-reservation-http.test.mjs`: synthetic coverage for disabled state, both mutation types, MFA failures, malformed requests, authorization errors and sanitized server errors.
+- GitHub commits: `7c959b0f9ddad2cd025e8b62dd70e84e03bbb4a7`, `f0755f33ad5bbd7f7fa79eeca071111d204a2065`. GitHub Actions run 45898512010 was in progress when checked; no passing result claimed yet. Local clone blocked by container DNS resolution.
+- This adapter is **not wired to a public route**, has no production staff OIDC/MFA implementation and cannot handle real appointments. Before enabling: approved staff identity verification with trusted subject-to-staff UUID mapping; deployment security review, tenant isolation, migration/rehearsed rollback, concurrency tests against development Postgres, and monitoring.
+- Next: connect authenticated development-only staff read/write API after verified OIDC and active staff membership integration, preserving disabled-by-default production gates.
