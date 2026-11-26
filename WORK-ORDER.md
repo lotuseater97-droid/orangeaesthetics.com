@@ -169,3 +169,7 @@ Created aesthetics.html and iv-therapy.html, updated all 20 audited public page 
 - Created `app/BUSINESS-PLATFORM-STRUCTURE.md`, `app/lib/business-navigation.mjs`, `app/lib/business-operations.mjs`, `app/lib/workflow-rules.mjs`, synthetic tests, and a GitHub Actions test workflow.
 - These are real committed business-domain foundations but **not yet a deployed, authenticated, database-backed owner dashboard**. Existing static Worker excludes `app/`; no real customer or financial data is collected. A dedicated secure backend, auth/RLS, payment integration, and regulatory review remain required.
 - Public site remains Orange Aesthetics' existing visual identity and navigation.
+
+
+### Public website QA — 2026-11-26
+W13: Hardened static audit against browser-normalized active URL schemes (d631548); added regression cases (e45e971). Committed to main; CI execution and live deployment not verified. W13 remains open for mobile/browser QA. No production payment or clinical gates changed.
