@@ -397,3 +397,7 @@ W13: Hardened static audit against browser-normalized active URL schemes (d63154
 
 ### Mobile and accessibility development — 2026-11-26
 W13: Shared CSS mobile navigation, focus and reduced-motion improvements (32c88a2); homepage skip navigation and cache version (bb21bbb, c484e50). Browser QA and deployment verification pending. Extend skip navigation to remaining public pages after verification.
+
+
+### Appointment form privacy — 2026-11-26
+W11/W13: Explicit POST fallback, disabled submit until script initializes, noscript telephone fallback and keyboard skip link committed (8d8d254). Prevents default GET submission of contact details. Browser tests and notification delivery remain unverified; no live activation.
