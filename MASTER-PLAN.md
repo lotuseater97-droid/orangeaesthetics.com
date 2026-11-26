@@ -419,3 +419,6 @@ Development runtime now sets request/header/keep-alive timeouts and maximum head
 - Next: connect authenticated development-only staff read/write API after verified OIDC and active staff membership integration, preserving disabled-by-default production gates.
 
 - **Verified CI update (2026-11-26):** GitHub Actions Business foundation tests run [45898512010](https://github.com/lotuseater97-droid/orangeaesthetics.com/actions/runs/45898512010) completed successfully for commit `f0755f33ad5bbd7f7fa79eeca071111d204a2065` (unit job success). This confirms automated repository tests at that commit, not live Postgres integration, production authorization or deployment.
+
+## Independent development priority — 2026-11-26
+Owner directs developers to defer all tasks requiring human authorization into a separate approval backlog, without blocking independent implementation. Preserve all activation gates; continue synthetic-data dashboard, reporting, inventory, scheduling, accessibility and automated tests. Implemented nested staff shift overlap detection in `app/lib/staff-operations.mjs` (6f1378c) and added regression coverage; CI not yet verified. Next independent task: improve owner reporting and staff scheduling review without live records or payroll activation.
