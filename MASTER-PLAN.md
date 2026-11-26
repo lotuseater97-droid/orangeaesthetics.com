@@ -393,3 +393,7 @@ The server-only PostgreSQL runner now retains rejected query outcomes even after
 
 ### Public website QA — 2026-11-26
 W13: Hardened static audit against browser-normalized active URL schemes (d631548); added regression cases (e45e971). Committed to main; CI execution and live deployment not verified. W13 remains open for mobile/browser QA. No production payment or clinical gates changed.
+
+
+### Mobile and accessibility development — 2026-11-26
+W13: Shared CSS mobile navigation, focus and reduced-motion improvements (32c88a2); homepage skip navigation and cache version (bb21bbb, c484e50). Browser QA and deployment verification pending. Extend skip navigation to remaining public pages after verification.
