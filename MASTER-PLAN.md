@@ -425,3 +425,6 @@ Owner directs developers to defer all tasks requiring human authorization into a
 
 ### Independent owner reporting improvement — 2026-11-26
 Owner financial and inventory summary arithmetic now rejects unsafe integer totals instead of silently losing precision (8cb604c). Five synthetic regression tests added (444e4a9). CI verification pending; no production or approval-dependent changes. Next independent work: owner reporting date-range summaries and inventory review.
+
+### Owner reporting date ranges — 2026-11-26
+Implemented pure inclusive business-local date range financial summaries in `app/lib/owner-period-report.mjs` (1baff1f), with counts and existing safe-cent arithmetic; five regression tests (513be8a). Trusted data adapter must supply pre-scoped business dates; no UI or production integration yet. CI pending. Next independent task: inventory review and low-stock reporting.
