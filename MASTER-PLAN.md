@@ -389,3 +389,7 @@ The server-only PostgreSQL runner now retains rejected query outcomes even after
 ### Transaction safety checkpoint — 2026-11-25
 - Confirmed main commits `0091812431bc9c491cfa2d98e85d17de921460fc`, `2cc0c89a6399cbfdd54118c39d8d9407edbb5050`, and `2d644117c9027173c023cb327f018f424e9fb2b6`: drain pending queries, reject failed queries before commit, and set a parameterized transaction-local statement timeout (15 seconds default, configurable 1–120 seconds).
 - Regression tests committed; execution not yet verified. Next: verify CI, connect trusted pool and authenticated staff reservation endpoint in staging only. Production activation remains blocked.
+
+
+### Public website QA — 2026-11-26
+W13: Hardened static audit against browser-normalized active URL schemes (d631548); added regression cases (e45e971). Committed to main; CI execution and live deployment not verified. W13 remains open for mobile/browser QA. No production payment or clinical gates changed.
