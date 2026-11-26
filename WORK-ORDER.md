@@ -212,3 +212,6 @@ Checkout run 45900140490 confirmed all application and test modules parse after 
 
 ### Purchasing controls — 2026-11-26
 Verified previous repair at 86aceb3: business foundation run 45900244362, checkout run 45900244285 and static audit run 45900244323 all succeeded. Hardened purchase reconciliation with mandatory requester/approver identity, eligible purchase states, over-receipt detection and safe integer totals (63154b9); four regression tests (1376f1f). New CI pending. Next independent task: connect purchasing evaluation to synthetic owner interface. No payment or production activation.
+
+### Interactive purchasing dashboard — 2026-11-26
+Connected synthetic owner purchasing view to evaluatePurchase (718e81d), showing approval queue count, received/invoiced amounts, reconciliation issues and readiness. Added static wiring regression test. Existing demo actions simulate full receipt and matching invoice only; partial receipts, independent invoice entry and browser QA remain pending. No real payments, orders or inventory changes. Next independent task: partial receipt and invoice entry in demo.
