@@ -185,3 +185,6 @@ W13: Hardened static audit against browser-normalized active URL schemes (d63154
 
 ## Independent development priority — 2026-11-26
 Owner directs developers to defer all tasks requiring human authorization into a separate approval backlog, without blocking independent implementation. Preserve all activation gates; continue synthetic-data dashboard, reporting, inventory, scheduling, accessibility and automated tests. Implemented nested staff shift overlap detection in `app/lib/staff-operations.mjs` (6f1378c) and added regression coverage; CI not yet verified. Next independent task: improve owner reporting and staff scheduling review without live records or payroll activation.
+
+### Independent owner reporting improvement — 2026-11-26
+Owner financial and inventory summary arithmetic now rejects unsafe integer totals instead of silently losing precision (8cb604c). Five synthetic regression tests added (444e4a9). CI verification pending; no production or approval-dependent changes. Next independent work: owner reporting date-range summaries and inventory review.
