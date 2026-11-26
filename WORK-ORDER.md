@@ -203,3 +203,6 @@ Composed financial, paid expense category and current inventory reports in `app/
 
 ### Interactive owner finance interface — 2026-11-26
 Connected existing app/prototypes/owner-interactive.html finance view to shared reporting engine via ES module import, with date range controls, cash metrics, category breakdown and current inventory alert count (9c55149). Synthetic records only; serve over local HTTP for module imports. Browser QA pending. CI diagnosis: static audit asset/link and private exclusion steps passed, Worker security test failed; checkout integration failed at application library syntax check before full tests. Job logs not available in job metadata; exact causes remain unresolved. Next independent task: resolve syntax and Worker test failures, then browser QA and purchasing interface integration. No live activation.
+
+### Staff reservation syntax repair — 2026-11-26
+Corrected double-escaped regex literal in staff-reservation-http.mjs that prevented module parsing (86d1c10); added content-type regression coverage. CI verification pending. Staff endpoint remains disabled by default. Next: verify full checkout suite and diagnose remaining Worker security failures.
