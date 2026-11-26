@@ -34,3 +34,11 @@ test("purchasing workspace uses shared reconciliation and displays readiness",()
  assert.match(html,/r\.invoiced_cents/);
  assert.match(html,/r\.issues\.join/);
 });
+
+test("purchase demo records independent partial amounts",()=>{
+ assert.match(html,/received:\[\],invoiced:\[\]/);
+ assert.match(html,/receipts:p\.received\.map/);
+ assert.match(html,/invoices:p\.invoiced\.map/);
+ assert.match(html,/p\[to\]\.push\(cents\)/);
+ assert.doesNotMatch(html,/p\.received=true|p\.invoiced=true/);
+});
