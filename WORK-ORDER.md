@@ -191,3 +191,6 @@ Owner financial and inventory summary arithmetic now rejects unsafe integer tota
 
 ### Owner reporting date ranges — 2026-11-26
 Implemented pure inclusive business-local date range financial summaries in `app/lib/owner-period-report.mjs` (1baff1f), with counts and existing safe-cent arithmetic; five regression tests (513be8a). Trusted data adapter must supply pre-scoped business dates; no UI or production integration yet. CI pending. Next independent task: inventory review and low-stock reporting.
+
+### Independent inventory review — 2026-11-26
+Improved existing low-stock and reorder engine: grouped movements for efficient review, reject duplicate movement IDs and invalid calendar dates, protect stock and reorder arithmetic from overflow (22fdf53). Four regression tests added (6a853e2). CI pending; no live inventory or clinical use activated. Next independent task: expense category reporting and dashboard integration with synthetic data.
