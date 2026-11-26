@@ -20,7 +20,7 @@ export async function onRequestPost({request,env}) {
         const {done,value}=await reader.read();
         if(done)break;
         size+=value.byteLength;
-        if(size>4096){await reader.cancel();return json(413,"Request too large");}
+        if(size>4096){void reader.cancel().catch(()=>{});return json(413,"Request too large");}
         chunks.push(value);
       }
     }finally{reader.releaseLock();}
@@ -46,7 +46,9 @@ export async function onRequestPost({request,env}) {
     const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),8000);
     try{
       const result=await fetch(endpoint.href,{method:"POST",redirect:"error",signal:controller.signal,headers:{"authorization":"Bearer "+env.APPOINTMENT_NOTIFICATION_TOKEN,"content-type":"application/json"},body:JSON.stringify({name,email,phone,service,source:"Orange Aesthetics appointment request"})});
-      if(!result.ok)return json(502,"Delivery unavailable");return json(200,"Received");
+      const delivered=result.ok;
+      if(result.body)void result.body.cancel().catch(()=>{});
+      if(!delivered)return json(502,"Delivery unavailable");return json(200,"Received");
     }finally{clearTimeout(timeout)}
   }catch{return json(502,"Delivery unavailable")}
 }
