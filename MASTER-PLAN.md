@@ -401,3 +401,7 @@ W13: Shared CSS mobile navigation, focus and reduced-motion improvements (32c88a
 
 ### Appointment form privacy — 2026-11-26
 W11/W13: Explicit POST fallback, disabled submit until script initializes, noscript telephone fallback and keyboard skip link committed (8d8d254). Prevents default GET submission of contact details. Browser tests and notification delivery remain unverified; no live activation.
+
+
+### Appointment backend resource handling — 2026-11-26
+W11: Avoid awaiting oversized body cancellation and cancel unused notification response bodies (9ae7831). Source committed; runtime tests and notification delivery not verified. No live configuration changes.
