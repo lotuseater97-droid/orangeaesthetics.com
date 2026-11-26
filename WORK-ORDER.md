@@ -173,3 +173,10 @@ Created aesthetics.html and iv-therapy.html, updated all 20 audited public page 
 
 ### Public website QA — 2026-11-26
 W13: Hardened static audit against browser-normalized active URL schemes (d631548); added regression cases (e45e971). Committed to main; CI execution and live deployment not verified. W13 remains open for mobile/browser QA. No production payment or clinical gates changed.
+
+
+## Progress — 2026-11-26: staff appointment transport
+- Added `app/lib/staff-reservation-http.mjs` and `app/tests/staff-reservation-http.test.mjs` in commits `7c959b0` and `f0755f3`. The private HTTP adapter composes existing reservation create/transition transactions with strict request/MFA/origin validation and sanitized responses. **Disabled by default, not routed or deployed.**
+- Tests: GitHub Actions run 45898512010 was in progress at documentation time; local clone could not resolve github.com, so do not count as locally tested. Review CI result before declaring tested.
+- W09: server-side appointment HTTP foundation added; authenticated staff UI remains blocked by approved identity, role mapping, RLS/migrations, and deployment security gates.
+- Next smallest unblocked task: implement and test trusted server-side staff session identity adapter and tenant-scoped appointment read model; do not turn on live endpoints.
