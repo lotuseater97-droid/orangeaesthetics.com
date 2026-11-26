@@ -26,9 +26,11 @@ for (const page of pages) {
   if (!/name=["']description["']/i.test(html)) warnings.push(label + ': missing description');
   for (const match of html.matchAll(/<(a|link|script|img)\b[^>]*?\b(href|src)\s*=\s*["']([^"']+)["']/gi)) {
     const raw = match[3].trim();
+    // Browsers remove ASCII tabs and newlines from URL schemes.
+    const normalized = raw.replace(/[\t\n\r]/g, '');
     const tag = match[1].toLowerCase();
     const safeEmbeddedImage = tag === 'img' && /^data:image\/(?:png|jpeg|gif|webp|avif);base64,[a-z0-9+/=]+$/i.test(raw);
-    if (/^javascript\s*:/i.test(raw) || (/^data\s*:/i.test(raw) && !safeEmbeddedImage)) {
+    if (/^javascript\s*:/i.test(normalized) || (/^data\s*:/i.test(normalized) && !safeEmbeddedImage)) {
       errors.push(label + ': unsafe URL in ' + tag + ' ' + match[2] + ': ' + raw.slice(0, 80));
       continue;
     }
