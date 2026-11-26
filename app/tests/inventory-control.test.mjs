@@ -8,3 +8,8 @@ test("expiring lot flagged",()=>assert.ok(evaluateInventory({items:[{...item,lot
 test("orphan movement flagged",()=>assert.ok(evaluateInventory({items:[item],movements:[{id:"m1",item_id:"other",quantity_delta:3}],today:"2026-11-22"}).alerts.some(a=>a.kind==="orphan_movement")));
 test("reorder packs round up",()=>assert.equal(proposeReorder({on_hand:3,reorder_threshold:5,target_stock:20,pack_size:6}),18));
 test("no reorder above threshold",()=>assert.equal(proposeReorder({on_hand:7,reorder_threshold:5,target_stock:20}),0));
+
+test("duplicate movements cannot inflate stock",()=>{const m={id:"m1",item_id:"i1",quantity_delta:3};assert.throws(()=>evaluateInventory({items:[item],movements:[m,m],today:"2026-11-22"}),TypeError)});
+test("invalid calendar dates rejected",()=>assert.throws(()=>evaluateInventory({items:[item],today:"2026-02-30"}),TypeError));
+test("stock overflow rejected",()=>assert.throws(()=>evaluateInventory({items:[item],movements:[{id:"a",item_id:"i1",quantity_delta:Number.MAX_SAFE_INTEGER},{id:"b",item_id:"i1",quantity_delta:1}],today:"2026-11-22"}),RangeError));
+test("reorder overflow rejected",()=>assert.throws(()=>proposeReorder({on_hand:-1,reorder_threshold:5,target_stock:Number.MAX_SAFE_INTEGER}),RangeError));
