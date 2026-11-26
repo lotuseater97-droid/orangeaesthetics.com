@@ -182,3 +182,6 @@ W13: Hardened static audit against browser-normalized active URL schemes (d63154
 - Next smallest unblocked task: implement and test trusted server-side staff session identity adapter and tenant-scoped appointment read model; do not turn on live endpoints.
 
 - **Verified CI update (2026-11-26):** GitHub Actions Business foundation tests run [45898512010](https://github.com/lotuseater97-droid/orangeaesthetics.com/actions/runs/45898512010) completed successfully for commit `f0755f33ad5bbd7f7fa79eeca071111d204a2065` (unit job success). This confirms automated repository tests at that commit, not live Postgres integration, production authorization or deployment.
+
+## Independent development priority — 2026-11-26
+Owner directs developers to defer all tasks requiring human authorization into a separate approval backlog, without blocking independent implementation. Preserve all activation gates; continue synthetic-data dashboard, reporting, inventory, scheduling, accessibility and automated tests. Implemented nested staff shift overlap detection in `app/lib/staff-operations.mjs` (6f1378c) and added regression coverage; CI not yet verified. Next independent task: improve owner reporting and staff scheduling review without live records or payroll activation.
