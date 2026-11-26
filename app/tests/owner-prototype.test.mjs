@@ -25,3 +25,12 @@ test("user supplied task title is HTML escaped before rendering",()=>{
  assert.match(html,/const escapeHtml=/);
  assert.match(html,/const cell=x=>/);
 });
+
+test("purchasing workspace uses shared reconciliation and displays readiness",()=>{
+ assert.match(html,/import \{evaluatePurchase\} from/);
+ assert.match(html,/purchaseReport=p=>evaluatePurchase/);
+ assert.match(html,/r\.ready_for_payment/);
+ assert.match(html,/r\.received_cents/);
+ assert.match(html,/r\.invoiced_cents/);
+ assert.match(html,/r\.issues\.join/);
+});
