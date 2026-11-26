@@ -14,7 +14,7 @@ export function createStaffReservationHttpHandler({verifyStaff,authorize,validat
   if(method!=="POST")return reply(405,"Method not allowed");
   const get=k=>headers?.get?.(k)??headers?.[k]??headers?.[k.toLowerCase()];
   if(get("origin")!==origin)return reply(403,"Origin not allowed");
-  if(!/^application\\/json(?:\\s*;|\\s*$)/i.test(get("content-type")??""))return reply(415,"JSON required");
+  if(!/^application\/json(?:\s*;|\s*$)/i.test(get("content-type")??""))return reply(415,"JSON required");
   if(typeof rawBody!=="string"||Buffer.byteLength(rawBody,"utf8")>2048)return reply(413,"Request too large");
   let request;
   try{request=JSON.parse(rawBody)}catch{return reply(400,"Invalid JSON")}
