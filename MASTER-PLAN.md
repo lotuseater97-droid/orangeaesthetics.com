@@ -385,3 +385,7 @@ The server-only PostgreSQL transaction runner now applies a transaction-local, p
 
 ### Transaction query failure tracking (2026-11-23)
 The server-only PostgreSQL runner now retains rejected query outcomes even after a pending promise settles, preventing a fire-and-forget failed statement from being missed before COMMIT. The transaction must roll back on any observed query failure. This remains an internal adapter; authenticated staff endpoints, migration review, and live concurrency verification are outstanding.
+
+### Transaction safety checkpoint — 2026-11-25
+- Confirmed main commits `0091812431bc9c491cfa2d98e85d17de921460fc`, `2cc0c89a6399cbfdd54118c39d8d9407edbb5050`, and `2d644117c9027173c023cb327f018f424e9fb2b6`: drain pending queries, reject failed queries before commit, and set a parameterized transaction-local statement timeout (15 seconds default, configurable 1–120 seconds).
+- Regression tests committed; execution not yet verified. Next: verify CI, connect trusted pool and authenticated staff reservation endpoint in staging only. Production activation remains blocked.
