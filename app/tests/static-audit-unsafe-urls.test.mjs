@@ -56,3 +56,11 @@ test('rejects non-base64 image data URLs',()=>{
   assert.equal(result.status,1,result.stdout+result.stderr);
   assert.match(result.stderr,/unsafe URL/);
 });
+
+ test('rejects browser-normalized active URL schemes',()=>{
+  for (const url of ['java\tscript:alert(1)', 'java\nscript:alert(1)', 'da\rta:text/html,unsafe']) {
+    const result=runWithLink('<a href="'+url+'">Click</a>');
+    assert.equal(result.status,1,result.stdout+result.stderr);
+    assert.match(result.stderr,/unsafe URL/);
+  }
+});
