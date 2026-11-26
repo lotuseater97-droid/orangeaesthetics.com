@@ -70,3 +70,9 @@ test("failed session verification returns unavailable without database work",asy
  const {fn,calls}=handler({verifyStaff:async()=>{throw new Error("identity provider outage")}});
  assert.equal((await send(fn,creation)).status,503);assert.deepEqual(calls,[]);
 });
+
+test("JSON content type accepts charset and rejects lookalikes",async()=>{
+ const {fn}=handler({verifyStaff:async()=>null});
+ for(const type of ["application/json; charset=utf-8","Application/JSON"])assert.equal((await send(fn,creation,{headers:{...headers,"content-type":type}})).status,401);
+ for(const type of ["application/jsonx","application/json evil","text/json"])assert.equal((await send(fn,creation,{headers:{...headers,"content-type":type}})).status,415);
+});
