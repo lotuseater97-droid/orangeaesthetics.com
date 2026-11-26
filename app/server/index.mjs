@@ -57,12 +57,12 @@ const ownerApproval=createOwnerCatalogHttpHandler({approveCatalog,origin:CHECKOU
 // Member order history is wired but deliberately unavailable until real member OIDC is validated.
 const memberHistory=createMemberOrderHistoryHandler({verifySession,query:execute,enabled:false});
 const memberBenefits=createMemberBenefitsHandler({verifySession,query:execute,enabled:false});
-const server=createServer(async(req,res)=>{
+const server=createServer({requestTimeout:15000,headersTimeout:10000,keepAliveTimeout:5000,maxHeaderSize:16384},async(req,res)=>{
  const handler=req.url==="/api/stripe/webhook"?webhook:req.url==="/api/checkout"?checkout:req.url==="/api/owner/catalog-approval"?ownerApproval:req.url==="/api/member/orders"?memberHistory:req.url==="/api/member/benefits"?memberBenefits:null;
  if(!handler){res.writeHead(404);res.end();return;}
  let bytes=0;const chunks=[],limit=req.url==="/api/stripe/webhook"?65536:2048;
  try{
-  for await(const chunk of req){bytes+=chunk.length;if(bytes>limit){res.writeHead(413);res.end();return;}chunks.push(chunk);}
+  for await(const chunk of req){bytes+=chunk.length;if(bytes>limit){res.writeHead(413,{"cache-control":"no-store","connection":"close"});res.end();return;}chunks.push(chunk);}
   const output=await handler({method:req.method,headers:req.headers,rawBody:Buffer.concat(chunks).toString("utf8")});
   res.writeHead(output.status,output.headers);res.end(output.body);
  }catch{res.writeHead(503,{"cache-control":"no-store"});res.end();}
