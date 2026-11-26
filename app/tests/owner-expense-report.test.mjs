@@ -1,0 +1,10 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {summarizeExpenseCategories} from "../lib/owner-expense-report.mjs";
+const period={start:"2026-11-01",end:"2026-11-30"};
+const e={id:"a",category:"Supplies",status:"paid",paid_on:"2026-11-01",amount_cents:500};
+test("groups paid expenses and excludes unpaid or out of period",()=>{const r=summarizeExpenseCategories({...period,expenses:[e,{...e,id:"b",amount_cents:300},{...e,id:"c",category:"Rent",amount_cents:1000},{...e,id:"d",status:"approved"},{...e,id:"e",paid_on:"2026-12-01"}]});assert.equal(r.total_cents,1800);assert.equal(r.count,3);assert.deepEqual(r.categories,[{category:"Rent",amount_cents:1000,count:1},{category:"Supplies",amount_cents:800,count:2}])});
+test("rejects duplicate expenses",()=>assert.throws(()=>summarizeExpenseCategories({...period,expenses:[e,e]}),TypeError));
+test("rejects missing payment date",()=>assert.throws(()=>summarizeExpenseCategories({...period,expenses:[{...e,paid_on:null}]}),RangeError));
+test("empty report",()=>assert.deepEqual(summarizeExpenseCategories(period),{...period,total_cents:0,count:0,categories:[]}));
+test("rejects unknown status",()=>assert.throws(()=>summarizeExpenseCategories({...period,expenses:[{...e,status:"unknown"}]}),RangeError));
