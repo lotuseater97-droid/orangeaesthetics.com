@@ -209,3 +209,6 @@ Corrected double-escaped regex literal in staff-reservation-http.mjs that preven
 
 ### CI regression repair — 2026-11-26
 Checkout run 45900140490 confirmed all application and test modules parse after staff regex repair. Detailed job logs identified owner prototype test incorrectly parsing ES module as classic script. Updated test to use Node module-mode syntax check, preserving other assertions. New CI pending; next verify workflows then continue purchasing controls. No live activation.
+
+### Purchasing controls — 2026-11-26
+Verified previous repair at 86aceb3: business foundation run 45900244362, checkout run 45900244285 and static audit run 45900244323 all succeeded. Hardened purchase reconciliation with mandatory requester/approver identity, eligible purchase states, over-receipt detection and safe integer totals (63154b9); four regression tests (1376f1f). New CI pending. Next independent task: connect purchasing evaluation to synthetic owner interface. No payment or production activation.
