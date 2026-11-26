@@ -1,12 +1,15 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
-import {Script} from "node:vm";
+import {spawnSync} from "node:child_process";
 const html=readFileSync(new URL("../prototypes/owner-interactive.html",import.meta.url),"utf8");
 test("owner prototype JavaScript parses",()=>{
  const scripts=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)];
  assert.equal(scripts.length,1);
- assert.doesNotThrow(()=>new Script(scripts[0][1]));
+ assert.match(scripts[0][0],/<script type="module">/);
+ const result=spawnSync(process.execPath,["--input-type=module","--check"],{input:scripts[0][1],encoding:"utf8"});
+ assert.ifError(result.error);
+ assert.equal(result.status,0,result.stderr);
 });
 test("owner prototype is explicitly synthetic and nonpersistent",()=>{
  assert.match(html,/DEVELOPMENT SANDBOX/);
