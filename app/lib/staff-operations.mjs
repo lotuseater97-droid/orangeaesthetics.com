@@ -17,7 +17,11 @@ export function reviewTimeEntries(entries=[]){
  }
  for(const row of byStaff.values()){
   row.entries.sort((a,b)=>a.start-b.start);
-  for(let i=1;i<row.entries.length;i++)if(row.entries[i].start<row.entries[i-1].end)issues.push({code:"OVERLAPPING_SHIFTS",staff_id:row.staff_id,entry_ids:[row.entries[i-1].id,row.entries[i].id]});
+  let latest=row.entries[0];
+  for(const entry of row.entries.slice(1)){
+   if(entry.start<latest.end)issues.push({code:"OVERLAPPING_SHIFTS",staff_id:row.staff_id,entry_ids:[latest.id,entry.id]});
+   if(entry.end>latest.end)latest=entry;
+  }
  }
  return {staff:[...byStaff.values()].map(({staff_id,total_minutes})=>({staff_id,total_minutes})),issues};
 }
