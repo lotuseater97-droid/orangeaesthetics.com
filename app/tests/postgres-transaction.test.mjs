@@ -41,3 +41,15 @@ test("failed BEGIN discards connection without running work or rollback",async()
  assert.deepEqual(statements,["BEGIN"]);
  assert.deepEqual(releases,[true]);
 });
+
+test("unawaited failed query prevents commit even after settlement",async()=>{
+ const db=fakePool("SELECT fail");
+ await assert.rejects(postgresTransaction(db.pool)(async query=>{query("SELECT fail");await new Promise(resolve=>setImmediate(resolve))}),/failure/);
+ assert.deepEqual(db.calls.map(c=>c[0]),["BEGIN","SELECT fail","ROLLBACK"]);
+});
+test("pending successful query finishes before commit",async()=>{
+ const events=[];let finish;
+ const client={query:async sql=>{events.push(sql);if(sql==="SELECT slow"){await new Promise(resolve=>{finish=resolve});events.push("finished")}},release:()=>events.push("release")};
+ const result=postgresTransaction({connect:async()=>client})(async query=>{query("SELECT slow");return 42});
+ await new Promise(resolve=>setImmediate(resolve));assert.deepEqual(events,["BEGIN","SELECT slow"]);finish();assert.equal(await result,42);assert.deepEqual(events,["BEGIN","SELECT slow","finished","COMMIT","release"]);
+});
