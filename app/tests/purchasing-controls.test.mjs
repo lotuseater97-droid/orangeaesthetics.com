@@ -14,3 +14,8 @@ test("mismatched invoice blocks payment",()=>assert.ok(evaluatePurchase({...vali
 test("overbilling is flagged",()=>assert.ok(evaluatePurchase({...valid,invoices:[{...invoices[0],amount_cents:40000}]}).issues.includes("OVER_BILLED")));
 test("cancelled purchase cannot be paid",()=>assert.equal(evaluatePurchase({...valid,request:{...request,status:"cancelled"}}).ready_for_payment,false));
 test("queue lists pending approvals",()=>assert.equal(purchaseApprovalQueue([request],[{...approval,active_staff:false}]).length,1));
+
+test("missing approver identity cannot approve",()=>assert.equal(evaluatePurchase({...valid,approvals:[{...approval,actor_id:undefined}]}).approval_satisfied,false));
+test("draft cannot be paid",()=>assert.equal(evaluatePurchase({...valid,request:{...request,status:"draft"}}).ready_for_payment,false));
+test("over receipt blocks payment",()=>assert.ok(evaluatePurchase({...valid,receipts:[{...receipts[0],amount_cents:40000}]}).issues.includes("OVER_RECEIVED")));
+test("receipt overflow rejected",()=>assert.throws(()=>evaluatePurchase({...valid,receipts:[{...receipts[0],amount_cents:Number.MAX_SAFE_INTEGER},receipts[0]]}),RangeError));
