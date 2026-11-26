@@ -431,3 +431,6 @@ Implemented pure inclusive business-local date range financial summaries in `app
 
 ### Independent inventory review — 2026-11-26
 Improved existing low-stock and reorder engine: grouped movements for efficient review, reject duplicate movement IDs and invalid calendar dates, protect stock and reorder arithmetic from overflow (22fdf53). Four regression tests added (6a853e2). CI pending; no live inventory or clinical use activated. Next independent task: expense category reporting and dashboard integration with synthetic data.
+
+### Owner expense reporting — 2026-11-26
+Added paid expense category summaries by inclusive payment date, with category totals, counts, duplicate rejection and existing safe-cent calculations (593be59); five synthetic tests (e5014b5). Cash-basis reporting deliberately excludes approved but unpaid expenses; trusted adapter must map paid_on and status from authoritative records. CI pending; no live data or activation. Next independent task: integrate reporting modules into synthetic owner dashboard.
