@@ -443,3 +443,6 @@ Connected existing app/prototypes/owner-interactive.html finance view to shared 
 
 ### Staff reservation syntax repair — 2026-11-26
 Corrected double-escaped regex literal in staff-reservation-http.mjs that prevented module parsing (86d1c10); added content-type regression coverage. CI verification pending. Staff endpoint remains disabled by default. Next: verify full checkout suite and diagnose remaining Worker security failures.
+
+### CI regression repair — 2026-11-26
+Checkout run 45900140490 confirmed all application and test modules parse after staff regex repair. Detailed job logs identified owner prototype test incorrectly parsing ES module as classic script. Updated test to use Node module-mode syntax check, preserving other assertions. New CI pending; next verify workflows then continue purchasing controls. No live activation.
