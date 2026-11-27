@@ -497,3 +497,6 @@ Added sample full-day leave requests, approval/rejection, approval blocked by ex
 
 ### Calendar absence display — 2026-11-26
 Approved leave projected onto weekly/monthly calendar dates with duplicate employee suppression and separate visual labels (e7387ac, a6b11be). Pending/rejected requests excluded. Regression assertion committed; CI/browser QA pending. Next staff self-service integration. Synthetic only.
+
+### Employee self-service — 2026-11-26
+Added sample identity switching, individual shift and leave views, and employee leave submission into shared owner approval queue (1f376a4). Same in-memory sandbox, explicitly not authentication or access control. Regression assertion committed; execution/browser QA pending. Next clock-in/out prototype and authenticated adapter integration.
