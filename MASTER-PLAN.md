@@ -479,3 +479,6 @@ Added synthetic shift entry, shared time review validation, overlap rejection an
 
 ### Pacific staff scheduling — 2026-11-26
 Added America/Los_Angeles wall-clock conversion, UTC storage and local display (8b60ac3, d741cc5). Ambiguous fall-back and nonexistent spring-forward inputs rejected rather than guessed. Regression tests committed; CI/browser QA pending. Next shift editing/cancellation and weekly calendar. Synthetic only.
+
+### Shift editing and cancellation — 2026-11-26
+Added Pacific-time shift editing, reason-required cancellation, validation against the proposed schedule and in-memory before/after history (c8e6921). Cancelled shifts excluded from planned hours. Regression assertions committed; CI/browser verification pending. Next weekly calendar filtering and availability. No persistent audit or live staff records.
