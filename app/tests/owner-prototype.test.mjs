@@ -42,3 +42,10 @@ test("purchase demo records independent partial amounts",()=>{
  assert.match(html,/p\[to\]\.push\(cents\)/);
  assert.doesNotMatch(html,/p\.received=true|p\.invoiced=true/);
 });
+
+test("purchasing uses inline forms and displays recorded amounts",()=>{
+ assert.match(html,/form data-purchase=/);
+ assert.match(html,/form\.elements\.amount\.value/);
+ assert.match(html,/purchaseForm\(p\)/);
+ assert.doesNotMatch(html,/window\.prompt/);
+});
