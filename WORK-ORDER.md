@@ -304,3 +304,6 @@ Added sample effective-dated hourly compensation records in integer cents, manda
 
 ### Base labor cost estimates — 2026-11-26
 Added scheduled and completed actual base wage estimates, historical rate lookup, variance and unresolved rate guards, with owner reporting period integration (1b381e2, e2d2ad7). Excludes overtime, premiums, taxes and benefits; rate changes spanning a session require review. Tests committed; execution/browser QA pending. Next aggregate reporting and payroll rules validation.
+
+### Business labor expense totals — 2026-11-26
+Added business-level scheduled and actual base wage totals, variance, known subtotals and missing employee rate indicators; duplicate employee rows rejected (998f1bc, 8eb0887). Tests committed; execution/browser QA pending. Next labor expense CSV and period presets. Synthetic base wage estimates only.
