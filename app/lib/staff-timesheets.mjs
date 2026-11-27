@@ -20,3 +20,17 @@ export function reconcileTimesheet(record,events){
  const missing=record.sessions.filter(s=>!current.has(key(s)));
  return {added,missing,variance_minutes:report.worked_minutes-record.worked_minutes,stale:added.length>0||missing.length>0,clock_status:report.status};
 }
+
+export function proposeTimesheetAmendment(records,id,events,reason){
+ const original=records.find(r=>r.id===id&&r.status==="approved");
+ if(!original||typeof reason!=="string"||!reason.trim()||reason.length>240)throw new Error("Approved timesheet and reason required");
+ if(records.some(r=>r.amends===id&&r.status!=="rejected"))throw new Error("Amendment already exists");
+ const check=reconcileTimesheet(original,events);
+ if(!check.stale||check.clock_status!=="out")throw new Error("Changed completed records and closed clock required");
+ const report=staffHoursReport([original.staff_id],[],events,{start:original.start,end:original.end})[0];
+ return [...records,{id:"TS-"+(records.length+1),staff_id:original.staff_id,start:original.start,end:original.end,status:"pending",amends:id,amendment_reason:reason.trim(),sessions:report.completed.map(s=>({...s})),worked_minutes:report.worked_minutes}];
+}
+export function effectiveApprovedTimesheets(records){
+ const superseded=new Set(records.filter(r=>r.status==="approved"&&r.amends).map(r=>r.amends));
+ return records.filter(r=>r.status==="approved"&&!superseded.has(r.id));
+}
