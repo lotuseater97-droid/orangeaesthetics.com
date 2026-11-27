@@ -25,3 +25,14 @@ export function applyClockCorrection(records,events,id,action,instant,note){
  const effective=[...events,inserted].sort((a,b)=>Date.parse(a.instant)-Date.parse(b.instant));
  return {events:effective,records:records.map(r=>r.id===id?{...r,status:"applied",application_note:note.trim(),inserted}:r)};
 }
+
+export function applyMissingBreak(records,events,id,start,end,note){
+ const request=records.find(r=>r.id===id&&r.status==="accepted-for-correction"&&r.kind==="break");
+ if(!request||typeof note!=="string"||!note.trim()||note.length>240)throw new Error("Accepted break request and audit note required");
+ const a=Date.parse(start),b=Date.parse(end);
+ if(!Number.isFinite(a)||!Number.isFinite(b)||b<=a||businessLocalTime(new Date(a).toISOString()).slice(0,10)!==request.date)throw new Error("Invalid break interval");
+ const inserted=[{staff_id:request.staff_id,action:"break-start",instant:new Date(a).toISOString(),correction_id:id},{staff_id:request.staff_id,action:"break-end",instant:new Date(b).toISOString(),correction_id:id}];
+ const effective=[...events,...inserted].sort((x,y)=>Date.parse(x.instant)-Date.parse(y.instant));
+ let validated=[];for(const e of effective.filter(e=>e.staff_id===request.staff_id))validated=clockEvent(validated,e.staff_id,e.action,e.instant);
+ return {events:effective,records:records.map(r=>r.id===id?{...r,status:"applied",application_note:note.trim(),inserted_break:inserted}:r)};
+}
