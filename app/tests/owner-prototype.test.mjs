@@ -37,8 +37,8 @@ test("purchasing workspace uses shared reconciliation and displays readiness",()
 
 test("purchase demo records independent partial amounts",()=>{
  assert.match(html,/received:\[\],invoiced:\[\]/);
- assert.match(html,/receipts:p\.received\.map/);
- assert.match(html,/invoices:p\.invoiced\.map/);
+ assert.match(html,/receipts:activeAmounts\(p,"received"\)\.map/);
+ assert.match(html,/invoices:activeAmounts\(p,"invoiced"\)\.map/);
  assert.match(html,/p\[to\]\.push\(cents\)/);
  assert.doesNotMatch(html,/p\.received=true|p\.invoiced=true/);
 });
@@ -48,4 +48,15 @@ test("purchasing uses inline forms and displays recorded amounts",()=>{
  assert.match(html,/form\.elements\.amount\.value/);
  assert.match(html,/purchaseForm\(p\)/);
  assert.doesNotMatch(html,/window\.prompt/);
+});
+
+test("purchase corrections preserve originals and exclude voided amounts",()=>{
+ const source=html.match(/const activeAmounts=(.*);/)[1];
+ const activeAmounts=Function("return ("+source+")")();
+ const p={received:[100,200,100],invoiced:[100],corrections:[{kind:"received",index:0,reason:"Duplicate"}]};
+ assert.deepEqual(activeAmounts(p,"received"),[200,100]);
+ assert.deepEqual(activeAmounts(p,"invoiced"),[100]);
+ assert.deepEqual(p.received,[100,200,100]);
+ assert.match(html,/p\.corrections\.push\(/);
+ assert.match(html,/data-correction=/);
 });
