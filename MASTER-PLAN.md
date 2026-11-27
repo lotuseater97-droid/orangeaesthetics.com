@@ -485,3 +485,6 @@ Added Pacific-time shift editing, reason-required cancellation, validation again
 
 ### Weekly staff calendar — 2026-11-26
 Added Monday–Sunday Pacific-date grouping, previous/next week and date navigation, overnight shift display and midnight-exclusive end handling (3f38808, 3a7554a). Four regression tests committed. Synthetic only; CI/browser verification pending. Next monthly calendar and employee availability. Weekly display does not change all-schedule hours totals.
+
+### Monthly staff calendar — 2026-11-26
+Monthly grouping, week/month toggle, adjacent-month shading and clamped navigation implemented (f86114b, 6a4233c). Added leap-year and rollover tests; execution and browser QA pending. Next employee availability and time-off requests. Synthetic records only.
