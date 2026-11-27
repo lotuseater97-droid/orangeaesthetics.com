@@ -527,3 +527,6 @@ Added audited missing unpaid break insertion with two linked events, chronology 
 
 ### Existing timestamp correction — 2026-11-26
 Added audited replacement of an existing employee clock event with original and replacement snapshots, validated chronology and owner form for accepted other requests (162da6a, 32a236c). Tests committed; execution/browser QA pending. Next approved timesheet amendments and break removal. Synthetic only.
+
+### Erroneous break removal — 2026-11-26
+Added removal of completed break pairs from effective clock history with original pair retained in correction audit, required note, request date and chronology checks, and owner controls (363de27, dbaef8e). Tests committed; execution/browser QA pending. Next approved timesheet amendments. Synthetic only.
