@@ -488,3 +488,6 @@ Added Monday–Sunday Pacific-date grouping, previous/next week and date navigat
 
 ### Monthly staff calendar — 2026-11-26
 Monthly grouping, week/month toggle, adjacent-month shading and clamped navigation implemented (f86114b, 6a4233c). Added leap-year and rollover tests; execution and browser QA pending. Next employee availability and time-off requests. Synthetic records only.
+
+### Staff availability — 2026-11-26
+Recurring Pacific weekday windows, add/remove controls, existing conflict count and new/edit shift checks committed (ea1349f, eddcb95). Missing rules mean unrestricted; configured staff require full coverage. Four regression tests committed; execution/browser QA pending. Next time-off requests and approval. Synthetic only.
