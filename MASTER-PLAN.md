@@ -458,3 +458,6 @@ Implemented independent multiple receipt and invoice amounts in synthetic owner 
 
 ### Verified handover — 2026-11-26
 All completed code is committed. At 86ef5b1, business foundation run 45901018467, checkout integration run 45901018490 and static audit run 45901018541 succeeded; latest work-order static audit 45901028809 succeeded. No additional implementation occurred after partial purchasing. Next: replace browser prompts with inline validated receipt/invoice forms, transaction history and correction records; test and commit. Then continue vendor summaries, staff scheduling, appointment management, membership credits and QR check-in within approved scope. Browser QA and production integrations remain pending. Defer approval-dependent tasks; do not activate live payments, clinical workflows or PHI storage. Each continuation must fetch current repository files and latest commits, implement actual code, test, commit and update both plans. If blocked, attempt recovery and report actual failure rather than assume access is unavailable.
+
+### Inline purchasing entry — 2026-11-26
+Committed inline receipt/invoice forms and per-order amount history (6038e38). Synthetic only; correction records, browser QA and CI verification remain pending. Next: append-only correction controls and vendor summaries. No live activation.
