@@ -292,3 +292,6 @@ Added removal of completed break pairs from effective clock history with origina
 
 ### Approved timesheet amendments — 2026-11-26
 Added versioned amendment proposals for stale approved timesheets, mandatory reason, duplicate prevention, original snapshot preservation and effective approved version selection (7e60ced, 447083f). Pending amendments do not supersede approvals. Tests committed; execution/browser QA pending. Next approved-hours export with reconciliation safeguards. Synthetic only.
+
+### Approved hours export — 2026-11-26
+Added operational CSV download of effective approved timesheets with date validation, partial-period, pending-review and stale-snapshot guards (9fac318, 2de8dff). Does not establish completeness of all employee hours or calculate payroll. Tests committed; execution/browser QA pending. Next completeness checks and historical pay rates.
