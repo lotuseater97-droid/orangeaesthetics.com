@@ -259,3 +259,6 @@ Approved leave projected onto weekly/monthly calendar dates with duplicate emplo
 
 ### Employee self-service — 2026-11-26
 Added sample identity switching, individual shift and leave views, and employee leave submission into shared owner approval queue (1f376a4). Same in-memory sandbox, explicitly not authentication or access control. Regression assertion committed; execution/browser QA pending. Next clock-in/out prototype and authenticated adapter integration.
+
+### Staff time clock — 2026-11-26
+Added sample append-only clock events, clock in/out, unpaid breaks, transition validation and worked-time history (f885625, 093cdde). Tests committed; execution/browser QA pending. Uses browser time and synthetic in-memory records, not payroll or production timekeeping. Next owner actual-hours review and timesheet submission.
