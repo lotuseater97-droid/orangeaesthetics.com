@@ -7,3 +7,17 @@ export function weeklySchedule(date,shifts){
  const normalized=shifts.map(s=>{const a=Date.parse(s.clock_in),b=Date.parse(s.clock_out);if(!Number.isFinite(a)||!Number.isFinite(b)||b<=a)throw new RangeError("Invalid shift");return {...s,localStart:businessLocalTime(a),localEnd:businessLocalTime(b),lastDate:businessLocalTime(b-1).slice(0,10)}});
  return Array.from({length:7},(_,i)=>{const date=moveCalendarDate(start,i);return {date,shifts:normalized.filter(s=>s.localStart.slice(0,10)<=date&&s.lastDate>=date).sort((a,b)=>Date.parse(a.clock_in)-Date.parse(b.clock_in))}});
 }
+
+export function moveCalendarMonth(date,months){
+ const d=dateValue(date);
+ if(!Number.isSafeInteger(months)||Math.abs(months)>120)throw new RangeError("Invalid month movement");
+ const day=d.getUTCDate();d.setUTCDate(1);d.setUTCMonth(d.getUTCMonth()+months);
+ const end=new Date(d);end.setUTCMonth(end.getUTCMonth()+1,0);
+ d.setUTCDate(Math.min(day,end.getUTCDate()));return d.toISOString().slice(0,10);
+}
+export function monthlySchedule(date,shifts){
+ dateValue(date);const first=date.slice(0,7)+"-01",next=moveCalendarMonth(first,1);
+ const weeks=[];let cursor=first;
+ do{const week=weeklySchedule(cursor,shifts);weeks.push(week.map(d=>({...d,inMonth:d.date>=first&&d.date<next})));cursor=moveCalendarDate(week[6].date,1)}while(cursor<next);
+ return weeks;
+}
