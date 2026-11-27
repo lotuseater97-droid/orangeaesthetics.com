@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {requestClockCorrection,reviewClockCorrection,applyClockCorrection,applyMissingBreak,replaceClockTimestamp} from "../lib/staff-clock-corrections.mjs";
+import {requestClockCorrection,reviewClockCorrection,applyClockCorrection,applyMissingBreak,replaceClockTimestamp,removeRecordedBreak} from "../lib/staff-clock-corrections.mjs";
 const input={date:"2026-11-26",kind:"missed-out",reason:"Forgot to clock out"};
 test("request and review preserve original records",()=>{
  const pending=requestClockCorrection([],"a",input);
@@ -39,4 +39,12 @@ test("timestamp replacement retains original audit snapshot and validates sequen
  assert.equal(result.records[0].original.instant,original[0].instant);
  assert.equal(result.events[0].instant,"2026-11-26T16:30:00.000Z");
  assert.throws(()=>replaceClockTimestamp(accepted,original,"CR-1",original[0].instant,"2026-11-27T02:00:00Z","Invalid"));
+});
+
+test("erroneous break removal retains both original events in audit record",()=>{
+ const accepted=reviewClockCorrection(requestClockCorrection([],"a",{...input,kind:"break"}),"CR-1","accepted-for-correction","Verified");
+ const original=["in","break-start","break-end","out"].map((action,i)=>({staff_id:"a",action,instant:["2026-11-26T17:00:00Z","2026-11-26T20:00:00Z","2026-11-26T20:30:00Z","2026-11-27T01:00:00Z"][i]}));
+ const result=removeRecordedBreak(accepted,original,"CR-1",original[1].instant,"Worked through break");
+ assert.equal(original.length,4);assert.equal(result.events.length,2);assert.deepEqual(result.records[0].removed_break,original.slice(1,3));
+ assert.throws(()=>removeRecordedBreak(result.records,result.events,"CR-1",original[1].instant,"Again"));
 });
