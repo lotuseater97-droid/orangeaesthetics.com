@@ -482,3 +482,6 @@ Added America/Los_Angeles wall-clock conversion, UTC storage and local display (
 
 ### Shift editing and cancellation — 2026-11-26
 Added Pacific-time shift editing, reason-required cancellation, validation against the proposed schedule and in-memory before/after history (c8e6921). Cancelled shifts excluded from planned hours. Regression assertions committed; CI/browser verification pending. Next weekly calendar filtering and availability. No persistent audit or live staff records.
+
+### Weekly staff calendar — 2026-11-26
+Added Monday–Sunday Pacific-date grouping, previous/next week and date navigation, overnight shift display and midnight-exclusive end handling (3f38808, 3a7554a). Four regression tests committed. Synthetic only; CI/browser verification pending. Next monthly calendar and employee availability. Weekly display does not change all-schedule hours totals.
