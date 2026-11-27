@@ -14,3 +14,13 @@ export function leaveConflicts(shifts,requests){
  return requests.filter(r=>r.status==="approved"&&r.staff_id===s.staff_id&&r.start<=last&&r.end>=first).map(r=>({shift_id:s.id,leave_id:r.id,code:"APPROVED_LEAVE"}));
  });
 }
+
+export function calendarAbsences(days,requests){
+ if(!Array.isArray(days))throw new TypeError("Expected calendar days");
+ leaveConflicts([],requests);
+ return days.map(day=>{
+ if(!date(day.date))throw new TypeError("Invalid calendar date");
+ const absentStaff=[...new Set(requests.filter(r=>r.status==="approved"&&r.start<=day.date&&r.end>=day.date).map(r=>r.staff_id))].sort();
+ return {...day,absentStaff};
+ });
+}
