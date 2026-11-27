@@ -236,3 +236,6 @@ Implemented read-only vendor invoice balances from scoped settled payment record
 2026-11-26: Vendor settlement demo committed (e6456e0), with payment history and invoice void protection. Next staff scheduling workspace; CI/browser verification pending. No live activation.
 
 2026-11-26: Staff schedule prototype committed (22c3580). Next business timezone, shift edits/cancellation and calendar filtering; CI/browser QA pending.
+
+### Pacific staff scheduling — 2026-11-26
+Added America/Los_Angeles wall-clock conversion, UTC storage and local display (8b60ac3, d741cc5). Ambiguous fall-back and nonexistent spring-forward inputs rejected rather than guessed. Regression tests committed; CI/browser QA pending. Next shift editing/cancellation and weekly calendar. Synthetic only.
