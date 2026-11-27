@@ -298,3 +298,6 @@ Added operational CSV download of effective approved timesheets with date valida
 
 ### Approved hours export completeness — 2026-11-26
 Export now checks every employee represented in clock history for uncovered completed sessions, duplicate approved session coverage and open clocks (e391402). Open clocks block export conservatively even outside the selected period. Cannot detect unrecorded work. Regression tests committed; execution/browser QA pending. Next historical pay-rate configuration.
+
+### Employee hourly rate history — 2026-11-26
+Added sample effective-dated hourly compensation records in integer cents, mandatory reason, duplicate-date prevention and historical lookup, plus owner form (062b9eb, 487fe29). No real pay rates entered. Tests committed; execution/browser QA pending. Next base labor cost estimates, with overnight/rate-boundary and overtime limitations explicit.
