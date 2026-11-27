@@ -554,3 +554,6 @@ Added employee and business base wage expense CSV, reporting period, incomplete 
 
 ### Financial reporting presets — 2026-11-26
 Pacific week/month/quarter/year presets implemented (812c8f4), integrated with hours and labor cost reporting and existing labor CSV period (8047322). Calendar boundary regression tests committed. Execution/browser QA pending; prioritize verification backlog before further payroll features.
+
+### CI coverage repair — 2026-11-26
+Verified business foundation run 45935352742 passed 288/288, checkout 45935352847 and static audit 45935361608 passed. Logs revealed fixed test allowlist omitted recent modules. Changed workflow to app/tests/*.test.mjs and prototype path triggers (d91c8ea). Expanded run not yet verified. Next inspect failures and repair before payroll expansion.
