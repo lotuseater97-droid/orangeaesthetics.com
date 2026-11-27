@@ -560,3 +560,6 @@ Verified business foundation run 45935352742 passed 288/288, checkout 4593535284
 
 ### Expanded CI dependency repair — 2026-11-26
 Run 45935444449: 670 tests, 660 passed, 9 failed, 1 skipped. Authentication module and seven startup rejection failures indicate missing dependencies. Added npm install --prefix app --ignore-scripts and package/server change triggers (4b3fe20). No lockfile currently present; reproducible lockfile and rerun verification pending. No security checks weakened.
+
+### Expanded CI verified — 2026-11-26
+GitHub Actions run 45935535061 at 4b3fe20: 671 tests, 670 passed, zero failures, one explicit opt-in Neon rollback test skipped. Dependency repair resolved all nine failures. Static audit 45935548137 passed. Browser interaction QA, dependency lockfile and live integration remain pending.
