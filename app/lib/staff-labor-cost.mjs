@@ -23,3 +23,14 @@ export function baseLaborCost(staffIds,shifts,events,rates,period=null){
  return {staff_id:r.staff_id,scheduled,actual,variance_cents:scheduled.cents===null||actual.cents===null?null:actual.cents-scheduled.cents};
  });
 }
+
+export function summarizeLaborCosts(rows){
+ if(new Set(rows.map(r=>r.staff_id)).size!==rows.length)throw new Error("Duplicate employee");
+ const summarize=kind=>{
+ const missing=rows.filter(r=>r[kind].cents===null).map(r=>r.staff_id);
+ const known=rows.reduce((sum,r)=>sum+(r[kind].cents??0),0);
+ return {known_cents:known,total_cents:missing.length?null:known,missing_staff:missing};
+ };
+ const scheduled=summarize("scheduled"),actual=summarize("actual");
+ return {scheduled,actual,employee_count:rows.length,variance_cents:scheduled.total_cents===null||actual.total_cents===null?null:actual.total_cents-scheduled.total_cents};
+}
