@@ -548,3 +548,6 @@ Added scheduled and completed actual base wage estimates, historical rate lookup
 
 ### Business labor expense totals — 2026-11-26
 Added business-level scheduled and actual base wage totals, variance, known subtotals and missing employee rate indicators; duplicate employee rows rejected (998f1bc, 8eb0887). Tests committed; execution/browser QA pending. Next labor expense CSV and period presets. Synthetic base wage estimates only.
+
+### Labor expense CSV — 2026-11-26
+Added employee and business base wage expense CSV, reporting period, incomplete indicators and known subtotals, plus owner download (a7ae3c7, 6e57450). Not payroll; missing costs remain blank. Tests committed; execution/browser QA pending. Next reporting presets and verification backlog.
