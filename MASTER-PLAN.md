@@ -470,3 +470,6 @@ Implemented organization/vendor grouped commitments, pending approvals, received
 
 ### Accounts payable projection — 2026-11-26
 Implemented read-only vendor invoice balances from scoped settled payment records (0b24fa3), five regression tests (2b65412), and synthetic purchasing dashboard balance view. Demo has no payment records yet; next add simulated settlement entry and staff scheduling. No live payment execution, database migration, or verified CI/browser run.
+
+### Vendor settlement interface — 2026-11-26
+Synthetic payment entry, partial settlement, balance validation, payment history and paid-invoice void protection committed (e6456e0). No actual payment execution; payment reversals and persistent records remain unimplemented. Next independent task: staff scheduling workspace. CI/browser verification pending.
