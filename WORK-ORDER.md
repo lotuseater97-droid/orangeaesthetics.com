@@ -234,3 +234,5 @@ Implemented organization/vendor grouped commitments, pending approvals, received
 Implemented read-only vendor invoice balances from scoped settled payment records (0b24fa3), five regression tests (2b65412), and synthetic purchasing dashboard balance view. Demo has no payment records yet; next add simulated settlement entry and staff scheduling. No live payment execution, database migration, or verified CI/browser run.
 
 2026-11-26: Vendor settlement demo committed (e6456e0), with payment history and invoice void protection. Next staff scheduling workspace; CI/browser verification pending. No live activation.
+
+2026-11-26: Staff schedule prototype committed (22c3580). Next business timezone, shift edits/cancellation and calendar filtering; CI/browser QA pending.
