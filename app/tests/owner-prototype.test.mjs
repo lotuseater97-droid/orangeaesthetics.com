@@ -84,3 +84,5 @@ test("shift changes preserve history and validate proposed schedule",()=>{
  assert.match(html,/state\.shiftHistory\.push/);
  assert.match(html,/Shift change history/);
 });
+
+test("self-service demo scopes schedule and leave to selected sample identity",()=>{assert.match(html,/state\.shifts\.filter\(e=>e\.staff_id===demoStaff\)/);assert.match(html,/state\.leave\.filter\(e=>e\.staff_id===demoStaff\)/);assert.match(html,/staff_id:demoStaff/);assert.match(html,/not access control/);});
