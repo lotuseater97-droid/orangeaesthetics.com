@@ -473,3 +473,6 @@ Implemented read-only vendor invoice balances from scoped settled payment record
 
 ### Vendor settlement interface — 2026-11-26
 Synthetic payment entry, partial settlement, balance validation, payment history and paid-invoice void protection committed (e6456e0). No actual payment execution; payment reversals and persistent records remain unimplemented. Next independent task: staff scheduling workspace. CI/browser verification pending.
+
+### Staff scheduling workspace — 2026-11-26
+Added synthetic shift entry, shared time review validation, overlap rejection and scheduled hours totals (22c3580). Explicit UTC prototype, not local business calendar or payroll. Regression assertions committed; CI/browser verification pending. Next: business timezone handling, shift edits/cancellation and calendar filtering. No live staff records.
