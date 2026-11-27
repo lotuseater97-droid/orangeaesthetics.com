@@ -268,3 +268,6 @@ Added employee clock status, all-record scheduled/completed hours and variance, 
 
 ### Staff reporting period — 2026-11-26
 Added inclusive Pacific start-date filters and all-record reset for scheduled/completed hours and session detail (a261b61, 6a070df). Current status remains unfiltered. Overnight sessions assigned entirely to start date for operational reporting only, not payroll allocation. Regression test committed; CI/browser QA pending. Next timesheet submission and approval.
+
+### Timesheet submission and review — 2026-11-26
+Added employee completed-session snapshots, overlap prevention, owner approval/rejection with reason and final decision protection (e173ad8, 0909fc3). Rejected periods may be resubmitted. Tests committed; execution/browser QA pending. Next snapshot detail, correction workflow and reconciliation of late clock entries. Synthetic only; not payroll-ready.
