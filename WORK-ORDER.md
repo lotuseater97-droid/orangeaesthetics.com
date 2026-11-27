@@ -283,3 +283,6 @@ Accepted missed-in/out requests can insert a linked corrected event using Pacifi
 
 ### Missing break correction — 2026-11-26
 Added audited missing unpaid break insertion with two linked events, chronology validation, owner Pacific-time inputs and duplicate application protection (4679c03, 7b8cbdc). Existing break replacement/removal and approved-timesheet amendments remain pending. Tests committed; execution/browser QA pending. Synthetic only.
+
+### Existing timestamp correction — 2026-11-26
+Added audited replacement of an existing employee clock event with original and replacement snapshots, validated chronology and owner form for accepted other requests (162da6a, 32a236c). Tests committed; execution/browser QA pending. Next approved timesheet amendments and break removal. Synthetic only.
