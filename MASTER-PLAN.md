@@ -467,3 +467,6 @@ Synthetic owner dashboard now records reasoned voids separately from original re
 
 ### Vendor purchasing summaries — 2026-11-26
 Implemented organization/vendor grouped commitments, pending approvals, received/invoiced totals, unreceived amounts and ready-for-review amounts (82026ed, 95d2adf), with regression tests. Synthetic dashboard only. Invoice totals are not unpaid balances; actual AP requires vendor payment records. CI/browser verification pending. Next: vendor payment record design and staff scheduling interface. No production activation.
+
+### Accounts payable projection — 2026-11-26
+Implemented read-only vendor invoice balances from scoped settled payment records (0b24fa3), five regression tests (2b65412), and synthetic purchasing dashboard balance view. Demo has no payment records yet; next add simulated settlement entry and staff scheduling. No live payment execution, database migration, or verified CI/browser run.
