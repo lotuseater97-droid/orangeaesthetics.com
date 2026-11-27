@@ -262,3 +262,6 @@ Added sample identity switching, individual shift and leave views, and employee 
 
 ### Staff time clock — 2026-11-26
 Added sample append-only clock events, clock in/out, unpaid breaks, transition validation and worked-time history (f885625, 093cdde). Tests committed; execution/browser QA pending. Uses browser time and synthetic in-memory records, not payroll or production timekeeping. Next owner actual-hours review and timesheet submission.
+
+### Owner timekeeping oversight — 2026-11-26
+Added employee clock status, all-record scheduled/completed hours and variance, and completed session details (4949546, 8ba7ca6). Open sessions excluded from worked totals. Regression tests committed; execution/browser QA pending. Next pay-period filtering and timesheet submission. Synthetic only; not payroll or attendance determination.
