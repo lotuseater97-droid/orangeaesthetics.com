@@ -280,3 +280,6 @@ Added employee issue/date/explanation submission, personal status, owner accepta
 
 ### Missed punch application — 2026-11-26
 Accepted missed-in/out requests can insert a linked corrected event using Pacific local time and mandatory audit note; original events retained, full staff chronology validated, duplicate application rejected (dc46dcf, 64cf246). Existing timesheet reconciliation detects changed completed sessions. Break/other corrections and approved-timesheet amendments remain pending. Tests committed; execution/browser QA pending. Synthetic only.
+
+### Missing break correction — 2026-11-26
+Added audited missing unpaid break insertion with two linked events, chronology validation, owner Pacific-time inputs and duplicate application protection (4679c03, 7b8cbdc). Existing break replacement/removal and approved-timesheet amendments remain pending. Tests committed; execution/browser QA pending. Synthetic only.
