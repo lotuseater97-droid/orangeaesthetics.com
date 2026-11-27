@@ -226,3 +226,6 @@ All completed code is committed. At 86ef5b1, business foundation run 45901018467
 
 ### Purchasing corrections — 2026-11-26
 Synthetic owner dashboard now records reasoned voids separately from original receipts/invoices, excludes voided entries from reconciliation, and rejects duplicate voids (b902419). Regression coverage committed (5fb1d6d); CI and browser QA pending. Next independent task: vendor-level purchasing summaries. No durable database audit or live payment activation.
+
+### Vendor purchasing summaries — 2026-11-26
+Implemented organization/vendor grouped commitments, pending approvals, received/invoiced totals, unreceived amounts and ready-for-review amounts (82026ed, 95d2adf), with regression tests. Synthetic dashboard only. Invoice totals are not unpaid balances; actual AP requires vendor payment records. CI/browser verification pending. Next: vendor payment record design and staff scheduling interface. No production activation.
