@@ -530,3 +530,6 @@ Added audited replacement of an existing employee clock event with original and 
 
 ### Erroneous break removal — 2026-11-26
 Added removal of completed break pairs from effective clock history with original pair retained in correction audit, required note, request date and chronology checks, and owner controls (363de27, dbaef8e). Tests committed; execution/browser QA pending. Next approved timesheet amendments. Synthetic only.
+
+### Approved timesheet amendments — 2026-11-26
+Added versioned amendment proposals for stale approved timesheets, mandatory reason, duplicate prevention, original snapshot preservation and effective approved version selection (7e60ced, 447083f). Pending amendments do not supersede approvals. Tests committed; execution/browser QA pending. Next approved-hours export with reconciliation safeguards. Synthetic only.
