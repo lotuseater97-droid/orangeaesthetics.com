@@ -301,3 +301,6 @@ Export now checks every employee represented in clock history for uncovered comp
 
 ### Employee hourly rate history — 2026-11-26
 Added sample effective-dated hourly compensation records in integer cents, mandatory reason, duplicate-date prevention and historical lookup, plus owner form (062b9eb, 487fe29). No real pay rates entered. Tests committed; execution/browser QA pending. Next base labor cost estimates, with overnight/rate-boundary and overtime limitations explicit.
+
+### Base labor cost estimates — 2026-11-26
+Added scheduled and completed actual base wage estimates, historical rate lookup, variance and unresolved rate guards, with owner reporting period integration (1b381e2, e2d2ad7). Excludes overtime, premiums, taxes and benefits; rate changes spanning a session require review. Tests committed; execution/browser QA pending. Next aggregate reporting and payroll rules validation.
