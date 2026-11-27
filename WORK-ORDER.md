@@ -310,3 +310,6 @@ Added business-level scheduled and actual base wage totals, variance, known subt
 
 ### Labor expense CSV — 2026-11-26
 Added employee and business base wage expense CSV, reporting period, incomplete indicators and known subtotals, plus owner download (a7ae3c7, 6e57450). Not payroll; missing costs remain blank. Tests committed; execution/browser QA pending. Next reporting presets and verification backlog.
+
+### Financial reporting presets — 2026-11-26
+Pacific week/month/quarter/year presets implemented (812c8f4), integrated with hours and labor cost reporting and existing labor CSV period (8047322). Calendar boundary regression tests committed. Execution/browser QA pending; prioritize verification backlog before further payroll features.
