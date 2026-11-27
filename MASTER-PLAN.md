@@ -476,3 +476,6 @@ Synthetic payment entry, partial settlement, balance validation, payment history
 
 ### Staff scheduling workspace — 2026-11-26
 Added synthetic shift entry, shared time review validation, overlap rejection and scheduled hours totals (22c3580). Explicit UTC prototype, not local business calendar or payroll. Regression assertions committed; CI/browser verification pending. Next: business timezone handling, shift edits/cancellation and calendar filtering. No live staff records.
+
+### Pacific staff scheduling — 2026-11-26
+Added America/Los_Angeles wall-clock conversion, UTC storage and local display (8b60ac3, d741cc5). Ambiguous fall-back and nonexistent spring-forward inputs rejected rather than guessed. Regression tests committed; CI/browser QA pending. Next shift editing/cancellation and weekly calendar. Synthetic only.
