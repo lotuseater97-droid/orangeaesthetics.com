@@ -68,3 +68,11 @@ test("sample vendor settlements are bounded by invoice balance and block invoice
  assert.match(html,/Cannot void an invoice with a recorded settlement/);
  assert.match(html,/Payment history/);
 });
+
+test("staff schedule uses shared overlap and break validation",()=>{
+ assert.match(html,/data-view="staff"/);
+ assert.match(html,/id="new-shift"/);
+ assert.match(html,/reviewTimeEntries\(\[\.\.\.state\.shifts,entry\]\)/);
+ assert.match(html,/result\.issues\.length/);
+ assert.match(html,/Scheduled hours/);
+});
