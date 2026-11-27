@@ -36,3 +36,17 @@ export function applyMissingBreak(records,events,id,start,end,note){
  let validated=[];for(const e of effective.filter(e=>e.staff_id===request.staff_id))validated=clockEvent(validated,e.staff_id,e.action,e.instant);
  return {events:effective,records:records.map(r=>r.id===id?{...r,status:"applied",application_note:note.trim(),inserted_break:inserted}:r)};
 }
+
+export function replaceClockTimestamp(records,events,id,originalInstant,newInstant,note){
+ const request=records.find(r=>r.id===id&&r.status==="accepted-for-correction"&&["other","break"].includes(r.kind));
+ if(!request||typeof note!=="string"||!note.trim()||note.length>240)throw new Error("Accepted request and audit note required");
+ const matches=events.filter(e=>e.staff_id===request.staff_id&&e.instant===originalInstant);
+ const time=Date.parse(newInstant);
+ if(matches.length!==1||!Number.isFinite(time)||time===Date.parse(originalInstant)||businessLocalTime(originalInstant).slice(0,10)!==request.date)throw new Error("Invalid original or replacement timestamp");
+ const original=matches[0];
+ if(request.kind==="break"&&!original.action.startsWith("break-"))throw new Error("Break event required");
+ const replacement={...original,instant:new Date(time).toISOString(),correction_id:id};
+ const effective=events.map(e=>e===original?replacement:e).sort((a,b)=>Date.parse(a.instant)-Date.parse(b.instant));
+ let validated=[];for(const e of effective.filter(e=>e.staff_id===request.staff_id))validated=clockEvent(validated,e.staff_id,e.action,e.instant);
+ return {events:effective,records:records.map(r=>r.id===id?{...r,status:"applied",application_note:note.trim(),original:{...original},replacement}:r)};
+}
