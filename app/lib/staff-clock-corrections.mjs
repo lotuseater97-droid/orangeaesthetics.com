@@ -50,3 +50,15 @@ export function replaceClockTimestamp(records,events,id,originalInstant,newInsta
  let validated=[];for(const e of effective.filter(e=>e.staff_id===request.staff_id))validated=clockEvent(validated,e.staff_id,e.action,e.instant);
  return {events:effective,records:records.map(r=>r.id===id?{...r,status:"applied",application_note:note.trim(),original:{...original},replacement}:r)};
 }
+
+export function removeRecordedBreak(records,events,id,startInstant,note){
+ const request=records.find(r=>r.id===id&&r.status==="accepted-for-correction"&&r.kind==="break");
+ if(!request||typeof note!=="string"||!note.trim()||note.length>240)throw new Error("Accepted break request and audit note required");
+ const own=events.filter(e=>e.staff_id===request.staff_id);
+ const index=own.findIndex(e=>e.action==="break-start"&&e.instant===startInstant);
+ if(index<0||own[index+1]?.action!=="break-end"||businessLocalTime(startInstant).slice(0,10)!==request.date)throw new Error("Completed break on request date required");
+ const removed=[own[index],own[index+1]];
+ const effective=events.filter(e=>!removed.includes(e));
+ let validated=[];for(const e of effective.filter(e=>e.staff_id===request.staff_id))validated=clockEvent(validated,e.staff_id,e.action,e.instant);
+ return {events:effective,records:records.map(r=>r.id===id?{...r,status:"applied",application_note:note.trim(),removed_break:removed.map(e=>({...e}))}:r)};
+}
