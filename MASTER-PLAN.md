@@ -512,3 +512,6 @@ Added inclusive Pacific start-date filters and all-record reset for scheduled/co
 
 ### Timesheet submission and review — 2026-11-26
 Added employee completed-session snapshots, overlap prevention, owner approval/rejection with reason and final decision protection (e173ad8, 0909fc3). Rejected periods may be resubmitted. Tests committed; execution/browser QA pending. Next snapshot detail, correction workflow and reconciliation of late clock entries. Synthetic only; not payroll-ready.
+
+### Timesheet reconciliation — 2026-11-26
+Added expandable submitted session details, reconciliation against current completed clock records, added/missing session counts and variance, and stale approval guard in owner demo (4b3f78d, 9179922). Original snapshot preserved; stale pending records must be rejected and resubmitted. Regression test committed; CI/browser QA pending. Next correction request workflow. Synthetic only.
