@@ -518,3 +518,6 @@ Added expandable submitted session details, reconciliation against current compl
 
 ### Clock correction requests — 2026-11-26
 Added employee issue/date/explanation submission, personal status, owner acceptance/rejection with note (7f69fe9, fc07295). Acceptance queues correction only; no hours changed. Tests committed; execution/browser QA pending. Next audited application of corrected events and timesheet reconciliation. Synthetic only.
+
+### Missed punch application — 2026-11-26
+Accepted missed-in/out requests can insert a linked corrected event using Pacific local time and mandatory audit note; original events retained, full staff chronology validated, duplicate application rejected (dc46dcf, 64cf246). Existing timesheet reconciliation detects changed completed sessions. Break/other corrections and approved-timesheet amendments remain pending. Tests committed; execution/browser QA pending. Synthetic only.
