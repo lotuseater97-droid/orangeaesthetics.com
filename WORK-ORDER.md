@@ -274,3 +274,6 @@ Added employee completed-session snapshots, overlap prevention, owner approval/r
 
 ### Timesheet reconciliation — 2026-11-26
 Added expandable submitted session details, reconciliation against current completed clock records, added/missing session counts and variance, and stale approval guard in owner demo (4b3f78d, 9179922). Original snapshot preserved; stale pending records must be rejected and resubmitted. Regression test committed; CI/browser QA pending. Next correction request workflow. Synthetic only.
+
+### Clock correction requests — 2026-11-26
+Added employee issue/date/explanation submission, personal status, owner acceptance/rejection with note (7f69fe9, fc07295). Acceptance queues correction only; no hours changed. Tests committed; execution/browser QA pending. Next audited application of corrected events and timesheet reconciliation. Synthetic only.
