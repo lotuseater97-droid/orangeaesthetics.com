@@ -461,3 +461,6 @@ All completed code is committed. At 86ef5b1, business foundation run 45901018467
 
 ### Inline purchasing entry — 2026-11-26
 Committed inline receipt/invoice forms and per-order amount history (6038e38). Synthetic only; correction records, browser QA and CI verification remain pending. Next: append-only correction controls and vendor summaries. No live activation.
+
+### Purchasing corrections — 2026-11-26
+Synthetic owner dashboard now records reasoned voids separately from original receipts/invoices, excludes voided entries from reconciliation, and rejects duplicate voids (b902419). Regression coverage committed (5fb1d6d); CI and browser QA pending. Next independent task: vendor-level purchasing summaries. No durable database audit or live payment activation.
