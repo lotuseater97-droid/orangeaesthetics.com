@@ -265,3 +265,6 @@ Added sample append-only clock events, clock in/out, unpaid breaks, transition v
 
 ### Owner timekeeping oversight — 2026-11-26
 Added employee clock status, all-record scheduled/completed hours and variance, and completed session details (4949546, 8ba7ca6). Open sessions excluded from worked totals. Regression tests committed; execution/browser QA pending. Next pay-period filtering and timesheet submission. Synthetic only; not payroll or attendance determination.
+
+### Staff reporting period — 2026-11-26
+Added inclusive Pacific start-date filters and all-record reset for scheduled/completed hours and session detail (a261b61, 6a070df). Current status remains unfiltered. Overnight sessions assigned entirely to start date for operational reporting only, not payroll allocation. Regression test committed; CI/browser QA pending. Next timesheet submission and approval.
