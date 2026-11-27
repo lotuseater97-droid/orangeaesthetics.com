@@ -536,3 +536,6 @@ Added versioned amendment proposals for stale approved timesheets, mandatory rea
 
 ### Approved hours export — 2026-11-26
 Added operational CSV download of effective approved timesheets with date validation, partial-period, pending-review and stale-snapshot guards (9fac318, 2de8dff). Does not establish completeness of all employee hours or calculate payroll. Tests committed; execution/browser QA pending. Next completeness checks and historical pay rates.
+
+### Approved hours export completeness — 2026-11-26
+Export now checks every employee represented in clock history for uncovered completed sessions, duplicate approved session coverage and open clocks (e391402). Open clocks block export conservatively even outside the selected period. Cannot detect unrecorded work. Regression tests committed; execution/browser QA pending. Next historical pay-rate configuration.
