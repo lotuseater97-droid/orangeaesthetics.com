@@ -11,3 +11,12 @@ export function decideTimesheet(records,id,decision,reason){
  if(!records.some(r=>r.id===id&&r.status==="pending"))throw new Error("Pending timesheet required");
  return records.map(r=>r.id===id?{...r,status:decision,reason:reason.trim()}:r);
 }
+
+export function reconcileTimesheet(record,events){
+ const report=staffHoursReport([record.staff_id],[],events,{start:record.start,end:record.end})[0];
+ const key=s=>JSON.stringify([s.clock_in,s.clock_out,s.unpaid_break_minutes,s.worked_minutes]);
+ const submitted=new Set(record.sessions.map(key)),current=new Set(report.completed.map(key));
+ const added=report.completed.filter(s=>!submitted.has(key(s)));
+ const missing=record.sessions.filter(s=>!current.has(key(s)));
+ return {added,missing,variance_minutes:report.worked_minutes-record.worked_minutes,stale:added.length>0||missing.length>0,clock_status:report.status};
+}
