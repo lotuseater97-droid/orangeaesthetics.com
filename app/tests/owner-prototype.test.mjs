@@ -60,3 +60,11 @@ test("purchase corrections preserve originals and exclude voided amounts",()=>{
  assert.match(html,/p\.corrections\.push\(/);
  assert.match(html,/data-correction=/);
 });
+
+test("sample vendor settlements are bounded by invoice balance and block invoice void",()=>{
+ assert.match(html,/data-settlement=/);
+ assert.match(html,/cents>invoice\.balance_cents/);
+ assert.match(html,/state\.vendorPayments\.push/);
+ assert.match(html,/Cannot void an invoice with a recorded settlement/);
+ assert.match(html,/Payment history/);
+});
