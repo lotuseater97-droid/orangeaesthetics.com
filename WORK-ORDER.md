@@ -250,3 +250,6 @@ Monthly grouping, week/month toggle, adjacent-month shading and clamped navigati
 
 ### Staff availability — 2026-11-26
 Recurring Pacific weekday windows, add/remove controls, existing conflict count and new/edit shift checks committed (ea1349f, eddcb95). Missing rules mean unrestricted; configured staff require full coverage. Four regression tests committed; execution/browser QA pending. Next time-off requests and approval. Synthetic only.
+
+### Staff leave — 2026-11-26
+Added sample full-day leave requests, approval/rejection, approval blocked by existing shifts, and new/edit shift leave checks (e07ef33, be57d9b). Four tests committed. Next calendar absence display and staff portal integration. Synthetic only; CI/browser QA pending.
