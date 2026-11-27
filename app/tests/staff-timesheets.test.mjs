@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import {submitTimesheet,decideTimesheet} from "../lib/staff-timesheets.mjs";
+import {submitTimesheet,decideTimesheet,reconcileTimesheet} from "../lib/staff-timesheets.mjs";
 import {clockEvent} from "../lib/staff-clock.mjs";
 const period={start:"2026-11-26",end:"2026-11-26"};
 const open=clockEvent([],"a","in","2026-11-26T17:00:00Z");
@@ -18,4 +18,14 @@ test("decision is immutable and final; rejection allows resubmission",()=>{
  assert.throws(()=>decideTimesheet(approved,"TS-1","rejected","Changed"));
  const rejected=decideTimesheet(pending,"TS-1","rejected","Review needed");
  assert.equal(submitTimesheet(rejected,"a",period,events).length,2);
+});
+
+test("late completed session invalidates submitted snapshot",()=>{
+ const record=submitTimesheet([],"a",period,events)[0];
+ assert.equal(reconcileTimesheet(record,events).stale,false);
+ let later=clockEvent(events,"a","in","2026-11-27T00:00:00Z");
+ later=clockEvent(later,"a","out","2026-11-27T01:00:00Z");
+ const result=reconcileTimesheet(record,later);
+ assert.equal(result.stale,true);assert.equal(result.added.length,1);assert.equal(result.variance_minutes,60);
+ assert.equal(record.worked_minutes,360);
 });
