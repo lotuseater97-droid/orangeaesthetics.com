@@ -76,3 +76,11 @@ test("staff schedule uses shared overlap and break validation",()=>{
  assert.match(html,/result\.issues\.length/);
  assert.match(html,/Scheduled hours/);
 });
+
+test("shift changes preserve history and validate proposed schedule",()=>{
+ assert.match(html,/data-edit-shift=/);
+ assert.match(html,/data-cancel-shift=/);
+ assert.match(html,/reviewTimeEntries\(proposed\)/);
+ assert.match(html,/state\.shiftHistory\.push/);
+ assert.match(html,/Shift change history/);
+});
