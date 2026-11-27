@@ -239,3 +239,5 @@ Implemented read-only vendor invoice balances from scoped settled payment record
 
 ### Pacific staff scheduling — 2026-11-26
 Added America/Los_Angeles wall-clock conversion, UTC storage and local display (8b60ac3, d741cc5). Ambiguous fall-back and nonexistent spring-forward inputs rejected rather than guessed. Regression tests committed; CI/browser QA pending. Next shift editing/cancellation and weekly calendar. Synthetic only.
+
+2026-11-26: Shift editing/cancellation and change history committed (c8e6921). Next weekly calendar and availability. CI/browser QA pending.
