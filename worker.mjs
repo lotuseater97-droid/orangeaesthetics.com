@@ -22,7 +22,9 @@ export default {
     const last = segments.at(-1) || '';
     const extension = last.includes('.') ? last.split('.').at(-1) : '';
     if (extension && !publicTypes.has(extension)) return reply(404,'Not found');
-    const asset = await env.ASSETS.fetch(request);
+    let asset;
+    try { asset = await env.ASSETS.fetch(request); }
+    catch { return reply(503,'Website temporarily unavailable'); }
     const headers = new Headers(asset.headers);
     headers.set('x-content-type-options', 'nosniff');
     headers.set('referrer-policy', 'strict-origin-when-cross-origin');
