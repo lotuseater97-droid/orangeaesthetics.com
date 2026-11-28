@@ -325,3 +325,5 @@ GitHub Actions run 45935535061 at 4b3fe20: 671 tests, 670 passed, zero failures,
 
 ### Reproducible dependency installation — 2026-11-27
 Scope: generate npm lockfile from existing app manifest, verify clean installation and update CI to use npm ci where applicable. No production activation. Status: started; next generate lockfile.
+
+Dependency checkpoint: Node v22.16.0 available; app/package-lock.json absent (404). npm install --package-lock-only --ignore-scripts failed with EAI_AGAIN resolving registry.npmjs.org. No lockfile generated; do not switch CI to npm ci yet. Next independent task: inspect public robots/sitemap consistency without changing production activation gates.
