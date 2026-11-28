@@ -5,7 +5,7 @@ Scope: source inspection, not penetration testing or production verification. In
 | File | Lines | Severity | Finding | Status |
 |---|---|---|---|---|
 | worker.mjs | 4, 24 | Medium | Extension-based asset guard permits extensionless paths; verify public manifest | Open |
-| worker.mjs | 25 | Medium | Asset binding exceptions not explicitly handled | Open |
+| worker.mjs | 25 | Medium | Asset binding exceptions not explicitly handled | Fix committed cf83481; tests pending |
 | worker.mjs | 26–30 | Medium | CSP not applied here; inspect asset headers before changing | Open |
 | functions/api/appointment-request.js | 5–9, 32–33 | Medium | Origin and honeypot do not prevent direct automated abuse; verify edge rate limits | Open |
 | functions/api/appointment-request.js | 40 | Medium | Contact fields can contain sensitive free text | Open |
@@ -23,3 +23,6 @@ Release gates: browser QA, persistent authenticated adapters, Neon integration t
 Last recorded CI: 670 passed, zero failed, one opt-in Neon test skipped (run 45935535061). No new test execution claimed.
 
 Next: enumerate repository files; review each with exact line ranges; record fixes, regression tests and commit identifiers. Do not mark unreviewed files complete.
+
+## Remediation 2026-11-27
+Worker asset fetch now catches exceptions and returns a generic no-store 503 with existing security headers (cf83481). Runtime regression and CI verification pending; not deployed.
