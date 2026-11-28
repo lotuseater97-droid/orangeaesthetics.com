@@ -322,3 +322,6 @@ Run 45935444449: 670 tests, 660 passed, 9 failed, 1 skipped. Authentication modu
 
 ### Expanded CI verified — 2026-11-26
 GitHub Actions run 45935535061 at 4b3fe20: 671 tests, 670 passed, zero failures, one explicit opt-in Neon rollback test skipped. Dependency repair resolved all nine failures. Static audit 45935548137 passed. Browser interaction QA, dependency lockfile and live integration remain pending.
+
+### Reproducible dependency installation — 2026-11-27
+Scope: generate npm lockfile from existing app manifest, verify clean installation and update CI to use npm ci where applicable. No production activation. Status: started; next generate lockfile.
